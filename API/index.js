@@ -22,10 +22,7 @@ app.get('/login', (req, res) => {
 app.post('/signup', async(req, res) => {
     const {name, email, password_hash} = req.body;
 
-     // Validation: ensure fields are present
-    if (!name || !email || !password_hash) {
-        return res.status(400).json({ message: 'Please fill all fields!' });
-    }
+     
 
     try{
         // check if user exist
@@ -46,8 +43,9 @@ app.post('/signup', async(req, res) => {
 })
 
 // login
+
 app.post('/login', async (req, res) => {
-  const { email, password_hash } = req.body;
+  const {email, password_hash} = req.body;
 
   if (!email || !password_hash) {
     return res.status(400).json({ message: 'Please enter email and password' });
@@ -57,11 +55,11 @@ app.post('/login', async (req, res) => {
     const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (user.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });  // user nahi mila
     }
 
     if (user.rows[0].password_hash !== password_hash) {
-      return res.status(401).json({ message: 'Incorrect password' });
+      return res.status(401).json({ message: 'Incorrect password' });  // password match nahi hua
     }
 
     res.status(200).json({ message: 'Login successful' });
@@ -73,7 +71,8 @@ app.post('/login', async (req, res) => {
 
 
 
-const PORT = process.env.PORT || 6005;
+
+const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => {
     console.log(`Connected Successfully...on PORT ${PORT}`)
 });
