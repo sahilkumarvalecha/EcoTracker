@@ -19,7 +19,7 @@ signupbtn.addEventListener("click", async () =>{
 
     // Backend API call
   try {
-    const response = await fetch("https://q4rv2d3l-5055.inc1.devtunnels.ms/signup", {
+    const response = await fetch("https://symmetrical-space-waddle-97q97xrvvrv6h7vxg-5055.app.github.dev/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,3 +47,44 @@ signupbtn.addEventListener("click", async () =>{
  
 });
 
+
+const loginemail = document.querySelector("#login-email");
+const loginpassword = document.querySelector("#login-password");
+const loginpassissue = document.querySelector(".loginpassissue");
+const loginemailissue = document.querySelector(".loginemailissue");
+
+loginbtn.addEventListener("click", async () => {
+  try {
+    const response = await fetch("https://symmetrical-space-waddle-97q97xrvvrv6h7vxg-5055.app.github.dev/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: loginemail.value,
+        password_hash: loginpassword.value,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+  alert(data.message); // "Login successful"
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 1000);
+    } else if (response.status === 401) {
+      loginpassissue.style.color = 'darkRed';
+      loginpassissue.innerHTML = "incorrect password";
+    } else if (response.status === 404) {
+      // Don't redirect, just show alert
+      alert("User not found. Please sign up first.");
+    } else {
+      alert(data.message || "Login failed.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong. Try again later.");
+  }
+});
+  
