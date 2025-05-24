@@ -6,8 +6,15 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
-
 const app = express();
+const session = require('express-session');
+
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Set true only with HTTPS
+}));
 
 // Middleware
 app.use(cors());
