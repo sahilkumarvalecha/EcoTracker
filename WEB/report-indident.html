@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Incident</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-xl bg-green-50 p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4 text-green-700">Report Environmental Incident</h2>
+      <form action="http://localhost:5055/api/reports" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <!-- Title -->
+        <div>
+          <label for="title" class="block font-medium">Title<span class="text-red-500">*</span></label>
+          <input type="text" id="title" name="title" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"/>
+        </div>
+      
+        <!-- Description -->
+        <div>
+          <label for="description" class="block font-medium">Description<span class="text-red-500">*</span></label>
+          <textarea id="description" name="description" rows="4" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+        </div>
+      
+        <!-- Category -->
+        <div>
+          <label for="category_id" class="block font-medium">Category<span class="text-red-500">*</span></label>
+          <select id="category_id" name="category_id" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="">Select a category</option>
+            <option value="1">Waste Dumping</option>
+            <option value="2">Water Pollution</option>
+            <option value="3">Air Quality</option>
+            <option value="4">Noise Pollution</option>
+          </select>
+        </div>
+      
+        <!-- Location -->
+<div>
+    <label for="location_id" class="block font-medium">Location<span class="text-red-500">*</span></label>
+    <select id="location_id" name="location_id" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500">
+      <option value="">Select a location</option>
+      <option value="1">Clifton</option>
+      <option value="2">Gulshan</option>
+      <option value="3">DHA</option>
+      <option value="4">Korangi</option>
+    </select>
+  </div>
+  
+        <!-- Optional Image -->
+        <div>
+          <label for="image" class="block font-medium">Photo (optional)</label>
+          <input type="file" id="image" name="image" accept="image/*" class="block w-full text-sm text-gray-600"/>
+        </div>
+      
+        <!-- Anonymous checkbox -->
+        <div class="flex items-center">
+          <input type="checkbox" id="is_anonymous" name="is_anonymous" class="mr-2">
+          <label for="is_anonymous">Submit anonymously</label>
+        </div>
+      
+        <!-- Submit -->
+        <div>
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow">
+            Submit Report
+          </button>
+        </div>
+      </form>
+  </div>
+</body>
+</html>
