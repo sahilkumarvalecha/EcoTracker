@@ -129,18 +129,21 @@
       }
     </script>
     <script>
-      async function fetchReportCount() {
-        try {
-          const response = await fetch("/api/report-count");
-          const data = await response.json();
-          document.getElementById("report-count").textContent = `${data.count} Submitted`;
-        } catch (err) {
-          console.error("Failed to fetch report count", err);
-        }
-      }
-    
-      fetchReportCount();
+      window.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/report-count")
+          .then(response => response.json())
+          .then(data => {
+            const countElement = document.getElementById("report-count");
+            if (countElement) {
+              countElement.textContent = data.count;
+            }
+          })
+          .catch(error => {
+            console.error("Failed to fetch report count:", error);
+          });
+      });
     </script>
+    
     
     
     </body>
