@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoTracker Events</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white text-black shadow-md">
+      <div class="p-4 text-xl font-semibold border-b border-green-500">EcoTracker</div>
+      <nav class="p-4 space-y-2 text-sm">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        </a>
+        <a href="Reports.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-800">
+          <i class="fas fa-file-alt"></i><span>Reports</span>
+        </a>
+        <a href="events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-users"></i><span>Community</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <i class="fas fa-question-circle"></i><span>Help</span>
+        </a>
+        <div class="border-t border-gray-200 pt-4 mt-4">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+            <i class="fas fa-user-cog"></i><span>User Management</span>
+          </a>
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+            <i class="fas fa-history"></i><span>System Logs</span>
+          </a>
+        </div>
+      </nav>
+      <div class="p-4 border-t border-gray-100 text-sm">
+        <i class="fas fa-user-circle"></i> Jordan Lee<br /><span class="text-xs">Admin</span>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <h1 class="text-3xl font-semibold mb-6">Reports Overview</h1>
+
+      <!-- Tabs -->
+     <div class="flex space-x-4 mb-4 text-sm font-medium border-b">
+      <button onclick="switchTab('all')" id="tab-all" class="py-2 px-4 border-b-2 border-black text-black">All</button>
+      <button onclick="switchTab('submitted')" id="tab-submitted" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Submitted</button>
+      <button onclick="switchTab('inreview')" id="tab-inreview" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">In Review</button>
+      <button onclick="switchTab('resolved')" id="tab-resolved" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Resolved</button>
+    </div>
+
+
+      <!-- Filters -->
+      <div class="mb-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <input type="text" placeholder="Enter Keyword or ID" class="border border-gray-300 p-2 rounded w-60">
+          <select class="border border-gray-300 p-2 rounded">
+            <option>All statuses</option>
+          </select>
+          <input type="date" class="border border-gray-300 p-2 rounded">
+          <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Apply Filters</button>
+        </div>
+      </div>
+
+     <!-- Reports List -->
+<div id="event-list"> 
+  <div data-status="submitted" class="p-3 hover:bg-green-50">
+    <p class="font-medium">Oil Spill Report <span class="text-green-600 text-sm">- Submitted</span></p>
+    <p class="text-sm text-green-500">2h ago</p>
+  </div>
+
+  <div data-status="inreview" class="p-3 hover:bg-green-50">
+    <p class="font-medium">Wildfire Report <span class="text-green-600 text-sm">- In Review</span></p>
+    <p class="text-sm text-green-500">1d ago</p>
+  </div>
+
+  <div data-status="resolved" class="p-3 hover:bg-green-50">
+    <p class="font-medium">Toxic Leak Report <span class="text-green-600 text-sm">- Resolved</span></p>
+    <p class="text-sm text-green-500">3d ago</p>
+  </div>
+</div>
+
+      
+      </div>
+    </main>
+  </div>
+
+  <script>
+   function switchTab(tab) {
+    // Remove active styles from all tabs
+    document.querySelectorAll('[id^="tab-"]').forEach(el => {
+      el.classList.remove('border-black', 'text-black');
+      el.classList.add('text-gray-500');
+    });
+
+    // Add active styles to clicked tab
+    const activeTab = document.getElementById('tab-' + tab);
+    if (activeTab) {
+      activeTab.classList.add('border-black', 'text-black');
+      activeTab.classList.remove('text-gray-500');
+    }
+
+    // Show/hide reports based on status
+    const reports = document.querySelectorAll('#event-list > div');
+    reports.forEach(report => {
+      if (tab === 'all' || report.dataset.status === tab) {
+        report.style.display = 'block';
+      } else {
+        report.style.display = 'none';
+      }
+    });
+  }
+
+  </script>
+</body>
+</html>
