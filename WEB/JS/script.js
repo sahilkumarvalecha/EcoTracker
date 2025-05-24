@@ -7,18 +7,18 @@ const confirmpassissue = document.querySelector(".confirm-passwordissue");
 const loginbtn = document.querySelector(".Login-btn");
 const signupbtn = document.querySelector(".signup-btn");
 
-signupbtn.addEventListener("click", async (e) =>{
-    e.preventDefault();
-    if(signuppassword.value != confirmpassword.value){
-        confirmpassissue.style.color = "darkRed";
-         confirmpassissue.innerHTML = "password doesn't match";
-        return;
-    }
-    confirmpassissue.innerHTML = "";
+signupbtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (signuppassword.value != confirmpassword.value) {
+    confirmpassissue.style.color = "darkRed";
+    confirmpassissue.innerHTML = "password doesn't match";
+    return;
+  }
+  confirmpassissue.innerHTML = "";
 
-     
 
-    // Backend API call
+
+  // Backend API call
   try {
     const response = await fetch("http://localhost:5055/signup", {
       method: "POST",
@@ -28,14 +28,16 @@ signupbtn.addEventListener("click", async (e) =>{
       body: JSON.stringify({
         name: signupname.value,
         email: signupemail.value,
-       password_hash: signuppassword.value,
+        password_hash: signuppassword.value,
       }),
     });
 
     const data = await response.json();
-   if (response.ok) {
+    if (response.ok) {
       alert(data.message); // e.g., "Signup successful"
-      //  Redirect only on success
+      //  Store name in localStorage
+      localStorage.setItem("userName", signupname.value);
+      //  Redirect
       window.location.href = "login.html";
     } else {
       alert(data.message || "Signup failed");
@@ -45,7 +47,7 @@ signupbtn.addEventListener("click", async (e) =>{
     alert("Something went wrong. Try again later.");
     console.error(error);
   }
- 
+
 });
 
 
@@ -74,10 +76,13 @@ loginbtn.addEventListener("click", async (e) => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      alert(data.message); // "Login successful"
-      window.location.href = "index.html";
-    } else {
+   if (response.ok) {
+ // 1. Store user data
+      localStorage.setItem("userName", data.name);
+
+  // In your index.html's JavaScript (or shared JS file):
+ window.location.href = "/WEB/index.html";     // redirect to home page
+}  else {
       alert(data.message); // "User not found" ya "Incorrect password"
     }
   } catch (err) {
@@ -89,19 +94,20 @@ loginbtn.addEventListener("click", async (e) => {
 // rsvp API
 
 function rsvpEvent(eventId) {
-    fetch('http://localhost:5055/rsvp', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ event_id: eventId })
-    })
+  fetch('http://localhost:5055/rsvp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ event_id: eventId })
+  })
     .then(response => response.json())
     .then(data => {
-        alert(data.message || data.error);
+      alert(data.message || data.error);
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Something went wrong!');
+      console.error('Error:', error);
+      alert('Something went wrong!');
     });
 }
+
