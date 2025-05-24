@@ -143,3 +143,14 @@ app.use('/uploads', express.static(path.join(__dirname, "../WEB/uploads")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get("/api/report-count", async (req, res) => {
+    try {
+      const result = await pool.query("SELECT COUNT(*) FROM reports");
+      res.json({ count: parseInt(result.rows[0].count) });
+    } catch (error) {
+      console.error("Error fetching report count:", error);
+      res.status(500).json({ error: "Failed to fetch count" });
+    }
+  });
+  

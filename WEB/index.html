@@ -56,7 +56,7 @@
     <main class="flex-1 p-6">
       <h1 class="text-2xl font-bold mb-4">Overview</h1>
       <div class="mb-4 flex justify-end">
-        <a href="/WEB/report-indident.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2 shadow">
+        <a href="/WEB/report-incident.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2 shadow">
           <i class="fas fa-plus-circle"></i>
           <span>Report Incident</span>
         </a>
@@ -68,9 +68,9 @@
           <div class="flex items-center space-x-3">
             <i class="fas fa-file-alt text-green-700"></i>
             <div>
-              <p class="font-bold">12 Submitted</p>
+              <p id="report-count" class="font-bold">Loading...</p>
               <p class="text-sm">Recent environmental reports</p>
-            </div>
+            </div>            
           </div>
           <button class="mt-2 text-white bg-green-600 px-3 py-1 rounded">View Reports</button>
         </div>
@@ -121,8 +121,27 @@
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("submitted") === "true") {
         alert("Report submitted successfully!");
+        
+        // Remove the query param so it doesn’t alert again
+        urlParams.delete("submitted");
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
       }
     </script>
+    <script>
+      async function fetchReportCount() {
+        try {
+          const response = await fetch("/api/report-count");
+          const data = await response.json();
+          document.getElementById("report-count").textContent = `${data.count} Submitted`;
+        } catch (err) {
+          console.error("Failed to fetch report count", err);
+        }
+      }
+    
+      fetchReportCount();
+    </script>
+    
     
     </body>
 </html>
