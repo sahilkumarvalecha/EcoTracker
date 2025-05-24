@@ -5,99 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EcoTracker - Analytics</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-WW12j9F8aK3S5yo09uI3SgH3i7PuAqzsv+ZBO8kNnGgG93NH6ol3NU7yG/nz5C/4Zm+9A7O83TayJfsS8E1EOQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white text-black shadow-md">
-      <div class="p-4 text-xl font-semibold border-b border-green-500">EcoTracker</div>
-      <nav class="p-4 space-y-2 text-sm">
-        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+    <aside class="w-64 bg-white text-black flex flex-col">
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-map-marked-alt"></i><span>Map</span>
         </a>
-        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-file-alt"></i><span>Reports</span>
         </a>
-        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 text-green-800">
+        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-calendar-alt"></i><span>Events</span>
         </a>
-        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
           <i class="fas fa-chart-bar"></i><span>Analytics</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-users"></i><span>Community</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-question-circle"></i><span>Help</span>
         </a>
-        <div class="border-t border-gray-200 pt-4 mt-4">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+        <div class="border-t border-green-500 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
             <i class="fas fa-user-cog"></i><span>User Management</span>
           </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-100">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
             <i class="fas fa-history"></i><span>System Logs</span>
           </a>
         </div>
       </nav>
-      <div class="p-4 border-t border-gray-100 text-sm">
+      <div class="p-4 border-t border-green-500 text-sm">
         <i class="fas fa-user-circle"></i> Jordan Lee<br /><span class="text-xs">Admin</span>
       </div>
     </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 p-8">
-    <h1 class="text-2xl font-semibold mb-4">Analytics Overview</h1>
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <h1 class="text-2xl font-semibold mb-4">Analytics Overview</h1>
 
-    <!-- Tabs -->
-    <div class="flex space-x-6 border-b pb-2">
-      <button id="analytics-tab-events" onclick="switchAnalyticsTab('events')" class="text-green-600 font-medium border-b-2 border-green-600">Events</button>
-      <button id="analytics-tab-reports" onclick="switchAnalyticsTab('reports')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500">Reports</button>
-      <button id="analytics-tab-impact" onclick="switchAnalyticsTab('impact')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500">Impact</button>
-    </div>
+      <!-- Tabs -->
+      <div class="flex space-x-6 border-b pb-2">
+        <button id="analytics-tab-events" onclick="switchAnalyticsTab('events')" class="text-green-600 font-medium border-b-2 border-green-600">Events</button>
+        <button id="analytics-tab-reports" onclick="switchAnalyticsTab('reports')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500">Reports</button>
+        <button id="analytics-tab-impact" onclick="switchAnalyticsTab('impact')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500">Impact</button>
+      </div>
 
-    <!-- Events Section -->
-    <div id="analytics-section-events" class="mt-6">
-      <h2 class="text-lg font-semibold mb-2">Event Trends</h2>
-      <img src="https://quickchart.io/chart?c={type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{label:'Events',backgroundColor:'green',data:[10,15,20,13,22,18,26,21,17,19,16,20]}]}}" alt="Event Chart" class="w-full max-w-xl mb-6">
+      <!-- Events Section -->
+      <div id="analytics-section-events" class="mt-6">
+        <h2 class="text-lg font-semibold mb-2">Event Trends</h2>
+        <img src="https://quickchart.io/chart?c={type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{label:'Events',backgroundColor:'green',data:[10,15,20,13,22,18,26,21,17,19,16,20]}]}}" alt="Event Chart" class="w-full max-w-xl mb-6">
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white rounded-lg shadow p-4">
-          <i class="fas fa-broom text-green-600 text-xl mb-2"></i>
-          <h3 class="text-green-600 font-bold text-sm">Most Frequent</h3>
-          <p class="text-xl font-semibold">Cleanup</p>
-          <p class="text-sm text-gray-500">32 events this year</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-          <i class="fas fa-water text-green-600 text-xl mb-2"></i>
-          <h3 class="text-green-600 font-bold text-sm">Runner Up</h3>
-          <p class="text-xl font-semibold">River Reclaim</p>
-          <p class="text-sm text-gray-500">24 events this year</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-          <i class="fas fa-tree text-green-600 text-xl mb-2"></i>
-          <h3 class="text-green-600 font-bold text-sm">Popular</h3>
-          <p class="text-xl font-semibold">Park Restoration</p>
-          <p class="text-sm text-gray-500">19 events this year</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <i class="fas fa-broom text-green-600 text-xl mb-2"></i>
+            <h3 class="text-green-600 font-bold text-sm">Most Frequent</h3>
+            <p class="text-xl font-semibold">Cleanup</p>
+            <p class="text-sm text-gray-500">32 events this year</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <i class="fas fa-water text-green-600 text-xl mb-2"></i>
+            <h3 class="text-green-600 font-bold text-sm">Runner Up</h3>
+            <p class="text-xl font-semibold">River Reclaim</p>
+            <p class="text-sm text-gray-500">24 events this year</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <i class="fas fa-tree text-green-600 text-xl mb-2"></i>
+            <h3 class="text-green-600 font-bold text-sm">Popular</h3>
+            <p class="text-xl font-semibold">Park Restoration</p>
+            <p class="text-sm text-gray-500">19 events this year</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Reports Section -->
-    <div id="analytics-section-reports" class="mt-6 hidden">
-      <h2 class="text-lg font-semibold mb-4">Reports Overview</h2>
-      <p>This is placeholder content for reports analytics.</p>
-    </div>
+      <!-- Reports Section -->
+      <div id="analytics-section-reports" class="mt-6 hidden">
+        <h2 class="text-lg font-semibold mb-4">Reports Overview</h2>
+        <p>This is placeholder content for reports analytics.</p>
+      </div>
 
-    <!-- Impact Section -->
-    <div id="analytics-section-impact" class="mt-6 hidden">
-      <h2 class="text-lg font-semibold mb-4">Impact Overview</h2>
-      <p>This is placeholder content for impact analytics.</p>
-    </div>
-  </main>
+      <!-- Impact Section -->
+      <div id="analytics-section-impact" class="mt-6 hidden">
+        <h2 class="text-lg font-semibold mb-4">Impact Overview</h2>
+        <p>This is placeholder content for impact analytics.</p>
+      </div>
+    </main>
+  </div>
 
   <!-- Script -->
   <script>
@@ -120,6 +121,5 @@
 
     document.addEventListener('DOMContentLoaded', () => switchAnalyticsTab('events'));
   </script>
-
 </body>
 </html>
