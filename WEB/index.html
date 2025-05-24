@@ -14,11 +14,10 @@
     <aside class="w-64 bg-white-600 text-black flex flex-col">
       <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
       <nav class="flex-1 p-2 space-y-2">
-        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
           <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-map-marked-alt"></i><span>Map</span>
         </a>
         <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
@@ -55,15 +54,22 @@
     <!-- Main Content -->
     <main class="flex-1 p-6">
       <h1 class="text-2xl font-bold mb-4">Overview</h1>
+      <div class="mb-4 flex justify-end">
+        <a href="/WEB/report-incident.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2 shadow">
+          <i class="fas fa-plus-circle"></i>
+          <span>Report Incident</span>
+        </a>
+      </div>
+      
       <!-- Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-green-100 p-4 rounded shadow">
           <div class="flex items-center space-x-3">
             <i class="fas fa-file-alt text-green-700"></i>
             <div>
-              <p class="font-bold">12 Submitted</p>
+              <p id="report-count" class="font-bold">Loading...</p>
               <p class="text-sm">Recent environmental reports</p>
-            </div>
+            </div>            
           </div>
           <button class="mt-2 text-white bg-green-600 px-3 py-1 rounded">View Reports</button>
         </div>
@@ -110,5 +116,34 @@
     </main>
   </div>
     <script src="/WEB/JS/chart.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("submitted") === "true") {
+        alert("Report submitted successfully!");
+        
+        // Remove the query param so it doesn’t alert again
+        urlParams.delete("submitted");
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    </script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/report-count")
+          .then(response => response.json())
+          .then(data => {
+            const countElement = document.getElementById("report-count");
+            if (countElement) {
+              countElement.textContent = data.count;
+            }
+          })
+          .catch(error => {
+            console.error("Failed to fetch report count:", error);
+          });
+      });
+    </script>
+    
+    
+    
     </body>
 </html>
