@@ -55,6 +55,30 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
 });
 
+app.get('/rsvp', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM events LIMIT 1');
+    const event = result.rows[0];
+    if (!event) {
+      return res.send('No event found.');
+    }
+
+    const today = new Date();
+    const eventDate = new Date(event.date);
+
+    if (eventDate >= today.setHours(0, 0, 0, 0)) {
+      
+      res.sendFile(path.join(__dirname, '..', 'WEB', 'events.html'));
+    } else {
+      res.send('Event is done. Thank you!');
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Signup
 app.post('/signup', async (req, res) => {
   const { name, email, password_hash } = req.body;
@@ -157,6 +181,28 @@ app.get("/api/report-count", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch count" });
   }
 });
+
+
+// rsvp
+app.post('/rsvp', (req, res) => {
+    const eventId = req.body.event_id;
+    const userId = req.session.user_id;
+
+    if (!userId) {
+        return res.json({ error: 'Please log in first' });
+    }
+
+    const sql = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
+    db.query(sql, [userId, eventId], (err) => {
+        if (err) {
+            return res.json({ error: 'Failed to save RSVP' });
+        }
+        res.json({ message: 'RSVP successfully saved!' });
+    });
+});
+
+
+
 
 // Start the server
 const PORT = process.env.PORT || 5055;

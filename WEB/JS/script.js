@@ -86,13 +86,22 @@ loginbtn.addEventListener("click", async (e) => {
   }
 });
 
+// rsvp API
 
-// signup button
-// signupbtn.addEventListener("click", ()=>{
-//      window.location.href = "/WEB/signup.html";
-// })
-
-// login btn
-// loginbtn.addEventListener("click", ()=>{
-//      window.location.href = "/WEB/login.html";
-// })
+function rsvpEvent(eventId) {
+    fetch('http://localhost:5055/rsvp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ event_id: eventId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || data.error);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong!');
+    });
+}

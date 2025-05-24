@@ -1,54 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Events</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
-   <!-- Sidebar -->
-   <aside class="w-64 bg-white-600 text-black flex flex-col">
-    <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-    <nav class="flex-1 p-2 space-y-2">
-      <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-      <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
-        <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-      </a>
-      <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-map-marked-alt"></i><span>Map</span>
-      </a>
-      <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-file-alt"></i><span>Reports</span>
-      </a>
-      <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-calendar-alt"></i><span>Events</span>
-      </a>
-      <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-chart-bar"></i><span>Analytics</span>
-      </a>
-      <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-users"></i><span>Community</span>
-      </a>
-      <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-question-circle"></i><span>Help</span>
-      </a>
-      <div class="border-t border-green-500 mt-2 pt-2">
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-user-cog"></i><span>User Management</span>
-        </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-history"></i><span>System Logs</span>
-        </a>
-      </div>
-    </nav>
-     <div class="p-4 border-t border-green-500 text-sm">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white-600 text-black flex flex-col">
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
+            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+          </a>
+          <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-map-marked-alt"></i><span>Map</span>
+          </a>
+          <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-file-alt"></i><span>Reports</span>
+          </a>
+          <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-calendar-alt"></i><span>Events</span>
+          </a>
+          <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-chart-bar"></i><span>Analytics</span>
+          </a>
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-users"></i><span>Community</span>
+          </a>
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-question-circle"></i><span>Help</span>
+          </a>
+          <div class="border-t border-green-500 mt-2 pt-2">
+            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+              <i class="fas fa-user-cog"></i><span>User Management</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+              <i class="fas fa-history"></i><span>System Logs</span>
+            </a>
+          </div>
+      </nav>
+      <div class="p-4 border-t border-green-500 text-sm">
         <i class="fas fa-user-circle"></i>
         <button> <a href="/WEB/login.html">Signup/signin</a></button>
       </div>
-  </aside>
+    </aside>
 
     <!-- Main Content -->
     <main class="flex-1 p-8">
@@ -56,18 +58,26 @@
 
       <!-- Tabs -->
       <div class="flex space-x-4 mb-4 text-sm font-medium border-b">
-        <button onclick="switchTab('all')" id="tab-all" class="py-2 px-4 border-b-2 border-black text-black">All</button>
-        <button onclick="switchTab('active')" id="tab-active" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Active</button>
-        <button onclick="switchTab('upcoming')" id="tab-upcoming" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Upcoming</button>
-        <button onclick="switchTab('past')" id="tab-past" class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Past</button>
+        <button onclick="switchTab('all')" id="tab-all"
+          class="py-2 px-4 border-b-2 border-black text-black">All</button>
+        <button onclick="switchTab('active')" id="tab-active"
+          class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Active</button>
+        <button onclick="switchTab('upcoming')" id="tab-upcoming"
+          class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Upcoming</button>
+        <button onclick="switchTab('past')" id="tab-past"
+          class="py-2 px-4 border-b-2 text-gray-500 hover:text-black">Past</button>
       </div>
 
       <!-- Filters -->
       <div class="mb-6">
         <div class="flex flex-wrap items-center gap-4">
           <input type="text" placeholder="Event name or ID" class="border border-gray-300 p-2 rounded w-60">
-          <select class="border border-gray-300 p-2 rounded">
-            <option>All statuses</option>
+          <select onchange="filterByStatus(this.value)"
+            class="border border-gray-300 p-2 rounded w-40 bg-white text-gray-700">
+            <option value="all">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Upcoming">Upcoming</option>
+            <option value="Past">Past</option>
           </select>
           <input type="date" class="border border-gray-300 p-2 rounded">
           <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Apply Filters</button>
@@ -75,52 +85,85 @@
       </div>
 
       <!-- Event List -->
-      <div class="space-y-4" id="event-list">
-        <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="active">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-folder-open text-green-600 text-lg"></i>
-            <div>
-              <p class="font-medium text-lg">Cleanup Drive</p>
-              <p class="text-sm text-gray-500">Riverbank - Active - Today</p>
-            </div>
-          </div>
-          
-        </div>
-
-        <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="upcoming">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-folder-open text-yellow-500 text-lg"></i>
-            <div>
-              <p class="font-medium text-lg">Tree Planting</p>
-              <p class="text-sm text-gray-500">Lakeview - Upcoming - Tomorrow</p>
-            </div>
-          </div>
-          
-        </div>
-
-        <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="past">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-folder-open text-gray-400 text-lg"></i>
-            <div>
-              <p class="font-medium text-lg">Awareness Talk</p>
-              <p class="text-sm text-gray-500">Forest Edge - Past - 2d ago</p>
-            </div>
+       <div id="event-list">
+      <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="active">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-folder-open text-green-600 text-lg"></i>
+          <div>
+            <p class="font-medium text-lg">Cleanup Drive</p>
+            <p class="text-sm text-gray-500">Riverbank - Active - Today</p>
           </div>
         </div>
+        <button onclick="rsvpEvent('1')" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-900">
+          RSVP
+        </button>
       </div>
-    </main>
+
+
+      <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="upcoming">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-folder-open text-yellow-500 text-lg"></i>
+          <div>
+            <p class="font-medium text-lg">Tree Planting</p>
+            <p class="text-sm text-gray-500">Lakeview - Upcoming - Tomorrow</p>
+          </div>
+        </div>
+         <button onclick="rsvpEvent('2')"class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-900">
+      RSVP
+    </button>
+      </div>
+
+      <div class="flex justify-between items-center bg-white shadow-sm rounded p-4" data-status="past">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-folder-open text-gray-400 text-lg"></i>
+          <div>
+            <p class="font-medium text-lg">Awareness Talk</p>
+            <p class="text-sm text-gray-500">Forest Edge - Past - 2d ago</p>
+          </div>
+        </div>
+         <button disabled class="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">
+      Done
+    </button>
+      </div>
+      </div>
+  </div>
+  </main>
   </div>
 
   <script>
     function switchTab(tab) {
-      document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.remove('border-black', 'text-black'));
+      document.querySelectorAll('[id^="tab-"]').forEach(el =>
+        el.classList.remove('border-black', 'text-black')
+      );
       document.getElementById('tab-' + tab).classList.add('border-black', 'text-black');
 
       const events = document.querySelectorAll('#event-list > div');
       events.forEach(event => {
         event.style.display = (tab === 'all' || event.dataset.status === tab) ? 'flex' : 'none';
       });
+
+      // Sync dropdown with tab
+      document.querySelector('select').value = tab.charAt(0).toUpperCase() + tab.slice(1);
+    }
+
+    function filterByStatus(status) {
+      const events = document.querySelectorAll('#event-list > div');
+      events.forEach(event => {
+        event.style.display = (status === 'all' || event.dataset.status === status.toLowerCase()) ? 'flex' : 'none';
+      });
+
+      // Sync tab with dropdown
+      document.querySelectorAll('[id^="tab-"]').forEach(el =>
+        el.classList.remove('border-black', 'text-black')
+      );
+      const tabId = 'tab-' + (status.toLowerCase());
+      const tabBtn = document.getElementById(tabId);
+      if (tabBtn) {
+        tabBtn.classList.add('border-black', 'text-black');
+      }
     }
   </script>
+
 </body>
+
 </html>
