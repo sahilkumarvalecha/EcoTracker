@@ -8,7 +8,6 @@ const fs = require("fs");
 const cors = require("cors");
 const app = express();
 const session = require('express-session');
-const { log } = require("console");
 
 app.use(session({
   secret: 'your_secret_key',
@@ -24,7 +23,7 @@ app.use(session({
 
 // Middleware
 app.use(cors({
-  origin: 'http://127.0.0.1:5500',  // jahan se tum request kar rahe ho (frontend ka address)
+  origin: 'http://127.0.0.1:5500',
   credentials: true
 }));
 app.use(express.json());
@@ -80,13 +79,13 @@ app.get('/rsvp', async (req, res) => {
     } else {
       res.send('Event is done. Thank you!');
     }
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
   }
 });
 
+// User routes
 app.get("/api/user", async (req, res) => {
   if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
 
@@ -105,7 +104,7 @@ app.post("/api/avatar", async (req, res) => {
   res.json({ success: true });
 });
 
-// Signup
+// Auth routes
 app.post('/signup', async (req, res) => {
   const { name, email, password_hash } = req.body;
 
@@ -127,7 +126,6 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-// Login
 app.post('/login', async (req, res) => {
   const { email, password_hash } = req.body;
 
@@ -150,7 +148,6 @@ app.post('/login', async (req, res) => {
     if (user.password_hash !== password_hash) {
       return res.status(401).json({ message: 'Incorrect password' });
     }
-    console.log(user);
 
     req.session.user_id = user.user_id;
     req.session.email = email;
@@ -172,13 +169,11 @@ app.post('/login', async (req, res) => {
 // Middleware to check if user is logged in
 function checkAuth(req, res, next) {
   if (req.session.user_id) {
-    next(); // User is logged in
+    next();
   } else {
-    // For API requests, send 401 status
     if (req.xhr || req.headers.accept?.includes('application/json')) {
       return res.status(401).json({ redirect: '/login' });
     }
-    // For page requests, do server-side redirect
     res.redirect('/login');
   }
 }
@@ -223,10 +218,8 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
   }
 
   // Determine user_id
-  let user_id = null;
-  if (req.session.user_id && is_anonymous !== "on") {
-    user_id = req.session.user_id;
-  }
+  const isAnonymous = req.body.is_anonymous === 'on';
+  let user_id = isAnonymous ? null : req.session.user_id;
 
   const report_id = uuidv4();
   const status_id = 1; // Default to "Pending"
@@ -241,7 +234,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
         category_id, status_id, location_id,
         image_url, is_anonymous, severity_level, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    `,
+      `,
       [
         user_id,
         title,
@@ -250,7 +243,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
         status_id,
         locationId,
         image_url,
-        is_anonymous === "on",
+        isAnonymous,
         severity_level,
         created_at,
       ]
