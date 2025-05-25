@@ -142,46 +142,41 @@ app.post('/login', async (req, res) => {
 
 // Report submission
 app.post("/api/reports", upload.single("image"), async (req, res) => {
-  const { title, description, category_id, location_id, is_anonymous } = req.body;
-
-  const categoryId = parseInt(category_id);
-  const locationId = parseInt(location_id);
-
-
-const PORT = process.env.PORT || 5055;
-app.listen(PORT, () => {
-    console.log(`Connected Successfully...on PORT ${PORT}`)
-});
-  if (!title || !description || isNaN(categoryId) || isNaN(locationId)) {
-    return res.status(400).json({ error: "Missing or invalid required fields" });
-  }
-
-  const report_id = uuidv4();
-  const user_id = null; // Optional if not logged-in user
-  const status_id = 1;  // Default to "Pending"
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-  const created_at = new Date();
-
-  try {
-    await pool.query(`
-      INSERT INTO reports (
+    const { title, description, category_id, location_id, is_anonymous, severity_level } = req.body;
+  
+    const categoryId = parseInt(category_id);
+    const locationId = parseInt(location_id);
+  
+    if (!title || !description || isNaN(categoryId) || isNaN(locationId) || !severity_level) {
+      return res.status(400).json({ error: "Missing or invalid required fields" });
+    }
+  
+    const report_id = uuidv4();
+    const user_id = null; // Optional if not logged-in user
+    const status_id = 1;  // Default to "Pending"
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const created_at = new Date();
+  
+    try {
+      await pool.query(`
+        INSERT INTO reports (
+          user_id, title, description,
+          category_id, status_id, location_id,
+          image_url, is_anonymous, severity_level, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      `, [
         user_id, title, description,
-        category_id, status_id, location_id,
-        image_url, is_anonymous, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    `, [
-      user_id, title, description,
-      categoryId, status_id, locationId,
-      image_url, is_anonymous === "on", created_at
-    ]);
-
-    res.redirect('/index.html?submitted=true');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Database error");
-  }
-});
-
+        categoryId, status_id, locationId,
+        image_url, is_anonymous === "on", severity_level, created_at
+      ]);
+  
+      res.redirect('/index.html?submitted=true');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Database error");
+    }
+  });
+  
 // Get report count
 app.get("/api/report-count", async (req, res) => {
   try {
