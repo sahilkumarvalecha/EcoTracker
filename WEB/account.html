@@ -1,11 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>User Profile Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
+<body class="bg-gray-50">
+
+  <!-- Sidebar -->
+    <div class="flex min-h-screen">
+    <aside class="w-64 bg-white-600 text-black flex flex-col">
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        </a>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-file-alt"></i><span>Reports</span>
+        </a>
+        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        </a>
+        <a href="/WEB/community.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-users"></i><span>Community</span>
+        </a>
+        <a href="/WEB/help.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-question-circle"></i><span>Help</span>
+        </a>
+        
+      </nav>
+      <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+  <i class="fas fa-user-circle"></i>
+  <span id="sidebar-user-name">Signup/Signin</span>
+</a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <div class="text-center">
+         <img id="profile-picture" src="https://www.w3schools.com/howto/img_avatar.png" alt="User" class="w-32 h-32 rounded-full mx-auto profile-img">
+          <h2 class="text-2xl font-bold mt-4"><span id="profile-user-name">`${userName}`</span></h2>
+          <button class="edit-profile-btn mt-2 px-4 py-2 bg-green-700 text-white rounded hover:bg-green-900">Edit Profile</button>
+        </div>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold">Contact Information</h3>
+          <p id="user-email">Email: jane.doe@email.com</p>
+        </div>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold">Reported Incidents</h3>
+          <ul class="list-disc pl-5">
+            <li>Lost Access Card (2024-05-12) – Open</li>
+            <li>Broken Monitor (2024-04-28) – Resolved</li>
+            <li>Parking Issue (2024-03-15) – In Progress</li>
+          </ul>
+        </div>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold">Total Points</h3>
+          <p class="text-2xl font-bold text-green-600">1,250</p>
+        </div>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold">Badges</h3>
+          <div class="flex space-x-4">
+            <div class="bg-green-100 p-4 rounded">
+              <p>✔️ Verified</p>
+            </div>
+            <div class="bg-green-100 p-4 rounded">
+              <p>⭐ Top Scorer</p>
+            </div>
+            <div class="bg-green-100 p-4 rounded">
+              <p>🏆 Achiever</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<!-- Avatar Selection Modal -->
+<div id="avatarModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-white rounded-lg p-6 w-1/2">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold">Select Your Avatar</h3>
+      <button id="closeModal" class="text-red-500 text-xl font-bold">&times;</button>
+    </div>
+    <div class="grid grid-cols-3 gap-4">
+      <img src="https://i.pravatar.cc/100?img=1" class="rounded-full w-20 h-20 cursor-pointer avatar-option">
+<img src="https://i.pravatar.cc/100?img=2" class="rounded-full w-20 h-20 cursor-pointer avatar-option">
+<img src="https://i.pravatar.cc/100?img=3" class="rounded-full w-20 h-20 cursor-pointer avatar-option">
+<img src="https://i.pravatar.cc/100?img=4" class="rounded-full w-20 h-20 cursor-pointer avatar-option">
+<img src="https://i.pravatar.cc/100?img=5" class="rounded-full w-20 h-20 cursor-pointer avatar-option">
+
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const userName = localStorage.getItem("userName");
+    const userLink = document.getElementById("user-link");
+    const sidebarName = document.getElementById("sidebar-user-name");
+    const profileName = document.getElementById("profile-user-name");
+    const userEmail = document.getElementById("user-email");
+
+    if (userName) {
+      if (sidebarName) sidebarName.textContent = userName;
+      if (profileName) profileName.textContent = userName;
+      if (userEmail) userEmail.textContent = "Email: " + userEmail;
+      if (userLink) {
+        userLink.href = "account.html";
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+         window.location.href = "index.html"; 
+        });
+        userLink.parentNode.appendChild(logoutBtn);
+      }
+    }
+
+    const modal = document.getElementById("avatarModal");
+    const editBtn = document.querySelector(".edit-profile-btn");
+    const closeBtn = document.getElementById("closeModal");
+    const profileImg = document.getElementById("profile-picture");
+
+    editBtn.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".avatar-option").forEach(img => {
+      img.addEventListener("click", () => {
+        profileImg.src = img.src;
+        modal.classList.add("hidden");
+        localStorage.setItem("selectedAvatar", img.src);
+      });
+    });
+
+    // Load saved avatar if available
+    const savedAvatar = localStorage.getItem("selectedAvatar");
+    if (savedAvatar) {
+      profileImg.src = savedAvatar;
+    }
+  });
+</script>
+
 </body>
 </html>

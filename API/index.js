@@ -215,16 +215,16 @@ app.get(['/', '/dashboard'], checkAuth, (req, res) => {
         }
     });
     app.get('/api/session', (req, res) => {
-        if (req.session.user) {
-          const email = req.session.user.email;
-          res.json({
-            name: req.session.user.name,
-            isAdmin: email && email.endsWith('@ecotracker.pk'),
-          });
-        } else {
-          res.status(401).json({ error: 'User not logged in' });
-        }
-      });
+  if (req.session.user_id) {
+    res.json({
+      name: req.session.name,
+      email: req.session.email,
+      isAdmin: req.session.email && req.session.email.endsWith('@ecotracker.pk'),
+    });
+  } else {
+    res.status(401).json({ error: 'User not logged in' });
+  }
+});
               
     
     // Get report count

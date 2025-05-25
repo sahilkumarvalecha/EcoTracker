@@ -248,7 +248,7 @@
     logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("userName");
-      window.location.reload();
+      window.location.href = "index.html"; 
     });
     userLink.parentNode.appendChild(logoutBtn);
   } 

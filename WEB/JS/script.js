@@ -106,6 +106,7 @@ window.addEventListener("DOMContentLoaded", () => {
       // if (userLink) userLink.href = "signin.html"; // ya signup page
     }
   });
+  
 
 // rsvp API
 
