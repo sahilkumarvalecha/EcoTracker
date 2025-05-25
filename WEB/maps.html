@@ -3,179 +3,696 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Incident Map</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <title>Incident Map | EcoTracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+      --secondary: #3b82f6;
+      --accent: #f59e0b;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .sidebar-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    
+    .incident-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
+    }
+    
+    .incident-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .map-container {
+      height: 500px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+        backdrop-filter: blur(4px);
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
+      }
+      
+      .main-content {
+        padding-left: 0;
+      }
+      
+      .page-header {
+        margin-left: 60px;
+      }
+      
+      .map-container {
+        height: 350px;
+      }
+    }
+    
+    /* Modern scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Leaflet marker styles */
+    .critical-marker {
+      filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+    }
+    
+    .active-marker {
+      filter: drop-shadow(0 2px 4px rgba(249, 115, 22, 0.3));
+    }
+    
+    .resolved-marker {
+      filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg hover:shadow-md transition-shadow">
+      <i class="fas fa-bars text-gray-600"></i>
+    </button>
+    
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    
     <!-- Sidebar -->
-    <aside class="w-64 bg-white-600 text-black flex flex-col border-r">
-      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-      <nav class="flex-1 p-2 space-y-2">
-        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+      <div class="p-4 text-xl font-bold border-b border-gray-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-leaf text-green-500"></i>
+          <span class="text-gray-800">EcoTracker</span>
+        </div>
+        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600 transition-colors">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="/WEB/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Dashboard</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-100 text-green-800 font-semibold">
-          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        <a href="/WEB/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Map</span>
         </a>
-        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-file-alt"></i><span>Reports</span>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Reports</span>
         </a>
-        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        <a href="/WEB/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Events</span>
         </a>
-        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Analytics</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-users"></i><span>Community</span>
+        <a href="/WEB/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Community</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-question-circle"></i><span>Help</span>
+        <a href="/WEB/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span class="text-gray-700">Help</span>
         </a>
-        <div class="border-t border-green-500 mt-2 pt-2">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-user-cog"></i><span>User Management</span>
+        <div class="border-t border-gray-100 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i>
+            <span class="text-gray-700">User Management</span>
           </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-history"></i><span>System Logs</span>
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+            <i class="fas fa-history w-5 text-center text-green-500"></i>
+            <span class="text-gray-700">System Logs</span>
           </a>
         </div>
       </nav>
-          <div class="p-4 border-t border-green-500 text-sm">
-   <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-  <i class="fas fa-user-circle"></i>
-  <span id="user-name-text">Signup/Signin</span>
-</a>
-</div>
+      <div class="p-4 border-t border-gray-100">
+        <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors relative">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1 text-gray-700">Sign In / Sign Up</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+          <span class="notification-badge">3</span>
+        </a>
+      </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6">
-      <h1 class="text-2xl font-bold mb-4">Incident Map</h1>
+    <main class="flex-1 p-4 md:p-8 main-content">
+      <div class="max-w-7xl mx-auto">
+        <!-- Page Header with proper spacing for mobile -->
+        <div class="page-header mb-6">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Incident Map</h1>
+          <p class="text-gray-500 mt-1">Track and monitor environmental incidents in your area</p>
+        </div>
 
-      <!-- Filters -->
-      <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <select id="locationSelect" class="border p-2 rounded w-full">
-          <option disabled selected>Select location</option>
-          <option value="24.8138,67.0303">Clifton</option>
-          <option value="24.9180,67.0970">Gulshan</option>
-          <option value="24.8156,67.1108">DHA</option>
-          <option value="24.8415,67.1327">Korangi</option>
-        </select>
-        <select id="categorySelect" class="border p-2 rounded w-full">
-          <option disabled selected>Select category</option>
-          <option value="Waste Dumping">Waste Dumping</option>
-          <option value="Water Pollution">Water Pollution</option>
-          <option value="Air Quality">Air Quality</option>
-          <option value="Noise Pollution">Noise Pollution</option>
-        </select>
-        <button onclick="filterAndRenderMap()" class="bg-blue-600 text-white px-4 py-2 rounded">Search & View</button>
-      </div>
+        <!-- Tabs -->
+        <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
+          <button id="tab-all" onclick="switchTab('all')" class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1 transition-colors">All</button>
+          <button id="tab-active" onclick="switchTab('active')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 transition-colors">Active</button>
+          <button id="tab-resolved" onclick="switchTab('resolved')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 transition-colors">Resolved</button>
+          <button id="tab-critical" onclick="switchTab('critical')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 transition-colors">Critical</button>
+        </div>
 
-      <!-- Map View -->
-      <div id="map" class="h-[600px] w-full rounded shadow mb-4"></div>
+        <!-- Filters -->
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input id="locationSearch" type="text" placeholder="Enter address or area" class="pl-10 border border-gray-300 rounded-lg p-2.5 w-full focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+          </div>
+          
+          <select class="border border-gray-300 rounded-lg p-2.5 w-full focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+            <option>All categories</option>
+            <option>Pollution</option>
+            <option>Wildlife</option>
+            <option>Deforestation</option>
+            <option>Water Contamination</option>
+          </select>
+          
+          <select class="border border-gray-300 rounded-lg p-2.5 w-full focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+            <option>Any severity</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+          
+          <button onclick="searchLocation()" class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-4 py-2.5 rounded-lg transition-all flex items-center justify-center space-x-2 shadow-md hover:shadow-lg">
+            <i class="fas fa-filter"></i>
+            <span>Apply Filters</span>
+          </button>
+        </div>
 
-      <!-- Legend -->
-      <div class="flex flex-wrap gap-4 items-center px-2">
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-red-600 rounded-full inline-block"></span><span>Waste Dumping</span></div>
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-blue-600 rounded-full inline-block"></span><span>Water Pollution</span></div>
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-green-600 rounded-full inline-block"></span><span>Air Quality</span></div>
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-yellow-500 rounded-full inline-block"></span><span>Noise Pollution</span></div>
+        <!-- Incident Lists -->
+        <div id="incident-all" class="incident-tab mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Active Incident Card -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                  <i class="fas fa-exclamation-triangle text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Oil Spill - Riverbank</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-red-100 text-red-800 rounded-full">Critical</span>
+                    <span class="text-sm text-gray-500">Reported 2h ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Significant oil spill affecting local wildlife and water quality</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Active Incident Card -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-orange-100 text-orange-600">
+                  <i class="fas fa-trash text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Illegal Dumping - Industrial Zone</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-orange-100 text-orange-800 rounded-full">Active</span>
+                    <span class="text-sm text-gray-500">Reported 30m ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Large quantities of hazardous waste dumped illegally</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="incident-active" class="incident-tab hidden mb-8">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">Active Incidents</h2>
+          <div class="space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                  <i class="fas fa-fire text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Wildfire Smoke - Forest Edge</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-red-100 text-red-800 rounded-full">Critical</span>
+                    <span class="text-sm text-gray-500">Reported 10m ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Smoke from nearby wildfire affecting air quality</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-orange-100 text-orange-600">
+                  <i class="fas fa-trash text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Illegal Dumping - Industrial Zone</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-orange-100 text-orange-800 rounded-full">Active</span>
+                    <span class="text-sm text-gray-500">Reported 30m ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Large quantities of hazardous waste dumped illegally</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="incident-resolved" class="incident-tab hidden mb-8">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">Resolved Incidents</h2>
+          <div class="space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                  <i class="fas fa-check-circle text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Oil Spill - Riverbank</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-green-100 text-green-800 rounded-full">Resolved</span>
+                    <span class="text-sm text-gray-500">Resolved 1h ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Cleanup completed with minimal environmental impact</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                  <i class="fas fa-check-circle text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Illegal Dumping - Industrial Zone</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-green-100 text-green-800 rounded-full">Resolved</span>
+                    <span class="text-sm text-gray-500">Resolved 2d ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Waste properly disposed and area cleaned</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="incident-critical" class="incident-tab hidden mb-8">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">Critical Incidents</h2>
+          <div class="space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                  <i class="fas fa-exclamation-triangle text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Oil Spill - Riverbank</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-red-100 text-red-800 rounded-full">Critical</span>
+                    <span class="text-sm text-gray-500">Reported 2h ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Significant oil spill affecting local wildlife and water quality</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 incident-card">
+              <div class="flex items-start space-x-4">
+                <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                  <i class="fas fa-fire text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800">Wildfire Smoke - Forest Edge</h3>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="text-sm px-2.5 py-1 bg-red-100 text-red-800 rounded-full">Critical</span>
+                    <span class="text-sm text-gray-500">Reported 10m ago</span>
+                  </div>
+                  <p class="text-gray-600 mt-3 text-sm">Smoke from nearby wildfire affecting air quality</p>
+                  <div class="mt-4 flex space-x-3">
+                    <button class="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded transition-colors">
+                      <i class="fas fa-map-marker-alt mr-1"></i> Show on Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div class="map-container mb-6">
+          <div id="map" class="h-full w-full"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-6 mt-6">
+          <div class="flex items-center space-x-2">
+            <span class="w-5 h-5 bg-red-600 rounded-full inline-block shadow-sm"></span>
+            <span class="text-sm font-medium text-gray-700">Critical Incident</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-5 h-5 bg-orange-400 rounded-full inline-block shadow-sm"></span>
+            <span class="text-sm font-medium text-gray-700">Active Incident</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-5 h-5 bg-green-500 rounded-full inline-block shadow-sm"></span>
+            <span class="text-sm font-medium text-gray-700">Resolved</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-5 h-5 bg-blue-500 rounded-full inline-block shadow-sm"></span>
+            <span class="text-sm font-medium text-gray-700">New Report</span>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // account name
-     window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
+    // Mobile sidebar toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const closeSidebarButton = document.getElementById('close-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
+    }
+    
+    mobileMenuButton.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+    closeSidebarButton.addEventListener('click', toggleSidebar);
+    
+    // Tab switching functionality
+    function switchTab(tab) {
+      document.querySelectorAll('[id^="tab-"]').forEach(tabEl => {
+        tabEl.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+        tabEl.classList.add('text-gray-500');
+      });
 
-  if (userName && userNameSpan && userLink) {
-    userNameSpan.textContent = userName;
-    userLink.href = "account.html"; // Prevent redirect if already signed in
+      const activeTab = document.getElementById('tab-' + tab);
+      activeTab.classList.remove('text-gray-500');
+      activeTab.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
 
-    // Optionally add logout option
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userName");
-     window.location.href = "index.html"; 
-    });
-    userLink.parentNode.appendChild(logoutBtn);
-  } 
-});
+      document.querySelectorAll('[id^="incident-"]').forEach(section => {
+        section.classList.add('hidden');
+      });
 
+      document.getElementById('incident-' + tab).classList.remove('hidden');
+    }
+
+    // Initialize with All tab active
+    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
+    
+    // Initialize map
     const map = L.map('map').setView([24.8607, 67.0011], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-  
-    async function filterAndRenderMap() {
-      const location = document.getElementById('locationSelect').value;
-      const category = document.getElementById('categorySelect').value;
-  
-      // Fix for undefined or malformed values
-      if (!location || !category || !location.includes(",")) {
-        alert('Please select both location and category.');
-        return;
-      }
-  
-      const [lat, lng] = location.split(',').map(Number);
-      console.log('Sending lat/lng:', lat, lng);
-  
-      if (isNaN(lat) || isNaN(lng)) {
-        alert("Invalid coordinates.");
-        return;
-      }
-  
-      map.setView([lat, lng], 14);
-  
-      const res = await fetch(`http://localhost:5055/api/incidents?lat=${lat}&lng=${lng}&category=${encodeURIComponent(category)}`);
-      const data = await res.json();
-      console.log('Fetched incidents:', data);
-  
-      // Remove previous markers
-      map.eachLayer(layer => {
-        if (layer instanceof L.Circle) {
-          map.removeLayer(layer);
-        }
-      });
-  
-      if (Array.isArray(data)) {
-        data.forEach(item => {
-          let color = 'gray';
-          if (item.category === 'Waste Dumping') color = 'red';
-          else if (item.category === 'Water Pollution') color = 'blue';
-          else if (item.category === 'Air Quality') color = 'green';
-          else if (item.category === 'Noise Pollution') color = 'yellow';
-  
-          const lat = parseFloat(item.latitude);
-          const lng = parseFloat(item.longitude);
-  
-          const circle = L.circle([lat, lng], {
-            radius: 300,
-            color,
-            fillColor: color,
-            fillOpacity: 0.5
-          }).addTo(map);
-  
-          circle.bindTooltip(item.title);
+
+    // Add markers with custom icons
+    const criticalIcon = L.divIcon({
+      className: 'critical-marker',
+      html: '<div class="w-6 h-6 bg-red-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">!</div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    const activeIcon = L.divIcon({
+      className: 'active-marker',
+      html: '<div class="w-6 h-6 bg-orange-400 rounded-full border-2 border-white shadow-lg"></div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    const resolvedIcon = L.divIcon({
+      className: 'resolved-marker',
+      html: '<div class="w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white"><i class="fas fa-check text-xs"></i></div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    L.marker([24.8707, 67.0311], { icon: criticalIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Critical Incident</div><div class='text-sm text-gray-600 mt-1'>Oil spill affecting river ecosystem</div>");
+
+    L.marker([24.8507, 67.0211], { icon: activeIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Active Incident</div><div class='text-sm text-gray-600 mt-1'>Illegal dumping in industrial zone</div>");
+
+    L.marker([24.8407, 67.0111], { icon: resolvedIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Resolved Incident</div><div class='text-sm text-gray-600 mt-1'>Wildfire contained and extinguished</div>");
+
+    function searchLocation() {
+      const location = document.getElementById("locationSearch").value;
+      if (!location) return;
+
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length > 0) {
+            const lat = data[0].lat;
+            const lon = data[0].lon;
+            map.setView([lat, lon], 13);
+            
+            // Show success notification
+            showNotification(`Location found: ${location}`, 'success');
+          } else {
+            showNotification("Location not found", 'error');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification("Error searching location", 'error');
         });
-      } else {
-        L.popup()
-          .setLatLng([lat, lng])
-          .setContent(data.message || 'No data found')
-          .openOn(map);
-      }
     }
+    
+    // Notification function
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-fade-in ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+      }`;
+      notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.remove('animate-fade-in');
+        notification.classList.add('animate-fade-out');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // User session handling
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
+
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.reload();
+        });
+        userLink.parentNode.appendChild(logoutBtn);
+      }
+    });
   </script>
   
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fade-out {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+    
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out forwards;
+    }
+    
+    .animate-fade-out {
+      animation: fade-out 0.3s ease-in forwards;
+    }
+    
+    /* Leaflet popup styling */
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    
+    .leaflet-popup-content {
+      margin: 8px 12px !important;
+    }
+    
+    .leaflet-popup-tip {
+      box-shadow: none !important;
+    }
+  </style>
 </body>
 </html>
