@@ -3,56 +3,203 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EcoTracker Events</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <title>EcoTracker Reports</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .sidebar-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    
+    .sidebar-item.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .report-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .report-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+    }
+    
+    .status-submitted {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+    }
+    
+    .status-inreview {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status-resolved {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
+      }
+      
+      .main-content {
+        padding-left: 0;
+      }
+      
+      .page-header {
+        margin-left: 60px; /* Space for mobile menu button */
+      }
+      
+      .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .filter-container input,
+      .filter-container select {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
+      <i class="fas fa-bars text-gray-600"></i>
+    </button>
+    
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    
     <!-- Sidebar -->
-    <aside class="w-64 bg-white-600 text-black flex flex-col">
-      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-      <nav class="flex-1 p-2 space-y-2">
-        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
-          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+      <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-leaf text-green-500"></i>
+          <span>EcoTracker</span>
+        </div>
+        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="flex-1 p-2 space-y-1">
+        <a href="/WEB/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span>Dashboard</span>
         </a>
-        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        <a href="/WEB/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span>Map</span>
         </a>
-        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-file-alt"></i><span>Reports</span>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span>Reports</span>
         </a>
-        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        <a href="/WEB/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span>Events</span>
         </a>
-        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span>Analytics</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-users"></i><span>Community</span>
+        <a href="/WEB/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span>Community</span>
         </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-question-circle"></i><span>Help</span>
+        <a href="/WEB/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span>Help</span>
         </a>
-        <div class="border-t border-green-500 mt-2 pt-2">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-user-cog"></i><span>User Management</span>
+        <div class="border-t border-gray-100 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i>
+            <span>User Management</span>
           </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-history"></i><span>System Logs</span>
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+            <i class="fas fa-history w-5 text-center text-green-500"></i>
+            <span>System Logs</span>
           </a>
         </div>
       </nav>
+<<<<<<< HEAD
+      <div class="p-4 border-t border-gray-100">
+        <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+        </a>
+=======
        <div class="p-4 border-t border-green-500 text-sm">
   <i class="fas fa-user-circle"></i>
-  <a href="/WEB/login.html" id="user-link"
-     class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-     Signup/Signin
-  </a>
+   <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+  <i class="fas fa-user-circle"></i>
+  <span id="user-name-text">Signup/Signin</span>
+</a>
 </div>
     </aside>
-
     <!-- Main Content -->
     <main class="flex-1 p-8">
       <h1 class="text-3xl font-semibold mb-6">Reports Overview</h1>
@@ -76,58 +223,184 @@
           <input type="date" class="border border-gray-300 p-2 rounded">
           <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Apply Filters</button>
         </div>
+>>>>>>> 86843b8a1593d9e38612bf3ea42478c6e7037de0
       </div>
+    </aside>
 
-     <!-- Reports List -->
-<div id="event-list"> 
-  <div data-status="submitted" class="p-3 hover:bg-green-50">
-    <p class="font-medium">Oil Spill Report <span class="text-green-600 text-sm">- Submitted</span></p>
-    <p class="text-sm text-green-500">2h ago</p>
-  </div>
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 main-content">
+      <div class="max-w-7xl mx-auto">
+        <!-- Page Header with proper spacing for mobile -->
+        <div class="page-header mb-6">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Reports Overview</h1>
+          <p class="text-gray-500 mt-1">View and manage environmental reports from the community</p>
+        </div>
 
-  <div data-status="inreview" class="p-3 hover:bg-green-50">
-    <p class="font-medium">Wildfire Report <span class="text-green-600 text-sm">- In Review</span></p>
-    <p class="text-sm text-green-500">1d ago</p>
-  </div>
+        <!-- Tabs -->
+        <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
+          <button id="tab-all" onclick="switchTab('all')" class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">All</button>
+          <button id="tab-submitted" onclick="switchTab('submitted')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Submitted</button>
+          <button id="tab-inreview" onclick="switchTab('inreview')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">In Review</button>
+          <button id="tab-resolved" onclick="switchTab('resolved')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Resolved</button>
+        </div>
 
-  <div data-status="resolved" class="p-3 hover:bg-green-50">
-    <p class="font-medium">Toxic Leak Report <span class="text-green-600 text-sm">- Resolved</span></p>
-    <p class="text-sm text-green-500">3d ago</p>
-  </div>
-</div>
+        <!-- Filters -->
+        <div class="mb-6">
+          <div class="flex flex-wrap items-center gap-4 filter-container">
+            <input type="text" placeholder="Enter Keyword or ID" class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <select class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+              <option>All statuses</option>
+              <option>Submitted</option>
+              <option>In Review</option>
+              <option>Resolved</option>
+            </select>
+            <input type="date" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">Apply Filters</button>
+          </div>
+        </div>
 
-      
+        <!-- Reports List -->
+        <div id="event-list" class="space-y-3">
+          <div data-status="submitted" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center">
+            <div>
+              <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-lg bg-blue-100 text-blue-600">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Oil Spill Report</p>
+                  <p class="text-sm text-gray-500">2h ago</p>
+                </div>
+              </div>
+            </div>
+            <span class="status-badge status-submitted">Submitted</span>
+          </div>
+
+          <div data-status="inreview" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center">
+            <div>
+              <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-lg bg-yellow-100 text-yellow-600">
+                  <i class="fas fa-fire"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Wildfire Report</p>
+                  <p class="text-sm text-gray-500">1d ago</p>
+                </div>
+              </div>
+            </div>
+            <span class="status-badge status-inreview">In Review</span>
+          </div>
+
+          <div data-status="resolved" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center">
+            <div>
+              <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-lg bg-green-100 text-green-600">
+                  <i class="fas fa-skull-crossbones"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Toxic Leak Report</p>
+                  <p class="text-sm text-gray-500">3d ago</p>
+                </div>
+              </div>
+            </div>
+            <span class="status-badge status-resolved">Resolved</span>
+          </div>
+        </div>
       </div>
     </main>
   </div>
+<script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
 
-  <script>
-   function switchTab(tab) {
-    // Remove active styles from all tabs
-    document.querySelectorAll('[id^="tab-"]').forEach(el => {
-      el.classList.remove('border-black', 'text-black');
-      el.classList.add('text-gray-500');
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
     });
-
-    // Add active styles to clicked tab
-    const activeTab = document.getElementById('tab-' + tab);
-    if (activeTab) {
-      activeTab.classList.add('border-black', 'text-black');
-      activeTab.classList.remove('text-gray-500');
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
+  <script>
+    // Mobile sidebar toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const closeSidebarButton = document.getElementById('close-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
     }
+    
+    mobileMenuButton.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+    closeSidebarButton.addEventListener('click', toggleSidebar);
+    
+    function switchTab(tab) {
+      // Remove active styles from all tabs
+      document.querySelectorAll('[id^="tab-"]').forEach(el => {
+        el.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+        el.classList.add('text-gray-500');
+      });
 
-    // Show/hide reports based on status
-    const reports = document.querySelectorAll('#event-list > div');
-    reports.forEach(report => {
-      if (tab === 'all' || report.dataset.status === tab) {
-        report.style.display = 'block';
-      } else {
-        report.style.display = 'none';
+      // Add active styles to clicked tab
+      const activeTab = document.getElementById('tab-' + tab);
+      if (activeTab) {
+        activeTab.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+        activeTab.classList.remove('text-gray-500');
+      }
+
+      // Show/hide reports based on status
+      const reports = document.querySelectorAll('#event-list > div');
+      reports.forEach(report => {
+        if (tab === 'all' || report.dataset.status === tab) {
+          report.style.display = 'flex';
+        } else {
+          report.style.display = 'none';
+        }
+      });
+    }
+    
+    // Initialize with All tab active
+    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
+    
+    // User session handling
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
+
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.reload();
+        });
+        userLink.parentNode.appendChild(logoutBtn);
       }
     });
-  }
-
   </script>
+<<<<<<< HEAD
+=======
+
     <script src="/WEB/JS/sidebar.js"></script>
+>>>>>>> 86843b8a1593d9e38612bf3ea42478c6e7037de0
 </body>
 </html>

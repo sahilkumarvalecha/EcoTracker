@@ -1,6 +1,8 @@
+
 {
   "name": "zab-e-fest-25-hackathon",
   "version": "1.0.0",
+  "type": "commonjs",
   "description": "",
   "main": "index.js",
   "scripts": {

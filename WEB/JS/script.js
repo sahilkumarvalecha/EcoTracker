@@ -78,6 +78,7 @@ loginbtn.addEventListener("click", async (e) => {
 
    if (response.ok) {
  // 1. Store user data
+     localStorage.setItem("userEmail", loginemail.value);
       localStorage.setItem("userName", data.name);
 
   // In your index.html's JavaScript (or shared JS file):
@@ -92,7 +93,7 @@ loginbtn.addEventListener("click", async (e) => {
 });
 window.addEventListener("DOMContentLoaded", () => {
     const userName = localStorage.getItem("userName");
-    const userLink = document.getElementById("user-link");
+    const userLink = document.getElementsByClassName("user-link");
     const userNameSpan = document.getElementById("user-name-text");
 
     if (userName && userNameSpan && userLink) {
