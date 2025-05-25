@@ -258,6 +258,28 @@
   </div>
 
   <script>
+     // User session handling
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
+
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.reload();
+        });
+        userLink.parentNode.appendChild(logoutBtn);
+      }
+    });
+  
     // Mobile sidebar toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -317,27 +339,6 @@
     // Initialize with All tab active
     document.addEventListener('DOMContentLoaded', () => switchTab('all'));
     
-    // User session handling
-    window.addEventListener("DOMContentLoaded", () => {
-      const userName = localStorage.getItem("userName");
-      const userLink = document.getElementById("user-link");
-      const userNameSpan = document.getElementById("user-name-text");
-
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "#"; // Prevent redirect if already signed in
-
-        // Optionally add logout option
-        const logoutBtn = document.createElement("button");
-        logoutBtn.textContent = "Logout";
-        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("userName");
-          window.location.reload();
-        });
-        userLink.parentNode.appendChild(logoutBtn);
-      }
-    });
   </script>
 </body>
 

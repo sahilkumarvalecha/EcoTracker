@@ -64,6 +64,13 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
 });
 
+app.get('/maps', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'WEB', 'maps.html'));
+});
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
+});
+
 app.get('/rsvp', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM events LIMIT 1');

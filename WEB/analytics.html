@@ -249,6 +249,29 @@
   </div>
 
   <!-- Script -->
+   <script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
+
   <script>
     // Mobile sidebar toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -286,51 +309,10 @@
     // Initialize with Events tab active
     document.addEventListener('DOMContentLoaded', () => switchAnalyticsTab('events'));
     
-    // User session handling
-    window.addEventListener("DOMContentLoaded", () => {
-      const userName = localStorage.getItem("userName");
-      const userLink = document.getElementById("user-link");
-      const userNameSpan = document.getElementById("user-name-text");
-
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "#"; // Prevent redirect if already signed in
-
-        // Optionally add logout option
-        const logoutBtn = document.createElement("button");
-        logoutBtn.textContent = "Logout";
-        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("userName");
-          window.location.reload();
-        });
-        userLink.parentNode.appendChild(logoutBtn);
-      }
-    });
+   
   </script>
 
-  <script>
-      window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
-
-  if (userName && userNameSpan && userLink) {
-    userNameSpan.textContent = userName;
-    userLink.href = "#"; // Prevent redirect if already signed in
-
-    // Optionally add logout option
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userName");
-      window.location.href = "index.html"; 
-    });
-    userLink.parentNode.appendChild(logoutBtn);
-  } 
-});
-</script>
+  
   <script src="/WEB/JS/sidebar.js"></script>
 
 </body>
