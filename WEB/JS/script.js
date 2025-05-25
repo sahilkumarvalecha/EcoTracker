@@ -68,22 +68,21 @@ loginbtn.addEventListener("click", async (e) => {
     const response = await fetch("http://localhost:5055/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", 
       body: JSON.stringify({
         email: loginemail.value,
         password_hash: loginpassword.value,
       }),
-       
     });
 
     const data = await response.json();
 
    if (response.ok) {
  // 1. Store user data
+     localStorage.setItem("userEmail", loginemail.value);
       localStorage.setItem("userName", data.name);
 
   // In your index.html's JavaScript (or shared JS file):
- window.location.href = "index.html";     // redirect to home page
+ window.location.href = "/WEB/index.html";     // redirect to home page
 }  else {
       alert(data.message); // "User not found" ya "Incorrect password"
     }
@@ -106,7 +105,6 @@ window.addEventListener("DOMContentLoaded", () => {
       // if (userLink) userLink.href = "signin.html"; // ya signup page
     }
   });
-  
 
 // rsvp API
 
