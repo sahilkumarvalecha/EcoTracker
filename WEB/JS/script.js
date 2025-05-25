@@ -93,7 +93,7 @@ loginbtn.addEventListener("click", async (e) => {
 });
 window.addEventListener("DOMContentLoaded", () => {
     const userName = localStorage.getItem("userName");
-    const userLink = document.getElementById("user-link");
+    const userLink = document.getElementsByClassName("user-link");
     const userNameSpan = document.getElementById("user-name-text");
 
     if (userName && userNameSpan && userLink) {
