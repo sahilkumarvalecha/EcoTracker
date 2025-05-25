@@ -15,117 +15,275 @@
       }
     });
   </script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          },
+          boxShadow: {
+            'input-focus': '0 0 0 3px rgba(16, 185, 129, 0.25)',
+            'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-800 min-h-screen flex items-center justify-center px-4">
-  <div class="w-full max-w-xl bg-green-50 p-6 rounded-lg shadow">
-    <h2 class="text-2xl font-bold mb-4 text-green-700">Report Environmental Incident</h2>
-    <form id="reportForm" method="POST" enctype="multipart/form-data" class="space-y-4">
-        <!-- Title -->
-        <div>
-          <label for="title" class="block font-medium">Title<span class="text-red-500">*</span></label>
-          <input type="text" id="title" name="title" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"/>
+<body class="min-h-screen flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-xl bg-white p-8 rounded-xl shadow-card border border-gray-100">
+    <div class="text-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <h2 class="text-2xl font-bold mt-3 text-gray-800">Report Environmental Incident</h2>
+      <p class="text-gray-500 mt-1">Help us protect the environment</p>
+    </div>
+    
+    <form id="reportForm" action="http://localhost:5055/api/reports" method="POST" enctype="multipart/form-data" class="space-y-5">
+      <!-- Title -->
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700">Title<span class="text-red-500 ml-1">*</span></label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <input type="text" id="title" name="title" required 
+                 class="block w-full rounded-md border-gray-300 pl-3 pr-10 py-3 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out"
+                 placeholder="Brief incident title">
         </div>
-      
-        <!-- Description -->
-        <div>
-          <label for="description" class="block font-medium">Description<span class="text-red-500">*</span></label>
-          <textarea id="description" name="description" rows="4" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+      </div>
+    
+      <!-- Description -->
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description<span class="text-red-500 ml-1">*</span></label>
+        <div class="mt-1">
+          <textarea id="description" name="description" rows="4" required 
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out"
+                    placeholder="Provide detailed information about the incident"></textarea>
         </div>
-      
+      </div>
+    
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Category -->
         <div>
-          <label for="category_id" class="block font-medium">Category<span class="text-red-500">*</span></label>
-          <select id="category_id" name="category_id" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500">
-            <option value="">Select a category</option>
-            <option value="1">Waste Dumping</option>
-            <option value="2">Water Pollution</option>
-            <option value="3">Air Quality</option>
-            <option value="4">Noise Pollution</option>
+          <label for="category_id" class="block text-sm font-medium text-gray-700">Category<span class="text-red-500 ml-1">*</span></label>
+          <div class="mt-1">
+            <select id="category_id" name="category_id" required 
+                    class="block w-full rounded-md border-gray-300 py-3 pl-3 pr-10 text-base focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out">
+              <option value="">Select a category</option>
+              <option value="1">Waste Dumping</option>
+              <option value="2">Water Pollution</option>
+              <option value="3">Air Quality</option>
+              <option value="4">Noise Pollution</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Location -->
+        <div>
+          <label for="location_id" class="block text-sm font-medium text-gray-700">Location<span class="text-red-500 ml-1">*</span></label>
+          <div class="mt-1">
+            <select id="location_id" name="location_id" required 
+                    class="block w-full rounded-md border-gray-300 py-3 pl-3 pr-10 text-base focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out">
+              <option value="">Select a location</option>
+              <option value="1">Clifton</option>
+              <option value="2">Gulshan</option>
+              <option value="3">DHA</option>
+              <option value="4">Korangi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Severity Level -->
+      <div>
+        <label for="severity_level" class="block text-sm font-medium text-gray-700">Severity Level<span class="text-red-500 ml-1">*</span></label>
+        <div class="mt-1">
+          <select id="severity_level" name="severity_level" required 
+                  class="block w-full rounded-md border-gray-300 py-3 pl-3 pr-10 text-base focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out">
+            <option value="">Select severity</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </select>
         </div>
+      </div>
       
-        <!-- Location -->
-<div>
-    <label for="location_id" class="block font-medium">Location<span class="text-red-500">*</span></label>
-    <select id="location_id" name="location_id" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500">
-      <option value="">Select a location</option>
-      <option value="1">Clifton</option>
-      <option value="2">Gulshan</option>
-      <option value="3">DHA</option>
-      <option value="4">Korangi</option>
-    </select>
-  </div>
-  <!-- Severity Level -->
-<div>
-  <label for="severity_level" class="block font-medium">Severity Level<span class="text-red-500">*</span></label>
-  <select id="severity_level" name="severity_level" required class="w-full border rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500">
-    <option value="">Select severity</option>
-    <option value="Low">Low</option>
-    <option value="Medium">Medium</option>
-    <option value="High">High</option>
-  </select>
-</div>
-        <!-- Optional Image -->
-        <div>
-          <label for="image" class="block font-medium">Photo (optional)</label>
-          <input type="file" id="image" name="image" accept="image/*" class="block w-full text-sm text-gray-600"/>
+      <!-- Optional Image -->
+      <div>
+        <label for="image" class="block text-sm font-medium text-gray-700">Photo (optional)</label>
+        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+          <div class="space-y-1 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="flex text-sm text-gray-600">
+              <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none">
+                <span>Upload a file</span>
+                <input id="image" name="image" type="file" accept="image/*" class="sr-only">
+              </label>
+              <p class="pl-1">or drag and drop</p>
+            </div>
+            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          </div>
         </div>
-      
-        <!-- Anonymous checkbox -->
-        <div class="flex items-center">
-          <input type="checkbox" id="is_anonymous" name="is_anonymous" class="mr-2">
-          <label for="is_anonymous">Submit anonymously</label>
-        </div>
-      
-        <!-- Submit -->
-        <div>
-          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow">
-            Submit Report
-          </button>
-        </div>
-      </form>
+      </div>
+    
+      <!-- Anonymous checkbox -->
+      <div class="flex items-center">
+        <input type="checkbox" id="is_anonymous" name="is_anonymous" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+        <label for="is_anonymous" class="ml-2 block text-sm text-gray-700">Submit anonymously</label>
+      </div>
+    
+      <!-- Submit -->
+      <div class="pt-2">
+        <button type="submit" 
+                class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150 ease-in-out">
+          Submit Report
+          <svg id="loading-icon" class="ml-2 -mr-1 h-4 w-4 animate-spin opacity-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
   </div>
 
   <script>
-    // Add this at the start of your report handler
-    if (!is_anonymous && !req.session.user_id) {
-      return res.status(401).json({ error: "Authentication required for non-anonymous reports" });
-    }
-    // Add this to your form submission handler
-    if (!form.title.value || !form.description.value || !form.category_id.value) {
-      alert('Please fill all required fields');
-      return;
-    }
-    document.getElementById('reportForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const form = e.target;
-  const formData = new FormData(form);
+    const form = document.getElementById('reportForm');
+    const submitBtn = form.querySelector("button[type='submit']");
+    const loadingIcon = document.getElementById('loading-icon');
 
-  try {
-    const response = await fetch('http://localhost:5055/api/reports', {
-      method: 'POST',
-      body: formData,
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      loadingIcon.classList.remove('opacity-0');
+      submitBtn.classList.add('cursor-not-allowed');
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('http://localhost:5055/api/reports', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+
+        const result = await response.json();
+        
+        if(response.ok) {
+          // Show success message
+          const successIcon = document.createElement('div');
+          successIcon.innerHTML = `
+            <div class="fixed inset-0 flex items-center justify-center z-50">
+              <div class="bg-white p-6 rounded-xl shadow-lg max-w-sm mx-4 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                  <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </div>
+                <h3 class="mt-3 text-lg font-medium text-gray-900">Report Submitted!</h3>
+                <div class="mt-2 text-sm text-gray-500">
+                  <p>Thank you for helping protect our environment.</p>
+                </div>
+                <div class="mt-4">
+                  <button onclick="this.parentElement.parentElement.parentElement.remove()" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm">
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(successIcon);
+          form.reset();
+        } else {
+          throw new Error(result.message || 'Error submitting report');
+        }
+      } catch (error) {
+        // Show error message
+        const errorElement = document.createElement('div');
+        errorElement.innerHTML = `
+          <div class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-xl shadow-lg max-w-sm mx-4 text-center">
+              <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </div>
+              <h3 class="mt-3 text-lg font-medium text-gray-900">Submission Failed</h3>
+              <div class="mt-2 text-sm text-gray-500">
+                <p>${error.message}</p>
+              </div>
+              <div class="mt-4">
+                <button onclick="this.parentElement.parentElement.parentElement.remove()" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm">
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(errorElement);
+      } finally {
+        submitBtn.disabled = false;
+        loadingIcon.classList.add('opacity-0');
+        submitBtn.classList.remove('cursor-not-allowed');
       }
     });
 
-    if (response.redirected) {
-      window.location.href = response.url;
-      return;
+    // Drag and drop for file upload
+    const fileUpload = document.querySelector('input[type="file"]');
+    const dropArea = fileUpload.closest('div');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
 
-    const result = await response.json();
-    if (result.redirect) {
-      window.location.href = result.redirect;
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+      dropArea.classList.add('border-primary-500', 'bg-primary-50');
     }
-  } catch (error) {
-    console.error('Submission error:', error);
-    alert(error.message || 'An error occurred while submitting the report');
-  }
-});
-    </script>
+
+    function unhighlight() {
+      dropArea.classList.remove('border-primary-500', 'bg-primary-50');
+    }
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileUpload.files = files;
+    }
+  </script>
 </body>
 </html>
