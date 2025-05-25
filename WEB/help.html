@@ -6,231 +6,442 @@
   <title>EcoTracker - Help Center</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <body class="bg-gray-50 text-gray-800">
-  <div class="flex min-h-screen">  
-  <!-- Sidebar -->
-    <aside class="w-64 bg-white-600 text-black flex flex-col">
-      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-      <nav class="flex-1 p-2 space-y-2">
-        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
-          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-map-marked-alt"></i><span>Map</span>
-        </a>
-        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-file-alt"></i><span>Reports</span>
-        </a>
-        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-calendar-alt"></i><span>Events</span>
-        </a>
-        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-chart-bar"></i><span>Analytics</span>
-        </a>
-        <a href="/WEB/community.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-users"></i><span>Community</span>
-        </a>
-        <a href="/WEB/help.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-question-circle"></i><span>Help</span>
-        </a>
-        <div class="border-t border-green-500 mt-2 pt-2">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-user-cog"></i><span>User Management</span>
-          </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-history"></i><span>System Logs</span>
-          </a>
-        </div>
-      </nav>
-      <div class="p-4 border-t border-green-500 text-sm">
-        <i class="fas fa-user-circle"></i>
-        <button> <a href="/WEB/login.html">Signup/signin</a></button>
-      </div>
-    </aside>
-<style>
-    /* Consistent with your existing styles */
+  <style>
+    :root {
+      --primary: #10B981;
+      --primary-light: #D1FAE5;
+      --primary-dark: #059669;
+    }
+    
+    /* Sidebar animation */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+    }
+    
+    /* Help card hover effect */
     .help-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 12px;
-      transition: all 0.3s ease;
+      overflow: hidden;
+      position: relative;
     }
     .help-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .help-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .help-card:hover::before {
+      opacity: 1;
+    }
+    
+    /* Tab content animation */
+    .tab-content { 
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active { 
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Search bar focus effect */
+    .search-input:focus {
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* FAQ item animation */
+    .faq-item {
+      transition: all 0.2s ease;
+    }
+    .faq-item:hover {
+      transform: translateX(4px);
+    }
+    
+    /* Submit button gradient */
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      transition: all 0.3s ease;
+    }
+    .submit-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <div class="flex flex-col md:flex-row min-h-screen">
- 
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Mobile menu button -->
+  <div class="md:hidden fixed top-4 left-4 z-30">
+    <button id="menu-toggle" class="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </div>
+  
+  <!-- Sidebar overlay for mobile -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+  
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-white shadow-lg flex flex-col">
+      <div class="p-4 text-2xl font-bold border-b border-green-200 ml-4">EcoTracker</div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="/WEB/index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-tachometer-alt w-5 text-center"></i>
+          <span class="font-medium">Dashboard</span>
+        </a>
+        <a href="/WEB/maps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-map-marked-alt w-5 text-center"></i>
+          <span class="font-medium">Map</span>
+        </a>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-file-alt w-5 text-center"></i>
+          <span class="font-medium">Reports</span>
+        </a>
+        <a href="/WEB/events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-calendar-alt w-5 text-center"></i>
+          <span class="font-medium">Events</span>
+        </a>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-chart-bar w-5 text-center"></i>
+          <span class="font-medium">Analytics</span>
+        </a>
+        <a href="/WEB/community.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-users w-5 text-center"></i>
+          <span class="font-medium">Community</span>
+        </a>
+        <a href="/WEB/help.html" class="flex items-center space-x-3 p-3 rounded-lg bg-green-50 text-green-700 font-semibold">
+          <i class="fas fa-question-circle w-5 text-center"></i>
+          <span class="font-medium">Help</span>
+        </a>
+        <div class="border-t border-green-200 mt-4 pt-4">
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+            <i class="fas fa-user-cog w-5 text-center"></i>
+            <span class="font-medium">User Management</span>
+          </a>
+          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+            <i class="fas fa-history w-5 text-center"></i>
+            <span class="font-medium">System Logs</span>
+          </a>
+        </div>
+      </nav>
+      <div class="p-4 border-t border-green-200">
+        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+          <i class="fas fa-user-circle"></i>
+          <a href="/WEB/login.html" class="font-medium">Signup/signin</a>
+        </div>
+      </div>
+    </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6">
-      <h1 class="text-2xl font-semibold mb-6">Help Center</h1>
+    <main class="flex-1 p-6 md:ml-64 mt-12 md:mt-0">
+      <h1 class="text-3xl font-bold mb-8 ml-2">Help Center</h1>
 
       <!-- Search Bar -->
-      <div class="relative mb-8">
-        <input type="text" placeholder="Search help articles..." class="w-full p-4 pl-12 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500">
-        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <div class="relative mb-10 max-w-2xl mx-auto">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" placeholder="Search help articles..." 
+               class="search-input w-full py-4 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400">
       </div>
 
       <!-- Help Categories -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow help-card">
-          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
-            <i class="fas fa-user-circle text-xl"></i>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="help-card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="bg-green-100 w-14 h-14 rounded-xl flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-user-circle text-2xl"></i>
           </div>
           <h3 class="font-bold text-lg text-center mb-2">Account Help</h3>
           <p class="text-gray-600 text-sm text-center">Manage your profile, settings, and account security</p>
+          <div class="mt-4 text-center">
+            <a href="#" class="text-green-600 text-sm font-medium hover:underline">Learn more →</a>
+          </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow help-card">
-          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
-            <i class="fas fa-map-marked-alt text-xl"></i>
+        <div class="help-card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="bg-green-100 w-14 h-14 rounded-xl flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-map-marked-alt text-2xl"></i>
           </div>
           <h3 class="font-bold text-lg text-center mb-2">Reporting Issues</h3>
           <p class="text-gray-600 text-sm text-center">Learn how to report environmental concerns</p>
+          <div class="mt-4 text-center">
+            <a href="#" class="text-green-600 text-sm font-medium hover:underline">Learn more →</a>
+          </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow help-card">
-          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
-            <i class="fas fa-users text-xl"></i>
+        <div class="help-card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="bg-green-100 w-14 h-14 rounded-xl flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-users text-2xl"></i>
           </div>
           <h3 class="font-bold text-lg text-center mb-2">Community</h3>
           <p class="text-gray-600 text-sm text-center">Engage with other environmental activists</p>
+          <div class="mt-4 text-center">
+            <a href="#" class="text-green-600 text-sm font-medium hover:underline">Learn more →</a>
+          </div>
         </div>
       </div>
 
       <!-- FAQ Section with Tabs -->
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
+      <div class="mb-12 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
+          <div class="text-sm text-gray-500">Can't find your answer? <a href="#contact" class="text-green-600 hover:underline">Contact us</a></div>
+        </div>
         
-        <div class="flex space-x-4 mb-6 border-b pb-2">
-          <button onclick="switchTab('general')" class="tab-button font-medium text-green-600 border-b-2 border-green-600">General</button>
-          <button onclick="switchTab('reporting')" class="tab-button font-medium text-gray-500 hover:text-green-600">Reporting</button>
-          <button onclick="switchTab('community')" class="tab-button font-medium text-gray-500 hover:text-green-600">Community</button>
-          <button onclick="switchTab('technical')" class="tab-button font-medium text-gray-500 hover:text-green-600">Technical</button>
+        <div class="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg max-w-max">
+          <button onclick="switchTab('general')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="general">
+            General
+          </button>
+          <button onclick="switchTab('reporting')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="reporting">
+            Reporting
+          </button>
+          <button onclick="switchTab('community')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="community">
+            Community
+          </button>
+          <button onclick="switchTab('technical')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="technical">
+            Technical
+          </button>
         </div>
 
         <div id="general" class="tab-content active">
-          <div class="space-y-4">
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                How do I create an account?
+          <div class="space-y-3">
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  How do I create an account?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">To create an account, click on the "Sign Up" button in the top right corner of the homepage. You'll need to provide your email address, create a password, and verify your email to complete registration.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>To create an account, click on the "Sign Up" button in the top right corner of the homepage. You'll need to provide your email address, create a password, and verify your email to complete registration.</p>
+              </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                Is EcoTracker free to use?
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  Is EcoTracker free to use?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Yes, EcoTracker is completely free for community members. Our platform is supported by grants and donations to promote environmental awareness.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Yes, EcoTracker is completely free for community members. Our platform is supported by grants and donations to promote environmental awareness.</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="reporting" class="tab-content">
-          <div class="space-y-4">
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                How do I report an environmental issue?
+          <div class="space-y-3">
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  How do I report an environmental issue?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Navigate to the EcoAlerts tab in the Community Hub. Click "Post Alert" and fill out the form with details about the issue, including location, category, and photos if available.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Navigate to the EcoAlerts tab in the Community Hub. Click "Post Alert" and fill out the form with details about the issue, including location, category, and photos if available.</p>
+              </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                What happens after I submit a report?
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  What happens after I submit a report?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Your report enters our verification queue. Our team reviews each submission, and verified reports are forwarded to the appropriate authorities. You can track progress in your dashboard.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Your report enters our verification queue. Our team reviews each submission, and verified reports are forwarded to the appropriate authorities. You can track progress in your dashboard.</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="community" class="tab-content">
-          <div class="space-y-4">
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                How do I join community discussions?
+          <div class="space-y-3">
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  How do I join community discussions?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Go to the Community Hub and select the Discussions tab. Choose an area of interest and participate in existing conversations or start new ones.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Go to the Community Hub and select the Discussions tab. Choose an area of interest and participate in existing conversations or start new ones.</p>
+              </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                Can I organize cleanup events through EcoTracker?
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  Can I organize cleanup events through EcoTracker?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Absolutely! Use the Events section to create and promote environmental activities. You can invite community members and track participation.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Absolutely! Use the Events section to create and promote environmental activities. You can invite community members and track participation.</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="technical" class="tab-content">
-          <div class="space-y-4">
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                The map isn't loading properly. What should I do?
+          <div class="space-y-3">
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  The map isn't loading properly. What should I do?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">First, try refreshing your browser. If the issue persists, clear your browser cache or try accessing from a different browser. Contact support if the problem continues.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>First, try refreshing your browser. If the issue persists, clear your browser cache or try accessing from a different browser. Contact support if the problem continues.</p>
+              </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-              <h3 class="font-semibold flex items-center">
-                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                How do I reset my password?
+            <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 class="font-semibold flex items-center justify-between cursor-pointer" onclick="toggleAnswer(this)">
+                <span class="flex items-center">
+                  <i class="fas fa-question-circle text-green-500 mr-3"></i>
+                  How do I reset my password?
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
               </h3>
-              <p class="text-sm text-gray-600 mt-2">Click "Forgot Password" on the login page. You'll receive an email with instructions to reset your password. The link expires in 24 hours for security.</p>
+              <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
+                <p>Click "Forgot Password" on the login page. You'll receive an email with instructions to reset your password. The link expires in 24 hours for security.</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Contact Support Section -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-4">Contact Support</h2>
-        <p class="text-gray-600 mb-4">Can't find what you're looking for? Our support team is here to help.</p>
-        
-        <form class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Your Email</label>
-            <input type="email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Subject</label>
-            <input type="text" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Message</label>
-            <textarea rows="4" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
-          </div>
-          <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
-            Send Message <i class="fas fa-paper-plane ml-1"></i>
-          </button>
-        </form>
+      <div id="contact" class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+        <div class="max-w-2xl mx-auto">
+          <h2 class="text-2xl font-bold mb-2">Contact Support</h2>
+          <p class="text-gray-600 mb-6">Can't find what you're looking for? Our support team is here to help.</p>
+          
+          <form class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-gray-700">Your Email</label>
+              <input type="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-gray-700">Subject</label>
+              <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                <option>Select a topic</option>
+                <option>Account Issues</option>
+                <option>Reporting Problems</option>
+                <option>Technical Support</option>
+                <option>Feature Request</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-gray-700">Message</label>
+              <textarea rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"></textarea>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="subscribe" class="rounded text-green-500 focus:ring-green-500">
+              <label for="subscribe" class="ml-2 text-sm text-gray-600">Subscribe to our newsletter</label>
+            </div>
+            <button type="submit" class="submit-btn px-6 py-3 rounded-lg text-white font-medium">
+              Send Message <i class="fas fa-paper-plane ml-2"></i>
+            </button>
+          </form>
+        </div>
       </div>
     </main>
   </div>
 
   <script>
-    // Tab switching (consistent with your existing function)
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+    
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    // Tab switching
     function switchTab(tabName) {
+      // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
+      
+      // Show selected tab content
       document.getElementById(tabName).classList.add('active');
       
+      // Update tab buttons
       document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
-        button.classList.add('text-gray-500');
+        if (button.getAttribute('data-tab') === tabName) {
+          button.classList.add('bg-white', 'text-green-600', 'shadow-sm');
+          button.classList.remove('text-gray-500');
+        } else {
+          button.classList.remove('bg-white', 'text-green-600', 'shadow-sm');
+          button.classList.add('text-gray-500');
+        }
       });
-      event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
-      event.currentTarget.classList.remove('text-gray-500');
     }
 
-    // Search functionality could be added here
+    // FAQ answer toggle
+    function toggleAnswer(question) {
+      const answer = question.nextElementSibling;
+      const icon = question.querySelector('.fa-chevron-down');
+      
+      answer.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    }
+
+    // Initialize first tab as active
+    document.addEventListener('DOMContentLoaded', () => {
+      switchTab('general');
+    });
   </script>
 </body>
 </html>
