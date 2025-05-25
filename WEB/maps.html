@@ -152,6 +152,7 @@
             <i class="fas fa-history w-5 text-center text-green-500"></i>
             <span>System Logs</span>
           </a>
+<<<<<<< HEAD
         </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
@@ -162,6 +163,28 @@
         </a>
       </div>
     </aside>
+=======
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-question-circle"></i><span>Help</span>
+          </a>
+          <div class="border-t border-green-500 mt-2 pt-2">
+            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+              <i class="fas fa-user-cog"></i><span>User Management</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+              <i class="fas fa-history"></i><span>System Logs</span>
+            </a>
+          </div>
+        </nav>
+        <div class="p-4 border-t border-green-500 text-sm">
+  <i class="fas fa-user-circle"></i>
+  <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+  <i class="fas fa-user-circle"></i>
+  <span id="user-name-text">Signup/Signin</span>
+</a>
+</div>
+      </aside>
+>>>>>>> 86843b8a1593d9e38612bf3ea42478c6e7037de0
 
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 main-content">
@@ -392,6 +415,7 @@
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+<<<<<<< HEAD
     // Mobile sidebar toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -412,6 +436,41 @@
       document.querySelectorAll('[id^="tab-"]').forEach(tabEl => {
         tabEl.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
         tabEl.classList.add('text-gray-500');
+=======
+// account name
+    window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+
+    const tabs = document.querySelectorAll('button[id^="tab-"]');
+    const sections = document.querySelectorAll('.incident-tab');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('border-green-600', 'text-green-700'));
+        sections.forEach(s => s.classList.add('hidden'));
+
+        tab.classList.add('border-green-600', 'text-green-700');
+        const targetId = tab.id.replace('tab', 'incident');
+        document.getElementById(targetId).classList.remove('hidden');
+>>>>>>> 86843b8a1593d9e38612bf3ea42478c6e7037de0
       });
 
       const activeTab = document.getElementById('tab-' + tab);
