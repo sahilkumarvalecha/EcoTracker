@@ -140,7 +140,7 @@
       window.location.reload();
     });
     userLink.parentNode.appendChild(logoutBtn);
-  }
+  } 
 });
 
     if (userName && userNameSpan && userLink) {
@@ -152,7 +152,28 @@
       if (userLink) userLink.href = "login.html"; // ya signup page
     }
     </script>
+<!-- <script>
+  // Auth check function
+  async function checkAuth() {
+    try {
+      const response = await fetch('/API/check-auth', {
+        credentials: 'include' // Send cookies
+      });
+      const data = await response.json();
+      
+      if (!data.isAuthenticated) {
+        window.location.href = 'login'; // Redirect to login
+      }
+      // If authenticated, continue loading the page
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      window.location.href = 'login'; // Redirect if server error
+    }
+  }
 
+  // Run check on page load
+  checkAuth();
+</script> -->
     
     
     
