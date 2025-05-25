@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoTracker - Help Center</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <body class="bg-gray-50 text-gray-800">
+  <div class="flex min-h-screen">  
+  <!-- Sidebar -->
+    <aside class="w-64 bg-white-600 text-black flex flex-col">
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        </a>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-file-alt"></i><span>Reports</span>
+        </a>
+        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        </a>
+        <a href="/WEB/community.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-users"></i><span>Community</span>
+        </a>
+        <a href="/WEB/help.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-question-circle"></i><span>Help</span>
+        </a>
+        <div class="border-t border-green-500 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-user-cog"></i><span>User Management</span>
+          </a>
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-history"></i><span>System Logs</span>
+          </a>
+        </div>
+      </nav>
+      <div class="p-4 border-t border-green-500 text-sm">
+        <i class="fas fa-user-circle"></i>
+        <button> <a href="/WEB/login.html">Signup/signin</a></button>
+      </div>
+    </aside>
+<style>
+    /* Consistent with your existing styles */
+    .help-card {
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .help-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex flex-col md:flex-row min-h-screen">
+ 
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <h1 class="text-2xl font-semibold mb-6">Help Center</h1>
+
+      <!-- Search Bar -->
+      <div class="relative mb-8">
+        <input type="text" placeholder="Search help articles..." class="w-full p-4 pl-12 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500">
+        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      </div>
+
+      <!-- Help Categories -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow help-card">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-user-circle text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-center mb-2">Account Help</h3>
+          <p class="text-gray-600 text-sm text-center">Manage your profile, settings, and account security</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow help-card">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-map-marked-alt text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-center mb-2">Reporting Issues</h3>
+          <p class="text-gray-600 text-sm text-center">Learn how to report environmental concerns</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow help-card">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mb-4 mx-auto">
+            <i class="fas fa-users text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-center mb-2">Community</h3>
+          <p class="text-gray-600 text-sm text-center">Engage with other environmental activists</p>
+        </div>
+      </div>
+
+      <!-- FAQ Section with Tabs -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
+        
+        <div class="flex space-x-4 mb-6 border-b pb-2">
+          <button onclick="switchTab('general')" class="tab-button font-medium text-green-600 border-b-2 border-green-600">General</button>
+          <button onclick="switchTab('reporting')" class="tab-button font-medium text-gray-500 hover:text-green-600">Reporting</button>
+          <button onclick="switchTab('community')" class="tab-button font-medium text-gray-500 hover:text-green-600">Community</button>
+          <button onclick="switchTab('technical')" class="tab-button font-medium text-gray-500 hover:text-green-600">Technical</button>
+        </div>
+
+        <div id="general" class="tab-content active">
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                How do I create an account?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">To create an account, click on the "Sign Up" button in the top right corner of the homepage. You'll need to provide your email address, create a password, and verify your email to complete registration.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                Is EcoTracker free to use?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Yes, EcoTracker is completely free for community members. Our platform is supported by grants and donations to promote environmental awareness.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="reporting" class="tab-content">
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                How do I report an environmental issue?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Navigate to the EcoAlerts tab in the Community Hub. Click "Post Alert" and fill out the form with details about the issue, including location, category, and photos if available.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                What happens after I submit a report?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Your report enters our verification queue. Our team reviews each submission, and verified reports are forwarded to the appropriate authorities. You can track progress in your dashboard.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="community" class="tab-content">
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                How do I join community discussions?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Go to the Community Hub and select the Discussions tab. Choose an area of interest and participate in existing conversations or start new ones.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                Can I organize cleanup events through EcoTracker?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Absolutely! Use the Events section to create and promote environmental activities. You can invite community members and track participation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="technical" class="tab-content">
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                The map isn't loading properly. What should I do?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">First, try refreshing your browser. If the issue persists, clear your browser cache or try accessing from a different browser. Contact support if the problem continues.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold flex items-center">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                How do I reset my password?
+              </h3>
+              <p class="text-sm text-gray-600 mt-2">Click "Forgot Password" on the login page. You'll receive an email with instructions to reset your password. The link expires in 24 hours for security.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support Section -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Contact Support</h2>
+        <p class="text-gray-600 mb-4">Can't find what you're looking for? Our support team is here to help.</p>
+        
+        <form class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Your Email</label>
+            <input type="email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Subject</label>
+            <input type="text" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Message</label>
+            <textarea rows="4" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+          </div>
+          <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
+            Send Message <i class="fas fa-paper-plane ml-1"></i>
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Tab switching (consistent with your existing function)
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName).classList.add('active');
+      
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
+        button.classList.add('text-gray-500');
+      });
+      event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+      event.currentTarget.classList.remove('text-gray-500');
+    }
+
+    // Search functionality could be added here
+  </script>
+</body>
+</html>

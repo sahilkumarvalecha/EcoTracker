@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Incident Map</title>
@@ -9,50 +10,47 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
-<body class="bg-white text-gray-800">
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
+ <body class="bg-gray-50 text-gray-800">
+  <div class="flex min-h-screen">  
+  <!-- Sidebar -->
     <aside class="w-64 bg-white-600 text-black flex flex-col">
-        <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-        <nav class="flex-1 p-2 space-y-2">
-          <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-          </a>
-          <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-map-marked-alt"></i><span>Map</span>
-          </a>
-          <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-file-alt"></i><span>Reports</span>
-          </a>
-          <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-calendar-alt"></i><span>Events</span>
-          </a>
-          <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-chart-bar"></i><span>Analytics</span>
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        </a>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-file-alt"></i><span>Reports</span>
+        </a>
+        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        </a>
+        <a href="/WEB/community.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-users"></i><span>Community</span>
+        </a>
+        <a href="/WEB/help.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-question-circle"></i><span>Help</span>
+        </a>
+        <div class="border-t border-green-500 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-user-cog"></i><span>User Management</span>
           </a>
           <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-users"></i><span>Community</span>
+            <i class="fas fa-history"></i><span>System Logs</span>
           </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-question-circle"></i><span>Help</span>
-          </a>
-          <div class="border-t border-green-500 mt-2 pt-2">
-            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-              <i class="fas fa-user-cog"></i><span>User Management</span>
-            </a>
-            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-              <i class="fas fa-history"></i><span>System Logs</span>
-            </a>
-          </div>
-        </nav>
-        <div class="p-4 border-t border-green-500 text-sm">
+        </div>
+      </nav>
+      <div class="p-4 border-t border-green-500 text-sm">
         <i class="fas fa-user-circle"></i>
         <button> <a href="/WEB/login.html">Signup/signin</a></button>
       </div>
-      </aside>
-
-    <!-- Main Content -->
+    </aside>    <!-- Main Content -->
     <main class="flex-1 p-6">
       <h1 class="text-2xl font-bold mb-4">Incident Map</h1>
 
