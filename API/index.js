@@ -223,10 +223,9 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
   }
 
   // Determine user_id
-  let user_id = null;
-  if (req.session.user_id && is_anonymous !== "on") {
-    user_id = req.session.user_id;
-  }
+  const isAnonymous = req.body.is_anonymous === 'on';
+  let user_id = isAnonymous ? null : req.session.user_id;
+
 
   const report_id = uuidv4();
   const status_id = 1; // Default to "Pending"
@@ -241,7 +240,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
         category_id, status_id, location_id,
         image_url, is_anonymous, severity_level, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    `,
+      `,
       [
         user_id,
         title,
@@ -250,11 +249,11 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
         status_id,
         locationId,
         image_url,
-        is_anonymous === "on",
+        isAnonymous,
         severity_level,
         created_at,
       ]
-    );
+    );    
 
     res.redirect("/index.html?submitted=true");
   } catch (err) {
