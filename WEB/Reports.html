@@ -184,14 +184,14 @@
           </a>
         </div>
       </nav>
-       <div class="p-4 border-t border-green-500 text-sm">
-   <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-  <i class="fas fa-user-circle"></i>
-  <span id="user-name-text">Signup/Signin</span>
-</a>
-</div>
+      <div class="p-4 border-t border-gray-100">
+        <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+        </a>
+      </div>
     </aside>
- 
 
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 main-content">
@@ -211,7 +211,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="mb-6">
+        <div class="mb-6 ml-2" >
           <div class="flex flex-wrap items-center gap-4 filter-container">
             <input type="text" placeholder="Enter Keyword or ID" class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
             <select class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
@@ -283,7 +283,7 @@
 
   if (userName && userNameSpan && userLink) {
     userNameSpan.textContent = userName;
-    userLink.href = "account.html"; // Prevent redirect if already signed in
+    userLink.href = "#"; // Prevent redirect if already signed in
 
     // Optionally add logout option
     const logoutBtn = document.createElement("button");
@@ -291,7 +291,7 @@
     logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("userName");
-     window.location.href = "index.html"; 
+      window.location.href = "index.html"; 
     });
     userLink.parentNode.appendChild(logoutBtn);
   } 
@@ -339,9 +339,29 @@
     }
     
     // Initialize with All tab active
-    document.addEventListener('DOMContentLoaded', () => switchTab('all'));    
-   
+    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
+    
+    // User session handling
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
+
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.reload();
+        });
+        userLink.parentNode.appendChild(logoutBtn);
+      }
+    });
   </script>
-    <script src="/WEB/JS/sidebar.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@ const cors = require("cors");
 const app = express();
 const session = require('express-session');
 
+
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -23,7 +24,7 @@ app.use(session({
 
 // Middleware
 app.use(cors({
-  origin: 'http://127.0.0.1:5500',
+  origin: '*',
   credentials: true
 }));
 app.use(express.json());
@@ -96,7 +97,7 @@ app.get("/api/user", async (req, res) => {
 });
 
 app.post("/api/avatar", async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: "Not logged in" });
+  if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
 
   const { avatar } = req.body;
   await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.userId]);
@@ -149,11 +150,12 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Incorrect password' });
     }
 
+    const isAdmin = email.endsWith('@ecotracker.pk');
+
     req.session.user_id = user.user_id;
     req.session.email = email;
     req.session.name = user.name;
-
-    const isAdmin = email.endsWith('@ecotracker.pk');
+    req.session.isAdmin = isAdmin;
 
     res.status(200).json({
       success: true,
@@ -200,7 +202,12 @@ app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
 });
 
 // Report submission
+app.get('/api/reports', (req, res) => {
+  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
+});
+
 app.post("/api/reports", upload.single("image"), async (req, res) => {
+  
   const {
     title,
     description,
@@ -210,51 +217,60 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
     severity_level,
   } = req.body;
 
-  const categoryId = parseInt(category_id);
-  const locationId = parseInt(location_id);
-
-  if (!title || !description || isNaN(categoryId) || isNaN(locationId) || !severity_level) {
-    return res.status(400).json({ error: "Missing or invalid required fields" });
+  // Validation
+  if (
+    !title ||
+    !description ||
+    isNaN(category_id) ||
+    isNaN(location_id) ||
+    !severity_level
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Missing or invalid required fields" });
   }
 
-  // Determine user_id
-  const isAnonymous = req.body.is_anonymous === 'on';
-  let user_id = isAnonymous ? null : req.session.user_id;
+  const anonymous = is_anonymous === 'on';  // checkbox checked hone par 'on'
+const user_id = (!anonymous && req.session && req.session.user_id) ? req.session.user_id : null;
 
+
+
+  // Generate unique report ID
   const report_id = uuidv4();
-  const status_id = 1; // Default to "Pending"
+
+  // Prepare other data
   const image_url = req.file ? `/uploads/${req.file.filename}` : null;
   const created_at = new Date();
 
   try {
     await pool.query(
-      `
-      INSERT INTO reports (
-        user_id, title, description,
-        category_id, status_id, location_id,
+      `INSERT INTO reports (
+        report_id, user_id, title, description,
+        category_id, location_id,
         image_url, is_anonymous, severity_level, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      `,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
+        report_id,
         user_id,
         title,
         description,
-        categoryId,
-        status_id,
-        locationId,
+        parseInt(category_id),
+        parseInt(location_id),
         image_url,
-        isAnonymous,
+        anonymous,
         severity_level,
         created_at,
       ]
     );
 
     res.redirect("/index.html?submitted=true");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Database error");
+
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
   }
 });
+
 
 app.get('/api/session', (req, res) => {
   if (req.session.user_id && req.session.name && req.session.email) {
