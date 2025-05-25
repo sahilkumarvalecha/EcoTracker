@@ -12,161 +12,145 @@
 <body class="bg-white text-gray-800">
   <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white-600 text-black flex flex-col">
-        <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-        <nav class="flex-1 p-2 space-y-2">
-          <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-          </a>
-          <a href="/WEB/maps.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-map-marked-alt"></i><span>Map</span>
-          </a>
-          <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-file-alt"></i><span>Reports</span>
-          </a>
-          <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-calendar-alt"></i><span>Events</span>
-          </a>
-          <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-chart-bar"></i><span>Analytics</span>
+    <aside class="w-64 bg-white-600 text-black flex flex-col border-r">
+      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
+      <nav class="flex-1 p-2 space-y-2">
+        <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-100 text-green-800 font-semibold">
+          <i class="fas fa-map-marked-alt"></i><span>Map</span>
+        </a>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-file-alt"></i><span>Reports</span>
+        </a>
+        <a href="/WEB/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-chart-bar"></i><span>Analytics</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-users"></i><span>Community</span>
+        </a>
+        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+          <i class="fas fa-question-circle"></i><span>Help</span>
+        </a>
+        <div class="border-t border-green-500 mt-2 pt-2">
+          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+            <i class="fas fa-user-cog"></i><span>User Management</span>
           </a>
           <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-users"></i><span>Community</span>
+            <i class="fas fa-history"></i><span>System Logs</span>
           </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-question-circle"></i><span>Help</span>
-          </a>
-          <div class="border-t border-green-500 mt-2 pt-2">
-            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-              <i class="fas fa-user-cog"></i><span>User Management</span>
-            </a>
-            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-              <i class="fas fa-history"></i><span>System Logs</span>
-            </a>
-          </div>
-        </nav>
-        <div class="p-4 border-t border-green-500 text-sm">
-  <i class="fas fa-user-circle"></i>
-  <a href="/WEB/login.html" id="user-link"
-     class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-     Signup/Signin
-  </a>
-</div>
-      </aside>
+        </div>
+      </nav>
+      <div class="p-4 border-t border-green-500 text-sm">
+        <i class="fas fa-user-circle"></i> Jordan Lee<br /><span class="text-xs">Admin</span>
+      </div>
+    </aside>
 
     <!-- Main Content -->
     <main class="flex-1 p-6">
       <h1 class="text-2xl font-bold mb-4">Incident Map</h1>
 
-      <!-- Tabs -->
-      <div class="flex space-x-4 border-b mb-6">
-        <button id="tab-all" class="pb-2 border-b-2 border-transparent hover:border-green-600 hover:text-green-700 font-semibold">All</button>
-        <button id="tab-active" class="pb-2 border-b-2 border-transparent hover:border-green-600 hover:text-green-700 font-semibold">Active</button>
-        <button id="tab-resolved" class="pb-2 border-b-2 border-transparent hover:border-green-600 hover:text-green-700 font-semibold">Resolved</button>
-        <button id="tab-critical" class="pb-2 border-b-2 border-transparent hover:border-green-600 hover:text-green-700 font-semibold">Critical</button>
-      </div>
-
       <!-- Filters -->
-      <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input id="locationSearch" type="text" placeholder="Enter address or area" class="border p-2 rounded w-full">
-        <select class="border p-2 rounded w-full">
-          <option>All categories</option>
-          <option>Pollution</option>
-          <option>Wildlife</option>
+      <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <select id="locationSelect" class="border p-2 rounded w-full">
+          <option disabled selected>Select location</option>
+          <option value="24.8138,67.0303">Clifton</option>
+          <option value="24.9180,67.0970">Gulshan</option>
+          <option value="24.8156,67.1108">DHA</option>
+          <option value="24.8415,67.1327">Korangi</option>
         </select>
-        <select class="border p-2 rounded w-full">
-          <option>Any</option>
-          <option>Low</option>
-          <option>Medium</option>
-          <option>High</option>
+        <select id="categorySelect" class="border p-2 rounded w-full">
+          <option disabled selected>Select category</option>
+          <option value="Waste Dumping">Waste Dumping</option>
+          <option value="Water Pollution">Water Pollution</option>
+          <option value="Air Quality">Air Quality</option>
+          <option value="Noise Pollution">Noise Pollution</option>
         </select>
-        <button onclick="searchLocation()" class="bg-blue-600 text-white px-4 py-2 rounded">Apply Filters</button>
+        <button onclick="filterAndRenderMap()" class="bg-blue-600 text-white px-4 py-2 rounded">Search & View</button>
       </div>
 
-      <!-- Incident Tabs -->
-      <div id="incident-all" class="incident-tab mb-8">
-        <p class="text-gray-600">All incidents will appear here.</p>
-      </div>
-
-      <div id="incident-active" class="incident-tab hidden mb-8">
-        <h2 class="text-lg font-semibold mb-4">Active List</h2>
-        <ul class="space-y-4">
-          <li class="flex justify-between items-center border-b pb-2"><span>⚠️ <strong>Oil Spill</strong> – Riverbank – High</span><span class="text-sm text-gray-500">Reported 2h ago</span></li>
-          <li class="flex justify-between items-center border-b pb-2"><span>💩 <strong>Illegal Dumping</strong> – Industrial Zone – Medium</span><span class="text-sm text-gray-500">Reported 30m ago</span></li>
-          <li class="flex justify-between items-center border-b pb-2"><span>🔥 <strong>Wildfire Smoke</strong> – Forest Edge – High</span><span class="text-sm text-gray-500">Reported 10m ago</span></li>
-        </ul>
-      </div>
-
-      <div id="incident-resolved" class="incident-tab hidden mb-8">
-        <h2 class="text-lg font-semibold mb-4">Resolved List</h2>
-        <ul class="space-y-4">
-          <li class="flex justify-between items-center border-b pb-2"><span>✅ <strong>Oil Spill</strong> – Riverbank – High</span><span class="text-sm text-gray-500">Resolved 1h ago</span></li>
-          <li class="flex justify-between items-center border-b pb-2"><span>✅ <strong>Wildfire Smoke</strong> – Forest Edge – High</span><span class="text-sm text-gray-500">Resolved 3h ago</span></li>
-          <li class="flex justify-between items-center border-b pb-2"><span>✅ <strong>Illegal Dumping</strong> – Industrial Zone – Medium</span><span class="text-sm text-gray-500">Resolved 2d ago</span></li>
-        </ul>
-      </div>
-
-      <div id="incident-critical" class="incident-tab hidden mb-8">
-        <h2 class="text-lg font-semibold mb-4">Critical Incidents</h2>
-        <p class="text-gray-600">List of critical incidents goes here...</p>
-      </div>
-
-      <!-- Map -->
-      <div id="map" class="h-96 w-full rounded shadow mb-4"></div>
+      <!-- Map View -->
+      <div id="map" class="h-[600px] w-full rounded shadow mb-4"></div>
 
       <!-- Legend -->
-      <div class="flex space-x-6 mt-4">
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-red-600 rounded-full inline-block"></span><span>Critical Incident</span></div>
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-orange-400 rounded-full inline-block"></span><span>Active Incident</span></div>
-        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-green-500 rounded-full inline-block"></span><span>Resolved</span></div>
+      <div class="flex flex-wrap gap-4 items-center px-2">
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-red-600 rounded-full inline-block"></span><span>Waste Dumping</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-blue-600 rounded-full inline-block"></span><span>Water Pollution</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-green-600 rounded-full inline-block"></span><span>Air Quality</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 bg-yellow-500 rounded-full inline-block"></span><span>Noise Pollution</span></div>
       </div>
     </main>
   </div>
 
-  <!-- Scripts -->
   <script>
-    const tabs = document.querySelectorAll('button[id^="tab-"]');
-    const sections = document.querySelectorAll('.incident-tab');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('border-green-600', 'text-green-700'));
-        sections.forEach(s => s.classList.add('hidden'));
-
-        tab.classList.add('border-green-600', 'text-green-700');
-        const targetId = tab.id.replace('tab', 'incident');
-        document.getElementById(targetId).classList.remove('hidden');
-      });
-    });
-
     const map = L.map('map').setView([24.8607, 67.0011], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-
-    L.circleMarker([24.8707, 67.0311], { color: 'red', radius: 8 }).addTo(map).bindPopup("Critical Incident");
-    L.circleMarker([24.8507, 67.0211], { color: 'orange', radius: 8 }).addTo(map).bindPopup("Active Incident");
-    L.circleMarker([24.8407, 67.0111], { color: 'green', radius: 8 }).addTo(map).bindPopup("Resolved");
-
-    function searchLocation() {
-      const location = document.getElementById("locationSearch").value;
-      if (!location) return;
-
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.length > 0) {
-            const lat = data[0].lat;
-            const lon = data[0].lon;
-            map.setView([lat, lon], 13);
-          } else {
-            alert("Location not found");
-          }
-        })
-        .catch(err => console.error(err));
+  
+    async function filterAndRenderMap() {
+      const location = document.getElementById('locationSelect').value;
+      const category = document.getElementById('categorySelect').value;
+  
+      // Fix for undefined or malformed values
+      if (!location || !category || !location.includes(",")) {
+        alert('Please select both location and category.');
+        return;
+      }
+  
+      const [lat, lng] = location.split(',').map(Number);
+      console.log('Sending lat/lng:', lat, lng);
+  
+      if (isNaN(lat) || isNaN(lng)) {
+        alert("Invalid coordinates.");
+        return;
+      }
+  
+      map.setView([lat, lng], 14);
+  
+      const res = await fetch(`http://localhost:5055/api/incidents?lat=${lat}&lng=${lng}&category=${encodeURIComponent(category)}`);
+      const data = await res.json();
+      console.log('Fetched incidents:', data);
+  
+      // Remove previous markers
+      map.eachLayer(layer => {
+        if (layer instanceof L.Circle) {
+          map.removeLayer(layer);
+        }
+      });
+  
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          let color = 'gray';
+          if (item.category === 'Waste Dumping') color = 'red';
+          else if (item.category === 'Water Pollution') color = 'blue';
+          else if (item.category === 'Air Quality') color = 'green';
+          else if (item.category === 'Noise Pollution') color = 'yellow';
+  
+          const lat = parseFloat(item.latitude);
+          const lng = parseFloat(item.longitude);
+  
+          const circle = L.circle([lat, lng], {
+            radius: 300,
+            color,
+            fillColor: color,
+            fillOpacity: 0.5
+          }).addTo(map);
+  
+          circle.bindTooltip(item.title);
+        });
+      } else {
+        L.popup()
+          .setLatLng([lat, lng])
+          .setContent(data.message || 'No data found')
+          .openOn(map);
+      }
     }
   </script>
-  <script src="/WEB/JS/sidebar.js"></script>
+  
 </body>
 </html>
