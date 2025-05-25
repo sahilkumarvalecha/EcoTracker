@@ -35,6 +35,46 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
+app.get('/api/analytics', async (req, res) => {
+  try {
+    const reportsByLocation = await pool.query(`
+      SELECT l.neighborhood AS location, COUNT(*) 
+      FROM reports r 
+      JOIN locations l ON r.location_id = l.location_id 
+      GROUP BY l.neighborhood
+    `);
+
+    const reportsByCategory = await pool.query(`
+      SELECT c.name AS category, COUNT(*) 
+      FROM reports r 
+      JOIN categories c ON r.category_id = c.category_id 
+      GROUP BY c.name
+    `);
+
+    const locationData = {};
+    const categoryData = {};
+
+    reportsByLocation.rows.forEach(row => {
+      locationData[row.location] = parseInt(row.count);
+    });
+
+    reportsByCategory.rows.forEach(row => {
+      categoryData[row.category] = parseInt(row.count);
+    });
+
+    res.json({
+      reportsByLocation: locationData,
+      reportsByCategory: categoryData
+    });
+
+  } catch (err) {
+    console.error('❌ Failed to fetch analytics data:', err);
+    res.status(500).json({ error: 'Analytics query failed' });
+  }
+});
+
+
+
 // Get filtered incidents
 app.get('/api/incidents', async (req, res) => {
   const { lat, lng, category } = req.query;
