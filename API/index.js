@@ -410,39 +410,41 @@ app.get('/api/incidents', async (req, res) => {
   const { lat, lng, category } = req.query;
 
   try {
-    if (!lat || !lng || !category) {
-      return res.status(400).json({ error: 'Missing lat, lng, or category' });
-    }
-
-    const delta = 0.01;
-    const values = [
-      parseFloat(lat) - delta,
-      parseFloat(lat) + delta,
-      parseFloat(lng) - delta,
-      parseFloat(lng) + delta,
-      category
-    ];
-
-    const query = `
-      SELECT r.title, c.name AS category, l.latitude, l.longitude
+    let query = `
+      SELECT r.report_id, r.title, c.name AS category, 
+             l.latitude, l.longitude, l.neighborhood
       FROM reports r
       JOIN categories c ON r.category_id = c.category_id
       JOIN locations l ON r.location_id = l.location_id
-      WHERE l.latitude BETWEEN $1 AND $2
-        AND l.longitude BETWEEN $3 AND $4
-        AND c.name ILIKE $5
+      WHERE 1=1
     `;
 
-    const result = await pool.query(query, values);
-
-    if (result.rows.length > 0) {
-      res.json(result.rows);
-    } else {
-      res.json({ message: 'No such issue reported at the selected location.' });
+    const values = [];
+    
+    if (lat && lng) {
+      query += ` AND l.latitude BETWEEN $${values.length + 1} AND $${values.length + 2}
+                AND l.longitude BETWEEN $${values.length + 3} AND $${values.length + 4}`;
+      values.push(
+        parseFloat(lat) - 0.05,  // Wider search radius
+        parseFloat(lat) + 0.05,
+        parseFloat(lng) - 0.05,
+        parseFloat(lng) + 0.05
+      );
     }
 
+    if (category) {
+      query += ` AND c.name ILIKE $${values.length + 1}`;
+      values.push(`%${category}%`);
+    }
+
+    const result = await pool.query(query, values);
+    
+    // Always return an array, even if empty
+    res.json(result.rows || []);
+
   } catch (err) {
-    console.error('❌ Error in /api/incidents:', err);
-    res.status(500).json({ error: 'Database query failed.' });
+    console.error('Database error:', err);
+    res.status(500).json([]); // Return empty array on error
   }
 });
+
