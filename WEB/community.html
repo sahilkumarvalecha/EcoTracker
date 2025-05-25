@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoTracker - Community Hub</title>
+  <script type="module">
+    import { ensureAuthenticated } from '/WEB/js/auth.js';
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      const isAuthenticated = await ensureAuthenticated();
+      if (isAuthenticated) {
+        // Load page content
+      }
+    });
+  </script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -420,7 +430,7 @@
         <div id="ecoalerts" class="tab-content">
           <div class="max-w-3xl mx-auto">
             <!-- Create New Alert -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 alert-post">
+            <!-- <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 alert-post">
               <h2 class="text-xl font-semibold mb-4 text-center">Create New EcoAlert</h2>
               <textarea class="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" rows="4" placeholder="Describe the environmental issue..."></textarea>
               
@@ -455,7 +465,7 @@
                   <i class="fas fa-bell mr-2"></i> Post Alert
                 </button>
               </div>
-            </div>
+            </div> -->
 
             <!-- Alert Feed -->
             <div class="space-y-6">
@@ -731,6 +741,200 @@
         this.classList.add('bg-green-100', 'border-green-300');
       });
     });
+  </script>
+   <!-- backend*/ -->
+  <script>
+// Fetch and display EcoAlerts
+async function loadEcoAlerts() {
+  try {
+    const response = await fetch('/api/ecoalerts');
+    const alerts = await response.json();
+    
+    const alertsContainer = document.querySelector('#ecoalerts .space-y-6');
+    alertsContainer.innerHTML = '';
+    
+    alerts.forEach(alert => {
+      const alertElement = createAlertElement(alert);
+      alertsContainer.appendChild(alertElement);
+      
+      // Load comments for this alert
+      loadComments(alert.report_id);
+    });
+  } catch (error) {
+    console.error('Error loading ecoalerts:', error);
+  }
+}
+
+// Create HTML for a single alert
+function createAlertElement(alert) {
+  const alertElement = document.createElement('div');
+  alertElement.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 alert-post';
+  alertElement.dataset.reportId = alert.report_id;
+  
+  // Determine category color based on severity
+  let categoryClass = '';
+  let categoryText = '';
+  switch(alert.severity_level.toLowerCase()) {
+    case 'low':
+      categoryClass = 'bg-green-100 text-green-800';
+      categoryText = 'Low Priority';
+      break;
+    case 'medium':
+      categoryClass = 'bg-yellow-100 text-yellow-800';
+      categoryText = 'Medium Priority';
+      break;
+    case 'high':
+      categoryClass = 'bg-red-100 text-red-800';
+      categoryText = 'High Priority';
+      break;
+    default:
+      categoryClass = 'bg-gray-100 text-gray-800';
+  }
+  
+  // Format date
+  const date = new Date(alert.created_at);
+  const formattedDate = date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  alertElement.innerHTML = `
+    <div class="flex items-center mb-4">
+      <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold">${alert.is_anonymous ? 'Anonymous' : alert.user_name}</p>
+        <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> ${alert.location} · ${formattedDate}</p>
+      </div>
+    </div>
+    
+    <div class="text-center mb-4">
+      <span class="inline-block ${categoryClass} text-sm px-3 py-1 rounded-full">${alert.category} (${categoryText})</span>
+    </div>
+    
+    <p class="mb-4 text-center">${alert.description}</p>
+    
+    ${alert.image_url ? `
+    <div class="flex justify-center mb-4">
+      <img src="${alert.image_url}" alt="Report image" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
+    </div>
+    ` : ''}
+    
+    <div class="border-t pt-4">
+      <div class="flex items-center mb-3">
+        <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="flex-1 relative">
+          <input type="text" placeholder="Add a comment..." class="comment-input w-full p-3 border border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          <label class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+            <i class="fas fa-image text-green-600 hover:text-green-800 transition-colors"></i>
+            <input type="file" class="comment-image-input hidden" accept="image/*">
+          </label>
+        </div>
+      </div>
+      
+      <div class="comments-container space-y-3 mt-3"></div>
+    </div>
+  `;
+  
+  return alertElement;
+}
+
+// Load comments for a report
+async function loadComments(reportId) {
+  try {
+    const response = await fetch(`/api/ecoalerts/${reportId}/comments`);
+    const comments = await response.json();
+    
+    const commentsContainer = document.querySelector(`[data-report-id="${reportId}"] .comments-container`);
+    commentsContainer.innerHTML = '';
+    
+    comments.forEach(comment => {
+      const commentElement = document.createElement('div');
+      commentElement.className = 'flex items-start';
+      
+      commentElement.innerHTML = `
+        <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="bg-gray-100 p-3 rounded-lg flex-1">
+          <p class="font-medium">${comment.user_name}</p>
+          <p>${comment.text}</p>
+          ${comment.image_url ? `<img src="${comment.image_url}" alt="Comment image" class="comment-img">` : ''}
+        </div>
+      `;
+      
+      commentsContainer.appendChild(commentElement);
+    });
+  } catch (error) {
+    console.error('Error loading comments:', error);
+  }
+}
+
+// Handle comment submission
+document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('fa-image') || e.target.classList.contains('comment-image-input')) {
+    return; // Skip image click handling
+  }
+  
+  const commentInput = e.target.closest('.alert-post')?.querySelector('.comment-input');
+  const imageInput = e.target.closest('.alert-post')?.querySelector('.comment-image-input');
+  
+  if (commentInput && e.target === commentInput.nextElementSibling) {
+    // This is the image icon click - trigger file input
+    imageInput.click();
+    return;
+  }
+  
+  if (commentInput && commentInput.value.trim() !== '') {
+    const reportId = e.target.closest('.alert-post').dataset.reportId;
+    const formData = new FormData();
+    formData.append('text', commentInput.value);
+    
+    if (imageInput?.files[0]) {
+      formData.append('image', imageInput.files[0]);
+    }
+    
+    try {
+      const response = await fetch(`/api/ecoalerts/${reportId}/comments`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        commentInput.value = '';
+        if (imageInput) imageInput.value = '';
+        loadComments(reportId);
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+    }
+  }
+});
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+  // Load ecoalerts when the tab is active
+  const ecoalertsTab = document.getElementById('ecoalerts');
+  if (ecoalertsTab.classList.contains('active')) {
+    loadEcoAlerts();
+  }
+  
+  // Tab switching handler
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+      if (this.textContent.includes('EcoAlerts')) {
+        loadEcoAlerts();
+      }
+    });
+  });
+});
   </script>
 </body>
 </html>

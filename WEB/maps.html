@@ -6,6 +6,16 @@
   <title>Incident Map | EcoTracker</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script type="module">
+    import { ensureAuthenticated } from '/WEB/js/auth.js';
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      const isAuthenticated = await ensureAuthenticated();
+      if (isAuthenticated) {
+        // Load page content
+      }
+    });
+  </script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -608,7 +618,7 @@
             map.setView([lat, lon], 13);
             
             // Show success notification
-            showNotification(`Location found: ${location}`, 'success');
+            showNotification(`Location found ${location}`, 'success');
           } else {
             showNotification("Location not found", 'error');
           }

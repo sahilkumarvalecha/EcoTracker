@@ -1,74 +1,86 @@
-  const signupname = document.querySelector("#signup-name");
-  const signupemail = document.querySelector("#signup-email");
-  const signuppassword = document.querySelector("#signup-password");
-  const confirmpassword = document.querySelector("#signup-confirmpassword");
-  const signuppassissue = document.querySelector(".signup-passwordissue");
-  const confirmpassissue = document.querySelector(".confirm-passwordissue");
-  const loginbtn = document.querySelector(".Login-btn");
-  const signupbtn = document.querySelector(".signup-btn");
+// auth.js - Centralized authentication functions
 
-  signupbtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (signuppassword.value != confirmpassword.value) {
-      confirmpassissue.style.color = "darkRed";
-      confirmpassissue.innerHTML = "password doesn't match";
-      return;
+// Check authentication status
+async function checkAuthStatus() {
+  try {
+    const response = await fetch('/api/check-auth', {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Not authenticated');
     }
-    confirmpassissue.innerHTML = "";
+    
+    const data = await response.json();
+    return data.isAuthenticated;
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    return false;
+  }
+}
 
+// Redirect if not authenticated - ONLY FOR PROTECTED PAGES
+async function protectPage() {
+  // Skip auth check for login/signup pages
+  if (window.location.pathname.includes('login.html') || 
+      window.location.pathname.includes('signup.html')) {
+    return;
+  }
 
+  const isAuthenticated = await checkAuthStatus();
+  if (!isAuthenticated) {
+    window.location.href = '/WEB/login.html';
+  }
+}
 
-    // Backend API call
-    try {
-      const response = await fetch("http://localhost:5055/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: signupname.value,
-          email: signupemail.value,
-          password_hash: signuppassword.value,
-        }),
-      });
+// Get user info
+async function getUserInfo() {
+  try {
+    const response = await fetch('/api/user', {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get user info');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to get user info:', error);
+    return null;
+  }
+}
 
-      const data = await response.json();
-      if (response.ok) {
-        alert(data.message); // e.g., "Signup successful"
-        //  Store name in localStorage
-        localStorage.setItem("userName", signupname.value);
-        //  Redirect
-        window.location.href = "login.html";
-      } else {
-        alert(data.message || "Signup failed");
+// Initialize auth check on page load
+document.addEventListener('DOMContentLoaded', async () => {
+  // Only run protectPage on protected pages
+  if (!window.location.pathname.includes('login.html') && 
+      !window.location.pathname.includes('signup.html')) {
+    await protectPage();
+    
+    // Update UI for logged in user
+    const userInfo = await getUserInfo();
+    if (userInfo) {
+      const userNameText = document.getElementById('user-name-text');
+      if (userNameText) {
+        userNameText.textContent = userInfo.name;
       }
-
-    } catch (error) {
-      alert("Something went wrong. Try again later.");
-      console.error(error);
     }
+  }
+});
 
-  });
-
-
-
-  const loginemail = document.querySelector("#login-email");
-  const loginpassword = document.querySelector("#login-password");
-  const loginpassissue = document.querySelector(".loginpassissue");
-  const loginemailissue = document.querySelector(".loginemailissue");
-
-  // In your script.js, modify the login button event listener:
-// Login button event listener
-loginbtn.addEventListener("click", async (e) => {
+// Login handler
+document.querySelector('.Login-btn')?.addEventListener('click', async (e) => {
   e.preventDefault();
-
-  loginemailissue.textContent = "";
-  loginpassissue.textContent = "";
+  const loginemail = document.getElementById('login-email');
+  const loginpassword = document.getElementById('login-password');
+  const loginpassissue = document.querySelector('.loginpassissue');
 
   try {
-    const response = await fetch("http://localhost:5055/login", {
+    const response = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include',
       body: JSON.stringify({
         email: loginemail.value,
         password_hash: loginpassword.value,
@@ -78,40 +90,65 @@ loginbtn.addEventListener("click", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-      // Store user data
-      localStorage.setItem("userEmail", loginemail.value);
+      // Store minimal data in localStorage
       localStorage.setItem("userName", data.name);
       localStorage.setItem("isAdmin", data.isAdmin);
-
-      // Redirect to home page
+      
+      // Redirect to home
       window.location.href = "/WEB/index.html";
     } else {
-      alert(data.message);
+      loginpassissue.textContent = data.message || "Login failed";
+      loginpassissue.classList.add("show");
     }
   } catch (err) {
-    console.log(err.message);
-    alert("Server error. Please try again later.");
+    console.error(err);
+    loginpassissue.textContent = "Server error. Please try again later.";
+    loginpassissue.classList.add("show");
   }
 });
 
-// On page load
-  // rsvp API
+// Signup handler
+document.querySelector('.signup-btn')?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  
+  try {
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: signupname.value,
+        email: signupemail.value,
+        password_hash: signuppassword.value,
+      }),
+    });
 
-  function rsvpEvent(eventId) {
-    fetch('http://localhost:5055/rsvp', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ event_id: eventId })
-    })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message || data.error);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Something went wrong!');
-      });
+    const data = await response.json();
+    if (response.ok) {
+      window.location.href = '/WEB/login.html';
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong. Try again later.");
   }
+});
 
+// RSVP function
+function rsvpEvent(eventId) {
+  fetch('http://localhost:5055/rsvp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ event_id: eventId })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert(data.message || data.error);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Something went wrong!');
+    });
+}

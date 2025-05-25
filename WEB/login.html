@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Login</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,16 +150,20 @@
   </div>
 
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const passwordInput = document.getElementById('login-password');
+      const togglePassword = document.querySelector('.fa-eye-slash')?.parentElement;
+      const loginBtn = document.querySelector('.Login-btn');
+      const emailInput = document.getElementById('login-email');
+  
+      // 🔐 Check if user already logged in
       const user = localStorage.getItem("userName");
       if (user) {
         window.location.href = "/WEB/index.html";
+        return;
       }
-      
-      // Toggle password visibility
-      const passwordInput = document.getElementById('login-password');
-      const togglePassword = document.querySelector('[type="button"]');
-      
+  
+      // 👁️ Toggle password visibility
       if (togglePassword && passwordInput) {
         togglePassword.addEventListener('click', () => {
           const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -166,8 +171,45 @@
           togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
         });
       }
+  
+      // 🔒 Handle login
+      if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+  
+          if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
+          }
+  
+          fetch('http://localhost:5055/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              email: email,
+              password_hash: password
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              localStorage.setItem("userName", data.username || email); // adjust if backend returns username
+              window.location.href = "/WEB/index.html";
+            } else {
+              alert("Login failed: " + (data.message || "Invalid credentials."));
+            }
+          })
+          .catch(error => {
+            console.error("Login error:", error);
+            alert("An error occurred while logging in.");
+          });
+        });
+      }
     });
-  </script>
-  <script src="/WEB/JS/script.js"></script>
+  </script>  
 </body>
 </html>

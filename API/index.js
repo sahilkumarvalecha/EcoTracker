@@ -1,37 +1,72 @@
 require("dotenv").config();
-const express = require("express");
 const multer = require("multer");
 const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
+const session = require('express-session');
+const express = require("express");
 const cors = require("cors");
 const app = express();
-const session = require('express-session');
+
+// CORS Configuration
+const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Manual OPTIONS handler - avoids path-to-regexp issue
+app.options(/.*/, (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  res.sendStatus(200);
+});
+
+app.use((req, res, next) => {
+  console.log(`Incoming ${req.method} request to ${req.path}`);
+  next();
+});
 
 
 app.use(session({
   secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
-    secure: false,  // Set to true if using HTTPS
+    secure: false,
     httpOnly: true,
-    sameSite: 'lax'
-  },
-  proxy: true  // Add this if behind a proxy
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
 
-// Middleware
-app.use(cors({
-  origin: '*',
-  credentials: true
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+// Apply authentication middleware to all routes
+app.use(checkAuth);
 // Serve static files from WEB folder
-app.use(express.static(path.join(__dirname, '../WEB')));
+app.use(express.static(path.join(__dirname, '../WEB'), {
+  index: false, // Don't serve index.html for directories
+  extensions: ['html', 'htm'] // Only serve these extensions
+}));
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -52,16 +87,29 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, "../WEB/uploads")));
+// Serve static files from WEB folder (update this)
+app.use('/WEB', express.static(path.join(__dirname, '../WEB'), {
+  index: false,
+  extensions: ['html', 'htm']
+}));
 
-// HTML routes
+// Serve uploads separately
+app.use('/WEB/uploads', express.static(path.join(__dirname, '../WEB/uploads')));
+
+// Signup route
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'signup.html'));
+  if (req.session.user_id) {
+    return res.redirect('/WEB/index.html');
+  }
+  res.sendFile(path.join(__dirname, '../WEB/signup.html'));
 });
 
+// Login route
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
+  if (req.session.user_id) {
+    return res.redirect('/WEB/index.html');
+  }
+  res.sendFile(path.join(__dirname, '../WEB/login.html'));
 });
 
 app.get('/rsvp', async (req, res) => {
@@ -167,21 +215,53 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 // Middleware to check if user is logged in
+// Updated checkAuth middleware
+// Enhanced authentication middleware
+// Enhanced checkAuth middleware
+// Updated checkAuth middleware
 function checkAuth(req, res, next) {
-  if (req.session.user_id) {
-    next();
-  } else {
-    if (req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.status(401).json({ redirect: '/login' });
-    }
-    res.redirect('/login');
+  // Always allow login/signup pages and static assets
+  const publicRoutes = [
+    '/WEB/login.html',
+    '/WEB/signup.html',
+    '/api/login',
+    '/api/signup',
+    '/api/check-auth'
+  ];
+
+  // Allow static assets
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot)$/.test(req.path);
+  
+  // Skip auth check for public routes and static assets
+  if (publicRoutes.includes(req.path) || isStaticAsset) {
+    return next();
   }
+
+  // Check session for authentication
+  if (req.session.user_id) {
+    return next();
+  }
+
+  // Handle API requests differently
+  if (req.xhr || req.headers.accept?.includes('application/json')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  // Redirect to login for HTML requests
+  res.redirect('/WEB/login.html');
 }
 
+// Update your /api/check-auth endpoint
 app.get('/api/check-auth', (req, res) => {
-  res.json({ isAuthenticated: !!req.session.user_id });
+  res.json({ 
+    isAuthenticated: !!req.session.user_id,
+    // Include any additional user info needed
+    user: req.session.user_id ? {
+      name: req.session.name,
+      isAdmin: req.session.isAdmin
+    } : null
+  });
 });
 
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
@@ -206,72 +286,74 @@ app.get('/api/reports', (req, res) => {
   res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
 });
 
-app.post("/api/reports", upload.single("image"), async (req, res) => {
+app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => {
+  // Log the incoming request for debugging
+  console.log("Request body:", req.body);
+  console.log("File:", req.file);
   
   const {
     title,
     description,
     category_id,
     location_id,
-    is_anonymous,
     severity_level,
+    is_anonymous
   } = req.body;
 
+  // Convert checkbox value to boolean properly
+  const isAnonymous = is_anonymous === 'on' || is_anonymous === 'true';
+
+  const user_id = isAnonymous ? null : req.session.user_id;
+
   // Validation
-  if (
-    !title ||
-    !description ||
-    isNaN(category_id) ||
-    isNaN(location_id) ||
-    !severity_level
-  ) {
-    return res
-      .status(400)
-      .json({ error: "Missing or invalid required fields" });
+  if (!title || !description || !category_id || !location_id || !severity_level) {
+    return res.status(400).json({ 
+      error: "Missing required fields",
+      details: { title, description, category_id, location_id, severity_level }
+    });
   }
 
-  const anonymous = is_anonymous === 'on';  // checkbox checked hone par 'on'
-const user_id = (!anonymous && req.session && req.session.user_id) ? req.session.user_id : null;
-
-
-
-  // Generate unique report ID
-  const report_id = uuidv4();
-
-  // Prepare other data
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-  const created_at = new Date();
-
   try {
-    await pool.query(
+    const result = await pool.query(
       `INSERT INTO reports (
-        report_id, user_id, title, description,
+        user_id, title, description,
         category_id, location_id,
         image_url, is_anonymous, severity_level, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [
-        report_id,
         user_id,
         title,
         description,
-        parseInt(category_id),
-        parseInt(location_id),
-        image_url,
-        anonymous,
+        category_id,
+        location_id,
+        req.file ? `/uploads/${req.file.filename}` : null,
+        isAnonymous,
         severity_level,
-        created_at,
+        new Date()
       ]
     );
 
-    res.redirect("/index.html?submitted=true");
-
+    console.log("Report saved:", result.rows[0]);
+    return res.json({ 
+      success: true, 
+      redirect: '/index.html?submitted=true',
+      report: result.rows[0]
+    });
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ error: "Database error" });
+    return res.status(500).json({ 
+      error: "Failed to save report",
+      details: error.message 
+    });
   }
 });
-
-
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: err.message 
+  });
+});
 app.get('/api/session', (req, res) => {
   if (req.session.user_id && req.session.name && req.session.email) {
     const { name, email } = req.session;
@@ -297,8 +379,12 @@ app.get("/api/report-count", async (req, res) => {
 
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) return res.status(500).send("Logout failed");
-    res.redirect('/login.html');
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).send("Logout failed");
+    }
+    res.clearCookie('connect.sid');
+    res.redirect('/login');
   });
 });
 
@@ -460,5 +546,99 @@ app.get('/api/incidents', async (req, res) => {
   } catch (err) {
     console.error('❌ Error in /api/incidents:', err);
     res.status(500).json({ error: 'Database query failed.' });
+  }
+});
+
+// Get all reports for EcoAlerts feed
+app.get('/api/ecoalerts', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        r.report_id, 
+        r.title, 
+        r.description, 
+        r.image_url, 
+        r.created_at,
+        r.severity_level,
+        c.name AS category,
+        l.neighborhood AS location,
+        CASE 
+          WHEN r.user_id IS NULL THEN 'Anonymous'
+          ELSE u.name 
+        END AS user_name,
+        CASE
+          WHEN r.is_anonymous THEN true
+          ELSE false
+        END AS is_anonymous
+      FROM reports r
+      JOIN categories c ON r.category_id = c.category_id
+      JOIN locations l ON r.location_id = l.location_id
+      LEFT JOIN users u ON r.user_id = u.user_id
+      ORDER BY r.created_at DESC
+    `);
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching ecoalerts:", error);
+    res.status(500).json({ error: "Failed to fetch ecoalerts" });
+  }
+});
+
+// Get comments for a specific report
+app.get('/api/ecoalerts/:report_id/comments', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        c.comment_id,
+        c.text,
+        c.image_url,
+        c.created_at,
+        u.name AS user_name,
+        u.user_id
+      FROM comments c
+      JOIN users u ON c.user_id = u.user_id
+      WHERE c.report_id = $1
+      ORDER BY c.created_at ASC
+    `, [req.params.report_id]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ error: "Failed to fetch comments" });
+  }
+});
+
+// Add a new comment to a report
+app.post('/api/ecoalerts/:report_id/comments', upload.single("image"), async (req, res) => {
+  const { text } = req.body;
+  const report_id = req.params.report_id;
+  const user_id = req.session.user_id;
+
+  if (!user_id) {
+    return res.status(401).json({ error: "Not logged in" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO comments (
+        report_id, 
+        user_id, 
+        text, 
+        image_url, 
+        created_at
+      ) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [
+        report_id,
+        user_id,
+        text,
+        req.file ? `/uploads/${req.file.filename}` : null,
+        new Date()
+      ]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({ error: "Failed to add comment" });
   }
 });
