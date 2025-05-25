@@ -313,8 +313,6 @@ function isAdminMiddleware(req, res, next) {
           res.status(401).json({ error: 'User not logged in' });
         }
       });
-              
-    
     // Get report count
     app.get("/api/report-count", async (req, res) => {
     try {
