@@ -152,6 +152,7 @@ app.post('/login', async (req, res) => {
     } catch (err) {
       console.error(err.message);
       res.status(500).json({ message: 'Server error' });
+<<<<<<< Updated upstream
     }
 <<<<<<< Updated upstream
     });
@@ -252,6 +253,9 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
   });
   
 =======
+=======
+    }
+>>>>>>> Stashed changes
   });
   
   // Middleware to protect admin routes
@@ -313,6 +317,11 @@ function isAdminMiddleware(req, res, next) {
           res.status(401).json({ error: 'User not logged in' });
         }
       });
+<<<<<<< Updated upstream
+=======
+              
+    
+>>>>>>> Stashed changes
     // Get report count
     app.get("/api/report-count", async (req, res) => {
     try {
@@ -328,7 +337,10 @@ function isAdminMiddleware(req, res, next) {
           if (err) return res.status(500).send("Logout failed");
           res.redirect('/login.html');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         });
       });
       
