@@ -8,6 +8,7 @@
     const cors = require("cors");
     const app = express();
     const session = require('express-session');
+const { log } = require("console");
 
     app.use(session({
   secret: 'your_secret_key',
@@ -89,6 +90,27 @@
     }
     });
 
+   app.get("/api/user", async (req, res) => {
+  if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
+
+  const result = await pool.query("SELECT name, email, avatar FROM users WHERE user_id = $1", [req.session.user_id]);
+  if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
+
+  res.json(result.rows[0]);
+});
+
+
+
+app.post("/api/avatar", async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: "Not logged in" });
+
+  const { avatar } = req.body;
+  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.userId]);
+
+  res.json({ success: true });
+});
+
+
     // Signup
     app.post('/signup', async (req, res) => {
     const { name, email, password_hash } = req.body;
@@ -137,6 +159,8 @@ app.post('/login', async (req, res) => {
       if (user.password_hash !== password_hash) {
         return res.status(401).json({ message: 'Incorrect password' });
       }
+      console.log(user);
+      
   
       req.session.user_id = user.user_id;
       req.session.email = email;
@@ -306,19 +330,16 @@ function isAdminMiddleware(req, res, next) {
         res.status(500).send("Database error");
         }
     });
-    app.get('/api/session', (req, res) => {
-        if (req.session.user) {
-          const email = req.session.user.email;
-          res.json({
-            name: req.session.user.name,
-            isAdmin: email && email.endsWith('@ecotracker.pk'),
-          });
-        } else {
-          res.status(401).json({ error: 'User not logged in' });
-        }
-      });
-<<<<<<< Updated upstream
-=======
+   app.get('/api/session', (req, res) => {
+  if (req.session.user_id) {
+    res.json({
+      name: req.session.name,
+      isAdmin: req.session.email.endsWith('@ecotracker.pk'),
+    });
+  } else {
+    res.status(401).json({ error: 'User not logged in' });
+  }
+});
               
     
 >>>>>>> Stashed changes

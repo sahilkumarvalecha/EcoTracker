@@ -114,7 +114,7 @@
     if (userName) {
       if (sidebarName) sidebarName.textContent = userName;
       if (profileName) profileName.textContent = userName;
-      if (userEmail) userEmail.textContent = "Email: " + userEmail;
+      if (userEmail) userEmail.textContent = "Email: " + localStorage.getItem("userEmail");
       if (userLink) {
         userLink.href = "account.html";
         const logoutBtn = document.createElement("button");
