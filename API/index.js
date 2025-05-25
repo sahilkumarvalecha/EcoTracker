@@ -49,19 +49,43 @@ app.use((req, res, next) => {
 
 
 app.use(session({
+<<<<<<< Updated upstream
   secret: 'your_secret_key',
   resave: true,
   saveUninitialized: true,
+=======
+  secret: process.env.SESSION_SECRET || 'your_secret_key',
+  resave: false,
+  saveUninitialized: false,
+>>>>>>> Stashed changes
   cookie: {
     secure: false,
     httpOnly: true,
     sameSite: 'lax',
+<<<<<<< Updated upstream
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
 // Apply authentication middleware to all routes
 app.use(checkAuth);
+=======
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  },
+  proxy: true  // Add this if behind a proxy
+}));
+
+// Middleware
+app.use(cors({
+  origin: true, // Reflects the request origin
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+>>>>>>> Stashed changes
 // Serve static files from WEB folder
 app.use(express.static(path.join(__dirname, '../WEB'), {
   index: false, // Don't serve index.html for directories
@@ -93,10 +117,23 @@ app.use('/WEB', express.static(path.join(__dirname, '../WEB'), {
   extensions: ['html', 'htm']
 }));
 
+<<<<<<< Updated upstream
 // Serve uploads separately
 app.use('/WEB/uploads', express.static(path.join(__dirname, '../WEB/uploads')));
 
 // Signup route
+=======
+app.get('/api/session-test', (req, res) => {
+  console.log('Session ID:', req.sessionID);
+  console.log('Session data:', req.session);
+  res.json({ 
+    sessionExists: !!req.session.user_id,
+    user_id: req.session.user_id 
+  });
+});
+
+// HTML routes
+>>>>>>> Stashed changes
 app.get('/signup', (req, res) => {
   if (req.session.user_id) {
     return res.redirect('/WEB/index.html');
@@ -148,7 +185,7 @@ app.post("/api/avatar", async (req, res) => {
   if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
 
   const { avatar } = req.body;
-  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.userId]);
+  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.user_id]);
 
   res.json({ success: true });
 });
@@ -174,6 +211,15 @@ app.post('/signup', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+const verifySession = (req, res, next) => {
+  console.log('Current session:', req.session); // Debug log
+  if (!req.session.user_id) {
+    console.error('Session missing user_id!'); // Debug
+    return res.status(401).json({ error: 'Please log in first' });
+  }
+  next();
+};
 
 app.post('/login', async (req, res) => {
   const { email, password_hash } = req.body;
@@ -204,6 +250,7 @@ app.post('/login', async (req, res) => {
     req.session.email = email;
     req.session.name = user.name;
     req.session.isAdmin = isAdmin;
+
 
     res.status(200).json({
       success: true,
@@ -321,7 +368,12 @@ app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => 
         image_url, is_anonymous, severity_level, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [
+<<<<<<< Updated upstream
         user_id,
+=======
+        report_id,
+        is_anonymous ? null : req.session.user_id, // Store null if anonymous
+>>>>>>> Stashed changes
         title,
         description,
         category_id,
@@ -468,44 +520,8 @@ app.get('/api/analytics', async (req, res) => {
   }
 });
 
-// Analytics Route
-app.get('/api/analytics', async (req, res) => {
-  try {
-    const reportsByLocation = await pool.query(`
-      SELECT l.neighborhood AS location, COUNT(*) 
-      FROM reports r 
-      JOIN locations l ON r.location_id = l.location_id 
-      GROUP BY l.neighborhood
-    `);
 
-    const reportsByCategory = await pool.query(`
-      SELECT c.name AS category, COUNT(*) 
-      FROM reports r 
-      JOIN categories c ON r.category_id = c.category_id 
-      GROUP BY c.name
-    `);
-
-    const locationData = {};
-    const categoryData = {};
-
-    reportsByLocation.rows.forEach(row => {
-      locationData[row.location] = parseInt(row.count);
-    });
-
-    reportsByCategory.rows.forEach(row => {
-      categoryData[row.category] = parseInt(row.count);
-    });
-
-    res.json({
-      reportsByLocation: locationData,
-      reportsByCategory: categoryData
-    });
-
-  } catch (err) {
-    console.error('❌ Failed to fetch analytics data:', err);
-    res.status(500).json({ error: 'Analytics query failed' });
-  }
-});
+  
 
 // Filtered Incidents for Map
 app.get('/api/incidents', async (req, res) => {
@@ -550,6 +566,7 @@ app.get('/api/incidents', async (req, res) => {
   }
 });
 
+<<<<<<< Updated upstream
 // Get all reports for EcoAlerts feed
 app.get('/api/ecoalerts', async (req, res) => {
   try {
@@ -643,3 +660,29 @@ app.post('/api/ecoalerts/:report_id/comments', upload.single("image"), async (re
     res.status(500).json({ error: "Failed to add comment" });
   }
 });
+=======
+
+
+
+
+
+
+
+
+
+
+
+//  for admin
+
+
+// Fetch all users (admin only)
+app.get("/api/users", isAdminMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT user_id, name, email, avatar FROM users ORDER BY name ASC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+>>>>>>> Stashed changes

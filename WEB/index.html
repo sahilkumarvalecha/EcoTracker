@@ -517,6 +517,25 @@
     }
   }
 });
-  </script>    
+</script>
+<!-- <script>
+  fetch('/api/check-auth', {
+    credentials: 'include'
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network error');
+    return response.json();
+  })
+  .then(data => {
+    if (!data.isAuthenticated) {
+      window.location.href = '/';  // Match your Express route
+    }
+  })
+  .catch(error => {
+    console.error('Auth check failed:', error);
+    window.location.href = '/login';  // Match your Express route
+  });
+</script> -->
+      
     </body>
 </html>
