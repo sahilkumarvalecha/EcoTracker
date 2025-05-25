@@ -153,6 +153,7 @@ app.post('/login', async (req, res) => {
       console.error(err.message);
       res.status(500).json({ message: 'Server error' });
     }
+<<<<<<< Updated upstream
     });
 
     // middle ware to check is user is loginned or not 
@@ -250,6 +251,69 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
     }
   });
   
+=======
+  });
+  
+  // Middleware to protect admin routes
+function isAdminMiddleware(req, res, next) {
+    if (req.session && req.session.email && req.session.email.endsWith('@ecotracker.pk')) {
+      next();
+    } else {
+      res.status(403).json({ error: 'Access denied: Admins only' });
+    }
+  }
+   
+  app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'WEB', 'admin-dashboard.html'));
+  });
+      // Report submission
+    app.post("/api/reports", upload.single("image"), async (req, res) => {
+        const { title, description, category_id, location_id, is_anonymous, severity_level } = req.body;
+    
+        const categoryId = parseInt(category_id);
+        const locationId = parseInt(location_id);
+    
+        if (!title || !description || isNaN(categoryId) || isNaN(locationId) || !severity_level) {
+        return res.status(400).json({ error: "Missing or invalid required fields" });
+        }
+    
+        const report_id = uuidv4();
+        const user_id = null; // Optional if not logged-in user
+        const status_id = 1;  // Default to "Pending"
+        const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+        const created_at = new Date();
+    
+        try {
+        await pool.query(`
+            INSERT INTO reports (
+            user_id, title, description,
+            category_id, status_id, location_id,
+            image_url, is_anonymous, severity_level, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `, [
+            user_id, title, description,
+            categoryId, status_id, locationId,
+            image_url, is_anonymous === "on", severity_level, created_at
+        ]);
+    
+        res.redirect('/index.html?submitted=true');
+        } catch (err) {
+        console.error(err);
+        res.status(500).send("Database error");
+        }
+    });
+    app.get('/api/session', (req, res) => {
+        if (req.session.user) {
+          const email = req.session.user.email;
+          res.json({
+            name: req.session.user.name,
+            isAdmin: email && email.endsWith('@ecotracker.pk'),
+          });
+        } else {
+          res.status(401).json({ error: 'User not logged in' });
+        }
+      });
+>>>>>>> Stashed changes
               
     
     // Get report count
@@ -266,6 +330,28 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
         req.session.destroy(err => {
           if (err) return res.status(500).send("Logout failed");
           res.redirect('/login.html');
+<<<<<<< Updated upstream
+=======
+        });
+      });
+      
+
+    // rsvp
+    app.post('/rsvp', (req, res) => {
+        const eventId = req.body.event_id;
+        const userId = req.session.user_id;
+
+        if (!userId) {
+            return res.json({ error: 'Please log in first' });
+        }
+
+        const sql = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
+        db.query(sql, [userId, eventId], (err) => {
+            if (err) {
+                return res.json({ error: 'Failed to save RSVP' });
+            }
+            res.json({ message: 'RSVP successfully saved!' });
+>>>>>>> Stashed changes
         });
       });
       

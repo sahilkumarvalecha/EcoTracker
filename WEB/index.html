@@ -40,7 +40,11 @@
         </a>
       </nav>
 
+<<<<<<< Updated upstream
       <a href="/WEB/login.html" class="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+=======
+      <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+>>>>>>> Stashed changes
         <i class="fas fa-user-circle"></i>
         <span id="user-name-text">Signup/Signin</span>
       </a>
@@ -153,6 +157,7 @@
       </main>
     </div>
       <script src="/WEB/JS/chart.js"></script>
+<<<<<<< Updated upstream
       
       <script>
         document.addEventListener("DOMContentLoaded", async () => {
@@ -232,3 +237,92 @@
   </script>  
       </body>
   </html>
+=======
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("submitted") === "true") {
+          alert("Report submitted successfully!");
+          
+          // Remove the query param so it doesn’t alert again
+          urlParams.delete("submitted");
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        }
+      </script>
+      <script src="/WEB/JS/script.js"></script>
+      <script>
+        window.addEventListener("DOMContentLoaded", () => {
+    const userName = localStorage.getItem("userName");
+    const userLink = document.getElementById("user-link");
+    const userNameSpan = document.getElementById("user-name-text");
+
+    if (userName && userNameSpan && userLink) {
+      userNameSpan.textContent = userName;
+      userLink.href = "#"; // Prevent redirect if already signed in
+
+      // Optionally add logout option
+      const logoutBtn = document.createElement("button");
+      logoutBtn.textContent = "Logout";
+      logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("userName");
+        window.location.reload();
+      });
+      userLink.parentNode.appendChild(logoutBtn);
+    }
+  });
+
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Or profile page
+      } else {
+        // Show default Sign In / Sign Up text
+        if (userNameSpan) userNameSpan.textContent = "Sign In / Sign Up";
+        if (userLink) userLink.href = "login.html"; // ya signup page
+      }
+      </script>
+
+  <script>
+    console.log("Session data:", data);
+    const res = await fetch('/api/session');
+    const data = await res.json();
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch('/api/session');
+        const data = await res.json();
+
+        // Show admin sidebar if admin
+        if (data.isAdmin) {
+          document.getElementById("adminSidebar").classList.remove("hidden");
+          document.getElementById("userSidebar").classList.add("hidden");
+        }
+
+        // Show user name
+        if (data.name) {
+          const userNameSpan = document.getElementById("user-name-text");
+          const userLink = document.getElementById("user-link");
+          if (userNameSpan && userLink) {
+            userNameSpan.textContent = data.name;
+            userLink.href = "#";
+
+            const logoutBtn = document.createElement("button");
+            logoutBtn.textContent = "Logout";
+            logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+            logoutBtn.addEventListener("click", () => {
+              fetch('/api/logout', { method: 'POST' }).then(() => {
+                localStorage.clear();
+                window.location.href = "/WEB/login.html";
+              });
+            });
+            userLink.parentNode.appendChild(logoutBtn);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      }
+    });
+  </script>
+      </body>
+  </html>
+>>>>>>> Stashed changes
