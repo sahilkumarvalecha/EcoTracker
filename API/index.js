@@ -313,7 +313,6 @@ function isAdminMiddleware(req, res, next) {
           res.status(401).json({ error: 'User not logged in' });
         }
       });
->>>>>>> Stashed changes
               
     
     // Get report count

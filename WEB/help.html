@@ -42,10 +42,10 @@
           </a>
         </div>
       </nav>
-      <div class="p-4 border-t border-green-500 text-sm">
-        <i class="fas fa-user-circle"></i>
-        <button> <a href="/WEB/login.html">Signup/signin</a></button>
-      </div>
+       <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+  <i class="fas fa-user-circle"></i>
+  <span id="user-name-text">Signup/Signin</span>
+</a>
     </aside>
 <style>
     /* Consistent with your existing styles */
@@ -229,8 +229,30 @@
       event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
       event.currentTarget.classList.remove('text-gray-500');
     }
+    
 
-    // Search functionality could be added here
   </script>
+  <script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
 </body>
 </html>

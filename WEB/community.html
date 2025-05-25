@@ -42,10 +42,10 @@
           </a>
         </div>
       </nav>
-      <div class="p-4 border-t border-green-500 text-sm">
-        <i class="fas fa-user-circle"></i>
-        <button> <a href="/WEB/login.html">Signup/signin</a></button>
-      </div>
+       <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+  <i class="fas fa-user-circle"></i>
+  <span id="user-name-text">Signup/Signin</span>
+</a>
     </aside>
   <style>
     /* Members section laptop-friendly styles */
@@ -312,191 +312,282 @@
           </div>
         </section>
       </div>
+<!-- ====================== -->
+<!-- ECOALERTS TAB -->
+<!-- ====================== -->
+<div id="ecoalerts" class="tab-content">
+  <div class="alert-container">
 
-      <!-- ====================== -->
-      <!-- ECOALERTS TAB -->
-      <!-- ====================== -->
-      <div id="ecoalerts" class="tab-content">
-        <div class="alert-container">
-          <!-- Create New Alert -->
-          <div class="bg-white p-6 rounded-lg shadow-lg mb-8 alert-post">
-            <h2 class="text-xl font-semibold mb-4 text-center">Create New EcoAlert</h2>
-            <textarea class="w-full p-4 border rounded-lg mb-4" rows="4" placeholder="Describe the environmental issue..."></textarea>
-            
-            <!-- Category Selection -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2 text-center">Issue Category:</label>
-              <div class="grid grid-cols-2 gap-3">
-                <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Waste Dumping</button>
-                <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Water Pollution</button>
-                <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Air Quality</button>
-                <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Noise Pollution</button>
-              </div>
+    <style>
+      /* Fixed height for alert posts */
+      .alert-post {
+        min-height: 720px; /* or whatever height fits your first card */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Fixed size for images inside posts */
+      .alert-post img {
+        width: 100%;
+        height: 300px; /* Fixed height */
+        object-fit: cover;
+      }
+      
+      /* Style for comment images */
+      .comment-img {
+        max-width: 200px;  /* Smaller width for comment images */
+        max-height: 150px; /* Smaller height for comment images */
+        object-fit: cover;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+    </style>
+    
+    <!-- Create New Alert (Unchanged) -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8 alert-post">
+      <h2 class="text-xl font-semibold mb-4 text-center">Create New EcoAlert</h2>
+      <textarea class="w-full p-4 border rounded-lg mb-4" rows="4" placeholder="Describe the environmental issue..."></textarea>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2 text-center">Issue Category:</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Waste Dumping</button>
+          <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Water Pollution</button>
+          <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Air Quality</button>
+          <button class="category-btn border p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Noise Pollution</button>
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2 text-center">Area:</label>
+        <select class="w-full p-3 border rounded-lg">
+          <option>Clifton</option>
+          <option>Gulshan</option>
+          <option>DHA</option>
+          <option>Korangi</option>
+        </select>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <div>
+          <input type="file" id="alert-image" class="hidden" accept="image/*">
+          <label for="alert-image" class="cursor-pointer text-green-600 hover:text-green-800 flex items-center">
+            <i class="fas fa-image mr-2"></i> Add Photo
+          </label>
+        </div>
+        <button class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-200">
+          <i class="fas fa-bell mr-2"></i> Post Alert
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Feed -->
+    <div class="space-y-8">
+      <!-- Alert 1 - Beach Pollution -->
+      <div class="bg-white p-6 rounded-lg shadow-lg alert-post">
+        <div class="flex items-center mb-4">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold">Alex Kim</p>
+            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> Clifton · 2 hours ago</p>
+          </div>
+          <div class="flex items-center">
+            <button class="like-btn text-gray-400 hover:text-red-500 focus:outline-none" data-likes="5">
+              <i class="far fa-heart"></i>
+              <span class="text-sm ml-1">5</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="text-center mb-4">
+          <span class="inline-block bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">Waste Dumping</span>
+        </div>
+        
+        <p class="mb-4 text-center">Found massive plastic waste accumulation at Sea View beach during morning walk. Needs immediate cleanup!</p>
+        
+        <div class="flex justify-center mb-4">
+          <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0" alt="Beach pollution" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="text-red-500">Submitted (25%)</span></p>
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="progress-0 h-2.5 rounded-full"></div>
+          </div>
+        </div>
+        
+        <div class="border-t pt-4">
+          <div class="flex items-center mb-3">
+            <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+              <i class="fas fa-user"></i>
             </div>
-            
-            <!-- Location Selection -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2 text-center">Area:</label>
-              <select class="w-full p-3 border rounded-lg">
-                <option>Clifton</option>
-                <option>Gulshan</option>
-                <option>DHA</option>
-                <option>Korangi</option>
-              </select>
-            </div>
-            
-            <!-- Image Upload -->
-            <div class="flex justify-between items-center">
-              <div>
-                <input type="file" id="alert-image" class="hidden" accept="image/*">
-                <label for="alert-image" class="cursor-pointer text-green-600 hover:text-green-800 flex items-center">
-                  <i class="fas fa-image mr-2"></i> Add Photo
-                </label>
-              </div>
-              <button class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-200">
-                <i class="fas fa-bell mr-2"></i> Post Alert
-              </button>
+            <div class="flex-1 relative">
+              <input type="text" placeholder="Add a comment..." class="w-full p-3 border rounded-lg pr-10">
+              <label class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                <i class="fas fa-image text-green-600"></i>
+                <input type="file" class="hidden" accept="image/*">
+              </label>
             </div>
           </div>
-
-          <!-- Alert Feed -->
-          <div class="space-y-8">
-            <!-- Alert 1 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg alert-post">
-              <div class="flex items-center mb-4">
-                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
-                  <i class="fas fa-user"></i>
-                </div>
-                <div class="flex-1">
-                  <p class="font-semibold">Alex Kim</p>
-                  <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> Clifton · 2 hours ago</p>
-                </div>
-                <div class="flex items-center">
-                  <button class="like-btn text-gray-400 hover:text-red-500 focus:outline-none" data-likes="5">
-                    <i class="far fa-heart"></i>
-                    <span class="text-sm ml-1">5</span>
-                  </button>
-                </div>
+          
+          <div class="space-y-3 mt-3">
+            <div class="flex items-start">
+              <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+                <i class="fas fa-user"></i>
               </div>
-              
-              <!-- Category Tag -->
-              <div class="text-center mb-4">
-                <span class="inline-block bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">Waste Dumping</span>
-              </div>
-              
-              <p class="mb-4 text-center">Illegal dumping spotted near Sea View beach. Plastic waste and food containers everywhere!</p>
-              
-              <div class="flex justify-center mb-4">
-                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0" alt="Dumping site" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
-              </div>
-              
-              <!-- Progress Bar -->
-              <div class="mb-4">
-                <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="text-red-500">Submitted (25%)</span></p>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div class="progress-0 h-2.5 rounded-full"></div>
-                </div>
-              </div>
-              
-              <!-- Comments Section -->
-              <div class="border-t pt-4">
-                <div class="flex items-center mb-3">
-                  <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  <input type="text" placeholder="Add a comment..." class="flex-1 p-3 border rounded-lg">
-                </div>
-                
-                <!-- Sample Comments -->
-                <div class="space-y-3 mt-3">
-                  <div class="flex items-start">
-                    <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-                      <i class="fas fa-user"></i>
-                    </div>
-                    <div class="bg-gray-100 p-3 rounded-lg flex-1">
-                      <p class="font-medium">Priya Singh</p>
-                      <p>I've reported this to the Clifton Cantonment Board. Case #CB-2024-125</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Alert 2 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg alert-post">
-              <div class="flex items-center mb-4">
-                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
-                  <i class="fas fa-user"></i>
-                </div>
-                <div class="flex-1">
-                  <p class="font-semibold">Samira Chen</p>
-                  <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> Korangi · 1 day ago</p>
-                </div>
-                <div class="flex items-center">
-                  <button class="like-btn text-red-500 focus:outline-none" data-likes="12">
-                    <i class="fas fa-heart"></i>
-                    <span class="text-sm ml-1">12</span>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Category Tag -->
-              <div class="text-center mb-4">
-                <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">Water Pollution</span>
-              </div>
-              
-              <p class="mb-4 text-center">Factory releasing untreated wastewater into the storm drain. Strong chemical smell!</p>
-              
-              <div class="flex justify-center mb-4">
-                <img src="https://images.unsplash.com/photo-1610019085766-a47d31b71e65" alt="Polluted water" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
-              </div>
-              
-              <!-- Progress Bar -->
-              <div class="mb-4">
-                <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="text-blue-500">Under Review (50%)</span></p>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div class="progress-1 h-2.5 rounded-full"></div>
-                </div>
-              </div>
-              
-              <!-- Comments Section -->
-              <div class="border-t pt-4">
-                <div class="flex items-center mb-3">
-                  <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  <input type="text" placeholder="Add a comment..." class="flex-1 p-3 border rounded-lg">
-                </div>
-                
-                <!-- Sample Comments -->
-                <div class="space-y-3 mt-3">
-                  <div class="flex items-start">
-                    <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-                      <i class="fas fa-user"></i>
-                    </div>
-                    <div class="bg-gray-100 p-3 rounded-lg flex-1">
-                      <p class="font-medium">Liam O'Brien</p>
-                      <p>Which factory exactly? Can you share coordinates?</p>
-                    </div>
-                  </div>
-                  <div class="flex items-start">
-                    <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-                      <i class="fas fa-user"></i>
-                    </div>
-                    <div class="bg-gray-100 p-3 rounded-lg flex-1">
-                      <img src="https://images.unsplash.com/photo-1581093450021-4a7360e9a9e5" alt="Factory location" class="w-full rounded-lg">
-                    </div>
-                  </div>
-                </div>
+              <div class="bg-gray-100 p-3 rounded-lg flex-1">
+                <p class="font-medium">Priya Singh</p>
+                <p>Reported to Clifton Cantonment Board. Case #CB-2024-125</p>
+                <img src="https://images.unsplash.com/photo-1604871000636-074fa5117945" alt="Cleanup poster" class="comment-img">
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div>
 
-  <script>
+      <!-- Alert 2 - Industrial Waste -->
+      <div class="bg-white p-6 rounded-lg shadow-lg alert-post">
+        <div class="flex items-center mb-4">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold">Samira Chen</p>
+            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> Korangi · 1 day ago</p>
+          </div>
+          <div class="flex items-center">
+            <button class="like-btn text-red-500 focus:outline-none" data-likes="12">
+              <i class="fas fa-heart"></i>
+              <span class="text-sm ml-1">12</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="text-center mb-4">
+          <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">Water Pollution</span>
+        </div>
+        
+        <p class="mb-4 text-center">Factory releasing untreated wastewater into storm drain near Sector 32. Strong chemical smell and dead fish visible!</p>
+        
+        <div class="flex justify-center mb-4">
+          <img src="https://images.unsplash.com/photo-1610019085766-a47d31b71e65" alt="Industrial waste" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="text-blue-500">Under Review (50%)</span></p>
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="progress-1 h-2.5 rounded-full"></div>
+          </div>
+        </div>
+        
+        <div class="border-t pt-4">
+          <div class="flex items-center mb-3">
+            <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="flex-1 relative">
+              <input type="text" placeholder="Add a comment..." class="w-full p-3 border rounded-lg pr-10">
+              <label class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                <i class="fas fa-image text-green-600"></i>
+                <input type="file" class="hidden" accept="image/*">
+              </label>
+            </div>
+          </div>
+          
+          <div class="space-y-3 mt-3">
+            <div class="flex items-start">
+              <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="bg-gray-100 p-3 rounded-lg flex-1">
+                <p class="font-medium">Liam O'Brien</p>
+                <p>Which factory exactly? Here's the location:</p>
+                <img src="https://images.unsplash.com/photo-1581093450021-4a7360e9a9e5" alt="Factory location" class="comment-img">
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="bg-gray-100 p-3 rounded-lg flex-1">
+                <p class="font-medium">Samira Chen</p>
+                <p>Thanks! I've forwarded to EPA with these coordinates</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert 3 - Air Pollution -->
+      <div class="bg-white p-6 rounded-lg shadow-lg alert-post">
+        <div class="flex items-center mb-4">
+          <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold">Rahim Khan</p>
+            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> Gulshan · 3 days ago</p>
+          </div>
+          <div class="flex items-center">
+            <button class="like-btn text-red-500 focus:outline-none" data-likes="8">
+              <i class="fas fa-heart"></i>
+              <span class="text-sm ml-1">8</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="text-center mb-4">
+          <span class="inline-block bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full">Air Quality</span>
+        </div>
+        
+        <p class="mb-4 text-center">Thick black smoke coming from brick kilns near residential area. Residents complaining of breathing difficulties.</p>
+        
+        <div class="flex justify-center mb-4">
+          <img src="https://images.unsplash.com/photo-1519285626563-db893df334d8" alt="Air pollution" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="text-green-500">Resolved (100%)</span></p>
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="progress-3 h-2.5 rounded-full"></div>
+          </div>
+        </div>
+        
+        <div class="border-t pt-4">
+          <div class="flex items-center mb-3">
+            <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="flex-1 relative">
+              <input type="text" placeholder="Add a comment..." class="w-full p-3 border rounded-lg pr-10">
+              <label class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                <i class="fas fa-image text-green-600"></i>
+                <input type="file" class="hidden" accept="image/*">
+              </label>
+            </div>
+          </div>
+          
+          <div class="space-y-3 mt-3">
+            <div class="flex items-start">
+              <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="bg-gray-100 p-3 rounded-lg flex-1">
+                <p class="font-medium">Community Admin</p>
+                <p>Update: Kilns have been shut down by environmental protection agency</p>
+                <img src="https://images.unsplash.com/photo-1506706435692-290e0c5b4505" alt="Resolution notice" class="comment-img">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <script>
     // Tab switching
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(tab => {
@@ -546,5 +637,27 @@
       });
     });
   </script>
+  <script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
 </body>
 </html>

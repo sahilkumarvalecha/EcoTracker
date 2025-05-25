@@ -1,20 +1,103 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EcoTracker Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-white text-gray-800">
-    <div class="flex min-h-screen">
-    <!-- Main Sidebar Wrapper -->
-  <div class="flex">
-
-    <!-- Normal User Sidebar -->
-    <aside class="w-64 bg-white text-black flex flex-col border-r" id="userSidebar">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoTracker Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .sidebar-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    
+    .sidebar-item.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .activity-tag {
+      transition: all 0.2s ease;
+    }
+    
+    .activity-tag:hover {
+      transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white-600 text-black flex flex-col">
       <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
       <nav class="flex-1 p-2 space-y-2">
         <a href="/WEB/index.html" class="flex items-center space-x-2 p-2 rounded bg-green-200 hover:bg-green-500">
@@ -38,13 +121,10 @@
         <a href="/WEB/help.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
           <i class="fas fa-question-circle"></i><span>Help</span>
         </a>
+        
       </nav>
 
-<<<<<<< Updated upstream
-      <a href="/WEB/login.html" class="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-=======
       <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
->>>>>>> Stashed changes
         <i class="fas fa-user-circle"></i>
         <span id="user-name-text">Signup/Signin</span>
       </a>
@@ -91,153 +171,138 @@
       </div>
     </aside>
 
-  </div>
-      <!-- Main Content -->
-      <main class="flex-1 p-6">
-        <h1 class="text-2xl font-bold mb-4">Overview</h1>
-        <div class="mb-4 flex justify-end">
-          <a href="/WEB/report-incident.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2 shadow">
-            <i class="fas fa-plus-circle"></i>
-            <span>Report Incident</span>
-          </a>
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Overview</h1>
+            <p class="text-gray-500">Welcome back! Here's what's happening in your area.</p>
+          </div>
+          <div class="flex space-x-3">
+            <button class="p-2 rounded-full bg-white shadow hover:bg-gray-50">
+              <i class="fas fa-bell text-gray-500"></i>
+            </button>
+            <a href="/WEB/report-incident.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 shadow-md transition-colors">
+              <i class="fas fa-plus-circle"></i>
+              <span class="hidden md:inline">Report Incident</span>
+            </a>
+          </div>
         </div>
         
         <!-- Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="bg-green-100 p-4 rounded shadow">
-            <div class="flex items-center space-x-3">
-              <i class="fas fa-file-alt text-green-700"></i>
-              <div>
-                <p id="report-count" class="font-bold">Loading...</p>
-                <p class="text-sm">Recent environmental reports</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 card">
+            <div class="flex items-start space-x-4">
+              <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                <i class="fas fa-file-alt text-lg"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-700">Environmental Reports</h3>
+                <p id="report-count" class="text-2xl font-bold mt-1 text-gray-800">Loading...</p>
+                <p class="text-sm text-gray-500 mt-1">Recent reports in your area</p>
               </div>            
             </div>
-            <button class="mt-2 text-white bg-green-600 px-3 py-1 rounded">View Reports</button>
+            <button class="mt-4 text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
+              <span>View Reports</span>
+              <i class="fas fa-chevron-right text-xs"></i>
+            </button>
           </div>
-          <div class="bg-green-100 p-4 rounded shadow">
-            <div class="flex items-center space-x-3">
-              <i class="fas fa-exclamation-triangle text-green-700"></i>
-              <div>
-                <p class="font-bold">2 Active</p>
-                <p class="text-sm">Critical incidents</p>
+          
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 card">
+            <div class="flex items-start space-x-4">
+              <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                <i class="fas fa-exclamation-triangle text-lg"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-700">Critical Incidents</h3>
+                <p class="text-2xl font-bold mt-1 text-gray-800">2 Active</p>
+                <p class="text-sm text-gray-500 mt-1">Require immediate attention</p>
               </div>
             </div>
-            <button class="mt-2 text-white bg-green-600 px-3 py-1 rounded">View Alerts</button>
+            <button class="mt-4 text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
+              <span>View Alerts</span>
+              <i class="fas fa-chevron-right text-xs"></i>
+            </button>
           </div>
-          <div class="bg-green-100 p-4 rounded shadow">
-            <div class="flex items-center space-x-3">
-              <i class="fas fa-leaf text-green-700"></i>
-              <div>
-                <p class="font-bold">78 / 100</p>
-                <p class="text-sm">Current environmental health</p>
+          
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 card">
+            <div class="flex items-start space-x-4">
+              <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
+                <i class="fas fa-leaf text-lg"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-700">Environmental Health</h3>
+                <div class="flex items-center mt-1 space-x-2">
+                  <p class="text-2xl font-bold text-gray-800">78</p>
+                  <span class="text-sm text-gray-500">/ 100</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                </div>
               </div>
             </div>
-            <button class="mt-2 text-white bg-green-600 px-3 py-1 rounded">Details</button>
+            <button class="mt-4 text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
+              <span>See Details</span>
+              <i class="fas fa-chevron-right text-xs"></i>
+            </button>
           </div>
         </div>
 
         <!-- Recent Activity -->
-        <div class="mb-6">
-          <h2 class="font-semibold text-lg mb-2">Recent Activity</h2>
-          <div class="flex flex-wrap space-x-4 items-center">
-            <span><i class="fas fa-exclamation-circle text-yellow-600"></i> Oil Spill</span>
-            <span>High</span>
-            <span>Pending</span>
-            <span>Riverbank · 2h ago</span>
-            <span><i class="fas fa-dumpster-fire text-red-500"></i> Illegal Dump</span>
-            <span>Resolved · Park · 1d ago</span>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-8">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-semibold text-lg text-gray-800">Recent Activity</h2>
+            <button class="text-green-600 hover:text-green-700 text-sm font-medium">View All</button>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <div class="activity-tag bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-full text-sm flex items-center space-x-2">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Oil Spill</span>
+              <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">High</span>
+              <span class="text-yellow-600">Pending</span>
+              <span class="text-gray-500">2h ago</span>
+            </div>
+            
+            <div class="activity-tag bg-red-50 text-red-700 px-3 py-1.5 rounded-full text-sm flex items-center space-x-2">
+              <i class="fas fa-dumpster-fire"></i>
+              <span>Illegal Dump</span>
+              <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">Resolved</span>
+              <span class="text-gray-500">1d ago</span>
+            </div>
+            
+            <div class="activity-tag bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm flex items-center space-x-2">
+              <i class="fas fa-water"></i>
+              <span>Water Pollution</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">Medium</span>
+              <span class="text-blue-600">In Progress</span>
+              <span class="text-gray-500">3h ago</span>
+            </div>
+            
+            <div class="activity-tag bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full text-sm flex items-center space-x-2">
+              <i class="fas fa-smog"></i>
+              <span>Air Quality</span>
+              <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">Resolved</span>
+              <span class="text-gray-500">2d ago</span>
+            </div>
           </div>
         </div>
 
         <!-- Analytics Chart -->
-        <div>
-          <h2 class="font-semibold text-lg mb-2">Analytics</h2>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-semibold text-lg text-gray-800">Analytics</h2>
+            <div class="flex space-x-2">
+              <button class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">Week</button>
+              <button class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Month</button>
+              <button class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">Year</button>
+            </div>
+          </div>
           <canvas id="barChart" height="120"></canvas>
         </div>
       </main>
     </div>
       <script src="/WEB/JS/chart.js"></script>
-<<<<<<< Updated upstream
-      
-      <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-          try {
-            const API_BASE = "http://localhost:5055"; // Use absolute URL for server-side requests
-            const res = await fetch(`${API_BASE}/api/session`, {
-              credentials: 'include'
-            });
-      
-            const data = await res.json();
-      
-            const adminSidebar = document.getElementById("adminSidebar");
-            const userSidebar = document.getElementById("userSidebar");
-      
-            if (data.isAdmin && adminSidebar && userSidebar) {
-              adminSidebar.classList.remove("hidden");
-              userSidebar.classList.add("hidden");
-            }
-      
-            const userNameSpan = document.getElementById("user-name-text");
-            const userLinks = document.getElementsByClassName("user-link");
-      
-            if (data.name && userNameSpan && userLinks.length > 0) {
-              userNameSpan.textContent = data.name;
-              for (const link of userLinks) {
-                link.href = "#";
-      
-                if (!link.querySelector(".logout-btn")) {
-                  const logoutBtn = document.createElement("button");
-                  logoutBtn.textContent = "Logout";
-                  logoutBtn.className = "logout-btn ml-2 text-sm text-red-500 underline hover:text-red-700";
-                  logoutBtn.addEventListener("click", () => {
-                    fetch(`${API_BASE}/api/logout`, { method: 'POST' }).then(() => {
-                      localStorage.clear();
-                      window.location.href = "/WEB/login.html";
-                    });
-                  });
-                  link.appendChild(logoutBtn);
-                }
-              }
-            } else if (userNameSpan && userLinks.length > 0) {
-              userNameSpan.textContent = "Sign In / Sign Up";
-              for (const link of userLinks) {
-                link.href = "login.html";
-              }
-            }
-      
-          } catch (error) {
-            console.error("Error fetching session:", error);
-          }
-        });
-      </script>        
-  <script>
-     const API_BASE = "http://localhost:5055";
-    const form = document.querySelector("form");
-    if (form) {
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-  
-        const formData = new FormData(this);
-  
-        const response = await fetch(`${API_BASE}/api/reports`, {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
-
-  
-        if (response.redirected) {
-          window.location.href = response.url;
-        } else {
-          const result = await response.json();
-          alert(result.message || 'Report submitted!');
-        }
-      });
-    }
-  </script>  
-      </body>
-  </html>
-=======
       <script>
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get("submitted") === "true") {
@@ -256,37 +321,66 @@
     const userLink = document.getElementById("user-link");
     const userNameSpan = document.getElementById("user-name-text");
 
-    if (userName && userNameSpan && userLink) {
-      userNameSpan.textContent = userName;
-      userLink.href = "#"; // Prevent redirect if already signed in
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "account.html"; // Prevent redirect if already signed in
 
-      // Optionally add logout option
-      const logoutBtn = document.createElement("button");
-      logoutBtn.textContent = "Logout";
-      logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("userName");
-        window.location.reload();
-      });
-      userLink.parentNode.appendChild(logoutBtn);
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+     window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+
+    // Mobile sidebar toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const closeSidebarButton = document.getElementById('close-sidebar');
+    const userSidebar = document.getElementById('userSidebar');
+    const adminSidebar = document.getElementById('adminSidebar');
+    
+    function toggleSidebar() {
+      const activeSidebar = document.querySelector('.sidebar:not(.hidden)');
+      activeSidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
     }
-  });
+    
+    mobileMenuButton.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+    closeSidebarButton.addEventListener('click', toggleSidebar);
+    
+    // Check for submitted report
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("submitted") === "true") {
+      // Create a nice notification instead of alert
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-fade-in';
+      notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>Report submitted successfully!</span>
+      `;
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.classList.remove('animate-fade-in');
+        notification.classList.add('animate-fade-out');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+      
+      // Remove the query param so it doesn't alert again
+      urlParams.delete("submitted");
+      const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+      window.history.replaceState({}, document.title, newUrl);
+    }
+    
 
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "#"; // Or profile page
-      } else {
-        // Show default Sign In / Sign Up text
-        if (userNameSpan) userNameSpan.textContent = "Sign In / Sign Up";
-        if (userLink) userLink.href = "login.html"; // ya signup page
-      }
-      </script>
-
-  <script>
-    console.log("Session data:", data);
-    const res = await fetch('/api/session');
-    const data = await res.json();
-
+    // Admin session handling
     document.addEventListener("DOMContentLoaded", async () => {
       try {
         const res = await fetch('/api/session');
@@ -308,7 +402,7 @@
 
             const logoutBtn = document.createElement("button");
             logoutBtn.textContent = "Logout";
-            logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+            logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
             logoutBtn.addEventListener("click", () => {
               fetch('/api/logout', { method: 'POST' }).then(() => {
                 localStorage.clear();
@@ -325,4 +419,3 @@
   </script>
       </body>
   </html>
->>>>>>> Stashed changes
