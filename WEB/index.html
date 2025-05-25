@@ -40,7 +40,7 @@
         </a>
       </nav>
 
-      <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
+      <a href="/WEB/login.html" class="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
         <i class="fas fa-user-circle"></i>
         <span id="user-name-text">Signup/Signin</span>
       </a>
@@ -153,90 +153,82 @@
       </main>
     </div>
       <script src="/WEB/JS/chart.js"></script>
+      
       <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("submitted") === "true") {
-          alert("Report submitted successfully!");
-          
-          // Remove the query param so it doesn’t alert again
-          urlParams.delete("submitted");
-          const newUrl = window.location.pathname;
-          window.history.replaceState({}, document.title, newUrl);
-        }
-      </script>
-      <script src="/WEB/JS/script.js"></script>
-      <script>
-        window.addEventListener("DOMContentLoaded", () => {
-    const userName = localStorage.getItem("userName");
-    const userLink = document.getElementById("user-link");
-    const userNameSpan = document.getElementById("user-name-text");
-
-    if (userName && userNameSpan && userLink) {
-      userNameSpan.textContent = userName;
-      userLink.href = "#"; // Prevent redirect if already signed in
-
-      // Optionally add logout option
-      const logoutBtn = document.createElement("button");
-      logoutBtn.textContent = "Logout";
-      logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("userName");
-        window.location.reload();
-      });
-      userLink.parentNode.appendChild(logoutBtn);
-    }
-  });
-
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "#"; // Or profile page
-      } else {
-        // Show default Sign In / Sign Up text
-        if (userNameSpan) userNameSpan.textContent = "Sign In / Sign Up";
-        if (userLink) userLink.href = "login.html"; // ya signup page
-      }
-      </script>
-
-  <script>
-    console.log("Session data:", data);
-    const res = await fetch('/api/session');
-    const data = await res.json();
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const res = await fetch('/api/session');
-        const data = await res.json();
-
-        // Show admin sidebar if admin
-        if (data.isAdmin) {
-          document.getElementById("adminSidebar").classList.remove("hidden");
-          document.getElementById("userSidebar").classList.add("hidden");
-        }
-
-        // Show user name
-        if (data.name) {
-          const userNameSpan = document.getElementById("user-name-text");
-          const userLink = document.getElementById("user-link");
-          if (userNameSpan && userLink) {
-            userNameSpan.textContent = data.name;
-            userLink.href = "#";
-
-            const logoutBtn = document.createElement("button");
-            logoutBtn.textContent = "Logout";
-            logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-            logoutBtn.addEventListener("click", () => {
-              fetch('/api/logout', { method: 'POST' }).then(() => {
-                localStorage.clear();
-                window.location.href = "/WEB/login.html";
-              });
+        document.addEventListener("DOMContentLoaded", async () => {
+          try {
+            const API_BASE = "http://localhost:5055"; // Use absolute URL for server-side requests
+            const res = await fetch(`${API_BASE}/api/session`, {
+              credentials: 'include'
             });
-            userLink.parentNode.appendChild(logoutBtn);
+      
+            const data = await res.json();
+      
+            const adminSidebar = document.getElementById("adminSidebar");
+            const userSidebar = document.getElementById("userSidebar");
+      
+            if (data.isAdmin && adminSidebar && userSidebar) {
+              adminSidebar.classList.remove("hidden");
+              userSidebar.classList.add("hidden");
+            }
+      
+            const userNameSpan = document.getElementById("user-name-text");
+            const userLinks = document.getElementsByClassName("user-link");
+      
+            if (data.name && userNameSpan && userLinks.length > 0) {
+              userNameSpan.textContent = data.name;
+              for (const link of userLinks) {
+                link.href = "#";
+      
+                if (!link.querySelector(".logout-btn")) {
+                  const logoutBtn = document.createElement("button");
+                  logoutBtn.textContent = "Logout";
+                  logoutBtn.className = "logout-btn ml-2 text-sm text-red-500 underline hover:text-red-700";
+                  logoutBtn.addEventListener("click", () => {
+                    fetch(`${API_BASE}/api/logout`, { method: 'POST' }).then(() => {
+                      localStorage.clear();
+                      window.location.href = "/WEB/login.html";
+                    });
+                  });
+                  link.appendChild(logoutBtn);
+                }
+              }
+            } else if (userNameSpan && userLinks.length > 0) {
+              userNameSpan.textContent = "Sign In / Sign Up";
+              for (const link of userLinks) {
+                link.href = "login.html";
+              }
+            }
+      
+          } catch (error) {
+            console.error("Error fetching session:", error);
           }
+        });
+      </script>        
+  <script>
+     const API_BASE = "http://localhost:5055";
+    const form = document.querySelector("form");
+    if (form) {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+  
+        const formData = new FormData(this);
+  
+        const response = await fetch(`${API_BASE}/api/reports`, {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+
+  
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else {
+          const result = await response.json();
+          alert(result.message || 'Report submitted!');
         }
-      } catch (error) {
-        console.error("Error fetching session:", error);
-      }
-    });
-  </script>
+      });
+    }
+  </script>  
       </body>
   </html>
