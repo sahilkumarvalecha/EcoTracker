@@ -149,11 +149,12 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Incorrect password' });
     }
 
+    const isAdmin = email.endsWith('@ecotracker.pk');
+
     req.session.user_id = user.user_id;
     req.session.email = email;
     req.session.name = user.name;
-
-    const isAdmin = email.endsWith('@ecotracker.pk');
+    req.session.isAdmin = isAdmin;
 
     res.status(200).json({
       success: true,
