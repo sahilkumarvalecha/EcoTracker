@@ -127,39 +127,32 @@
         window.history.replaceState({}, document.title, newUrl);
       }
     </script>
+    <script src="/WEB/JS/script.js"></script>
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        fetch("/api/report-count")
-          .then(response => response.json())
-          .then(data => {
-            const countElement = document.getElementById("report-count");
-            if (countElement) {
-              countElement.textContent = data.count;
-            }
-          })
-          .catch(error => {
-            console.error("Failed to fetch report count:", error);
-          });
-      });
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
 
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
 
-       document.addEventListener("DOMContentLoaded", () => {
-    const userName = localStorage.getItem("userName");
-    const userLink = document.getElementById("user-link");
-    const userNameSpan = document.getElementById("user-name-text");
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.reload();
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  }
+});
 
-    if (userName && userNameSpan && userLink) {
-      userNameSpan.textContent = userName;
-      userLink.href = "#"; // Or profile page
-    } else {
-      // Show default Sign In / Sign Up text
-      if (userNameSpan) userNameSpan.textContent = "Sign In / Sign Up";
-      if (userLink) userLink.href = "signin.html"; // ya signup page
-    }
-  });
     </script>
 
-    <script src="/WEB/JS/script.js"></script>
+    
     
     
     

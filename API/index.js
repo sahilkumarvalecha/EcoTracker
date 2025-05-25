@@ -212,9 +212,6 @@ app.post('/rsvp', (req, res) => {
     });
 });
 
-
-
-
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

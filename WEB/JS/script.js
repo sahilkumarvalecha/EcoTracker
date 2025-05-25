@@ -90,6 +90,20 @@ loginbtn.addEventListener("click", async (e) => {
     alert("Server error. Please try again later.");
   }
 });
+window.addEventListener("DOMContentLoaded", () => {
+    const userName = localStorage.getItem("userName");
+    const userLink = document.getElementById("user-link");
+    const userNameSpan = document.getElementById("user-name-text");
+
+    if (userName && userNameSpan && userLink) {
+      userNameSpan.textContent = userName;
+      userLink.href = "#"; // Or profile page
+    } else {
+      // Show default Sign In / Sign Up text
+      // if (userNameSpan) userNameSpan.textContent = "Sign In / Sign Up";
+      // if (userLink) userLink.href = "signin.html"; // ya signup page
+    }
+  });
 
 // rsvp API
 

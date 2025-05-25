@@ -62,7 +62,14 @@
 
     <p class="text-xs text-gray-500 text-center mt-6">By continuing, you agree to our <a href="#" class="text-green-600 underline">Terms</a> and <a href="#" class="text-green-600 underline">Privacy Policy</a>.</p>
   </div>
-
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("userName");
+  if (user) {
+    window.location.href = "/WEB/index.html";
+  }
+});
+  </script>
 
   <script src="/WEB/JS/script.js"></script>
 </body>
