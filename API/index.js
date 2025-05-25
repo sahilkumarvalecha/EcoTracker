@@ -114,43 +114,44 @@
 
 
     // Login
-    app.post('/login', async (req, res) => {
+// index.js (update login route for admin check)
+app.post('/login', async (req, res) => {
     const { email, password_hash } = req.body;
-
+  
     if (!email || !password_hash) {
-        return res.status(400).json({ message: 'Please enter email and password' });
+      return res.status(400).json({ message: 'Please enter email and password' });
     }
-
+  
     try {
-
-        const result = await pool.query(
-            'SELECT name, password_hash, user_id FROM users WHERE email = $1',
-            [email]
-          );
-          
-
-        if (result.rows.length === 0) {
+      const result = await pool.query(
+        'SELECT name, password_hash, user_id FROM users WHERE email = $1',
+        [email]
+      );
+  
+      if (result.rows.length === 0) {
         return res.status(404).json({ message: 'User not found' });
-        }
-
-        const user = result.rows[0];
-
-        if (user.password_hash !== password_hash) {
+      }
+  
+      const user = result.rows[0];
+  
+      if (user.password_hash !== password_hash) {
         return res.status(401).json({ message: 'Incorrect password' });
-        }
-
-        req.session.user_id = user.user_id;
-console.log('Session set:', req.session);
-
-        // Send user info back to frontend
-        res.status(200).json({
+      }
+  
+      req.session.user_id = user.user_id;
+      req.session.email = email;
+      req.session.name = user.name;
+  
+      const isAdmin = email.endsWith('@ecotracker.pk');
+  
+      res.status(200).json({
         success: true,
-    name: user.name
-    });
-
+        name: user.name,
+        isAdmin
+      });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: 'Server error' });
+      console.error(err.message);
+      res.status(500).json({ message: 'Server error' });
     }
     });
 
@@ -213,6 +214,18 @@ app.get(['/', '/dashboard'], checkAuth, (req, res) => {
         res.status(500).send("Database error");
         }
     });
+    app.get('/api/session', (req, res) => {
+        if (req.session.user) {
+          const email = req.session.user.email;
+          res.json({
+            name: req.session.user.name,
+            isAdmin: email && email.endsWith('@ecotracker.pk'),
+          });
+        } else {
+          res.status(401).json({ error: 'User not logged in' });
+        }
+      });
+              
     
     // Get report count
     app.get("/api/report-count", async (req, res) => {
@@ -224,7 +237,13 @@ app.get(['/', '/dashboard'], checkAuth, (req, res) => {
         res.status(500).json({ error: "Failed to fetch count" });
     }
     });
-
+    app.get('/logout', (req, res) => {
+        req.session.destroy(err => {
+          if (err) return res.status(500).send("Logout failed");
+          res.redirect('/login.html');
+        });
+      });
+      
 
    app.post('/rsvp', async (req, res) => {
     const eventId = req.body.event_id;
