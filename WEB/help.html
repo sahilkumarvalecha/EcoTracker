@@ -402,6 +402,8 @@
     </main>
   </div>
   
+  
+
 
   <script>
     // Mobile sidebar toggle
@@ -451,10 +453,6 @@
       icon.classList.toggle('rotate-180');
     }
 
-    // Initialize first tab as active
-    document.addEventListener('DOMContentLoaded', () => {
-      switchTab('general');
-    });
   </script>
   <script>
       window.addEventListener("DOMContentLoaded", () => {
@@ -476,7 +474,9 @@
     });
     userLink.parentNode.appendChild(logoutBtn);
   } 
+  switchTab('general');
 });
-</script>
+  </script>
+
 </body>
 </html>
