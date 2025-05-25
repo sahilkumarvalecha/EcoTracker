@@ -153,15 +153,14 @@
           </a>
         </div>
       </nav>
-
-<div class="p-4 border-t border-green-500 text-sm">
-  <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-  <i class="fas fa-user-circle"></i>
-  <span id="user-name-text">Signup/Signin</span>
-</a>
-</div>
+      <div class="p-4 border-t border-gray-100">
+        <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+        </a>
+      </div>
     </aside>
-    
 
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 main-content">
@@ -295,7 +294,7 @@
 
       if (userName && userNameSpan && userLink) {
         userNameSpan.textContent = userName;
-        userLink.href = "account.html"; // Prevent redirect if already signed in
+        userLink.href = "#"; // Prevent redirect if already signed in
 
         // Optionally add logout option
         const logoutBtn = document.createElement("button");
@@ -309,6 +308,30 @@
       }
     });
   </script>
-  <script src="/WEB/JS/chart.js"></script>
+
+  <script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
+  <script src="/WEB/JS/sidebar.js"></script>
+
 </body>
 </html>

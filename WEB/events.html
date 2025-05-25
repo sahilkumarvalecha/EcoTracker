@@ -234,7 +234,7 @@
               </div>
             </div>
             <button onclick="rsvpEvent('2')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-              RSVP
+             
             </button>
           </div>
 
@@ -308,29 +308,37 @@
         tabBtn.classList.remove('text-gray-500');
       }
     }
-  </script>
-  <script>
-      window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
+    
+    function rsvpEvent(eventId) {
+      alert(`RSVP for event ${eventId} would be processed here`);
+      // Your actual RSVP logic would go here
+    }
+    
+    // Initialize with All tab active
+    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
+    
+    // User session handling
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
 
-  if (userName && userNameSpan && userLink) {
-    userNameSpan.textContent = userName;
-    userLink.href = "account.html"; // Prevent redirect if already signed in
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
 
-    // Optionally add logout option
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userName");
-     window.location.href = "index.html"; 
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.reload();
+        });
+        userLink.parentNode.appendChild(logoutBtn);
+      }
     });
-    userLink.parentNode.appendChild(logoutBtn);
-  } 
-});
-</script>
+  </script>
 </body>
 
 </html>

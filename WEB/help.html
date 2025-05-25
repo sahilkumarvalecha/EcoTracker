@@ -159,15 +159,15 @@
         </div>
       </nav>
       <div class="p-4 border-t border-green-200">
-        <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
+        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 transition">
           <i class="fas fa-user-circle"></i>
-          <span id="user-name-text">Signup/Signin</span>
-        </a>
+          <a href="/WEB/login.html" class="font-medium">Signup/signin</a>
+        </div>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6 md:ml-64 mt-12 md:mt-0">
+    <main class="flex-1 p-6 md:ml-20 mt-12 md:mt-0">
       <h1 class="text-3xl font-bold mb-8 ml-2">Help Center</h1>
 
       <!-- Search Bar -->
@@ -390,6 +390,7 @@
       </div>
     </main>
   </div>
+  
 
   <script>
     // Mobile menu toggle
@@ -428,6 +429,7 @@
         }
       });
     }
+    
 
     // FAQ answer toggle
     function toggleAnswer(question) {
@@ -438,30 +440,32 @@
       icon.classList.toggle('rotate-180');
     }
 
-    // User session management
-    window.addEventListener("DOMContentLoaded", () => {
-      const userName = localStorage.getItem("userName");
-      const userLink = document.getElementById("user-link");
-      const userNameSpan = document.getElementById("user-name-text");
-
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "account.html"; // Prevent redirect if already signed in
-
-        // Optionally add logout option
-        const logoutBtn = document.createElement("button");
-        logoutBtn.textContent = "Logout";
-        logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("userName");
-          window.location.href = "index.html"; 
-        });
-        userLink.parentNode.appendChild(logoutBtn);
-      }
-
-      // Initialize first tab as active
+    // Initialize first tab as active
+    document.addEventListener('DOMContentLoaded', () => {
       switchTab('general');
     });
   </script>
+  <script>
+      window.addEventListener("DOMContentLoaded", () => {
+  const userName = localStorage.getItem("userName");
+  const userLink = document.getElementById("user-link");
+  const userNameSpan = document.getElementById("user-name-text");
+
+  if (userName && userNameSpan && userLink) {
+    userNameSpan.textContent = userName;
+    userLink.href = "#"; // Prevent redirect if already signed in
+
+    // Optionally add logout option
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userName");
+      window.location.href = "index.html"; 
+    });
+    userLink.parentNode.appendChild(logoutBtn);
+  } 
+});
+</script>
 </body>
 </html>
