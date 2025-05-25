@@ -105,24 +105,35 @@ app.post('/signup', async (req, res) => {
 
 // Login
 app.post('/login', async (req, res) => {
-  const {email, password_hash} = req.body;
+  const { email, password_hash } = req.body;
 
   if (!email || !password_hash) {
     return res.status(400).json({ message: 'Please enter email and password' });
   }
 
   try {
-    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
-    if (user.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });  // user nahi mila
+    const result = await pool.query('SELECT name FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    if (user.rows[0].password_hash !== password_hash) {
-      return res.status(401).json({ message: 'Incorrect password' });  // password match nahi hua
+    const user = result.rows[0];
+
+    if (user.password_hash !== password_hash) {
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
-    res.status(200).json({ message: 'Login successful' });
+    // Save user id in session if you want session login
+    req.session.user_id = user.id;
+
+    // Send user info back to frontend
+    res.status(200).json({
+      success: true,
+   name: user.name
+  });
+
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
