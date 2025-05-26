@@ -98,12 +98,12 @@
     <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
       <i class="fas fa-bars text-gray-600"></i>
     </button>
-    
+
     <!-- Sidebar overlay for mobile -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    
+    <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
+
     <!-- Sidebar -->
-    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed md:static inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out" id="sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -113,50 +113,64 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <nav class="flex-1 p-2 space-y-1">
-        <a href="/WEB/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
-          <span>Dashboard</span>
+      <nav class="flex-1 p-2 space-y-1 overflow-y-auto"> 
+        <!-- Regular User Items -->
+        <a href="/WEB/index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100 text-green-700">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i><span>Dashboard</span>
         </a>
-        <a href="/WEB/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
-          <span>Map</span>
+        <a href="/WEB/maps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i><span>Map</span>
         </a>
-        <a href="/WEB/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
-          <span>Reports</span>
+        <a href="/WEB/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i><span>Reports</span>
         </a>
-        <a href="/WEB/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
-          <span>Events</span>
+        <a href="/WEB/events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i><span>Events</span>
         </a>
-        <a href="/WEB/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
-          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
-          <span>Analytics</span>
+        <a href="/WEB/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i><span>Analytics</span>
         </a>
-        <a href="/WEB/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-users w-5 text-center text-green-500"></i>
-          <span>Community</span>
+        <a href="/WEB/community.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-users w-5 text-center text-green-500"></i><span>Community</span>
         </a>
-        <a href="/WEB/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
-          <span>Help</span>
+        <a href="/WEB/help.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i><span>Help</span>
         </a>
-        <div class="border-t border-gray-100 mt-2 pt-2">
-          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-            <i class="fas fa-user-cog w-5 text-center text-green-500"></i>
-            <span>User Management</span>
+
+        <!-- Admin Only Items -->
+        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+          
+          <a href="/WEB/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
           </a>
-          <a href="#" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-            <i class="fas fa-history w-5 text-center text-green-500"></i>
-            <span>System Logs</span>
+          <a href="/WEB/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+          </a>
+          <a href="/WEB/admin/environment-monitor.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+          </a>
+          <a href="/WEB/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+          </a>
+          <a href="/WEB/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+          </a>
+          <a href="/WEB/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+          </a>
+          <a href="/WEB/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+          </a>
+          <a href="/WEB/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
           </a>
         </div>
       </nav>
-      <div class="p-4 border-t border-gray-100">
+      <div class="p-4 border-t border-green-100">
         <a href="/WEB/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
+          <span id="user-name-text" class="flex-1">Signup/Signin</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
         </a>
       </div>
@@ -331,7 +345,92 @@
   } 
 });
 </script>
-  <script src="/WEB/JS/sidebar.js"></script>
 
+  <script src="/WEB/JS/sidebar.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+         const userName = localStorage.getItem("userName");
+         const userEmail = localStorage.getItem("userEmail");
+         const isAdmin = localStorage.getItem("isAdmin") === "true";
+         const userLink = document.getElementById("user-link");
+         const userNameSpan = document.getElementById("user-name-text");
+         const sidebar = document.getElementById("sidebar");
+         const adminItems = document.querySelectorAll(".admin-only");
+   
+         // Set user info
+         if (userName && userNameSpan && userLink) {
+           userNameSpan.textContent = userName;
+           userLink.href = "account.html";
+         }
+   
+         // Handle admin features
+         if (isAdmin) {
+           console.log("Admin logged in - expanding sidebar"); // Debug log
+           
+           // Expand sidebar by default for admin
+           if (sidebar) {
+             sidebar.classList.remove("w-64"); // Remove default width
+             sidebar.classList.add("w-72"); // Set wider width
+             sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+           }
+           
+           // Show admin-only items
+           adminItems.forEach(item => {
+             item.style.display = "block";
+           });
+   
+           // Add admin badge to user info
+           if (userNameSpan) {
+             const adminBadge = document.createElement("span");
+             adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+             adminBadge.textContent = "Admin";
+             userNameSpan.parentNode.appendChild(adminBadge);
+           }
+         }
+   
+         // Add logout button
+         if (userName) {
+           const logoutBtn = document.createElement("button");
+           logoutBtn.textContent = "Logout";
+           logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+           logoutBtn.addEventListener("click", () => {
+             // Clear all stored data
+             localStorage.removeItem("userName");
+             localStorage.removeItem("userEmail");
+             localStorage.removeItem("isAdmin");
+             
+             // Send logout request to server
+             fetch('http://localhost:5055/api/logout', {
+               method: 'POST',
+               credentials: 'include'
+             })
+             .then(() => {
+               window.location.href = "login.html";
+             });
+           });
+           
+           if (userLink && userLink.parentNode) {
+             userLink.parentNode.appendChild(logoutBtn);
+           }
+         }
+       });
+       if (!mobileMenuButton) {
+         const mobileMenuButton = document.getElementById('mobile-menu-button');
+       }
+      sidebarOverlay = document.getElementById('sidebar-overlay');
+       if (!closeSidebarButton) {
+         const closeSidebarButton = document.getElementById('close-sidebar');
+       }
+     // const sidebar = document.getElementById('sidebar');
+     
+       function toggleSidebar() {
+         sidebar.classList.toggle('-translate-x-full');
+         sidebarOverlay.classList.toggle('hidden');
+       }
+     
+       mobileMenuButton.addEventListener('click', toggleSidebar);
+       sidebarOverlay.addEventListener('click', toggleSidebar);
+       closeSidebarButton.addEventListener('click', toggleSidebar);
+     </script>
 </body>
 </html>
