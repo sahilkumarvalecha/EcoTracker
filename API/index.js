@@ -36,15 +36,11 @@ const corsOptions = {
   exposedHeaders: ['Set-Cookie']
 };
 
-<<<<<<< HEAD
 // Middleware
 app.use(cors({
   origin: 'http://127.0.0.1:5500',
   credentials: true
 }));
-=======
-app.use(cors(corsOptions));
->>>>>>> fb4cc52039a65e6ca834379e83a2a14f90b3da68
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -412,18 +408,9 @@ app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => 
       ]
     );
 
-<<<<<<< HEAD
     res.status(200).json({ success: true, message: "Report submitted successfully" });
 
 
-=======
-    console.log("Report saved:", result.rows[0]);
-    return res.json({ 
-      success: true, 
-      redirect: '/index.html?submitted=true',
-      report: result.rows[0]
-    });
->>>>>>> fb4cc52039a65e6ca834379e83a2a14f90b3da68
   } catch (error) {
     console.error("Database error:", error);
     return res.status(500).json({ 
