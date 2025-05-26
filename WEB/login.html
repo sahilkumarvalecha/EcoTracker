@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Login</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,24 +98,24 @@
 
       <form class="space-y-5">
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i class="fas fa-envelope text-gray-400"></i>
             </div>
-            <input type="email" id="login-email" placeholder="Enter your email" required 
+            <input type="email" id="login-email" placeholder="Enter your email" required
                    class="input-field w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
           </div>
           <p class="loginemailissue text-xs text-red-500 mt-1 error-message"></p>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i class="fas fa-lock text-gray-400"></i>
             </div>
-            <input type="password" id="login-password" placeholder="Enter your password" required 
+            <input type="password" id="login-password" placeholder="Enter your password" required  
                    class="input-field w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               <i class="fas fa-eye-slash"></i>
@@ -158,25 +159,88 @@
   </div>
 
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const user = localStorage.getItem("userName");
-      if (user) {
-        window.location.href = "/WEB/index.html";
-      }
-      
-      // Toggle password visibility
+    document.addEventListener("DOMContentLoaded", async () => {
       const passwordInput = document.getElementById('login-password');
       const togglePassword = document.querySelector('.password-toggle');
-      
+      const loginBtn = document.querySelector('.Login-btn');
+      const emailInput = document.getElementById('login-email');
+      const errorMessage = document.querySelector('.loginpassissue');
+    
+      // Skip auth check on login page
+      sessionStorage.setItem('skipAuthCheck', 'true');
+    
+      // Toggle password visibility
       if (togglePassword && passwordInput) {
         togglePassword.addEventListener('click', () => {
           const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
           passwordInput.setAttribute('type', type);
-          togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+          togglePassword.innerHTML = type === 'password' 
+            ? '<i class="fas fa-eye-slash"></i>' 
+            : '<i class="fas fa-eye"></i>';
+        });
+      }
+    
+      // Handle login button click
+      if (loginBtn) {
+        loginBtn.addEventListener('click', async () => {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+    
+          // Clear previous errors
+          errorMessage.textContent = '';
+          errorMessage.classList.remove('show');
+    
+          // Validate inputs
+          if (!email || !password) {
+            errorMessage.textContent = "Please enter both email and password.";
+            errorMessage.classList.add('show');
+            return;
+          }
+    
+          try {
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+    
+            const response = await fetch('http://localhost:5055/api/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include', // Important for cookies
+              body: JSON.stringify({
+                email: email,
+                password: password
+              })
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+              throw new Error(data.message || "Login failed");
+            }
+    
+            // Store minimal auth data in localStorage
+            localStorage.setItem("authToken", "true");
+            localStorage.setItem("userName", data.name || email);
+            localStorage.setItem("isAdmin", data.isAdmin || false);
+    
+            // Redirect to home page after slight delay to ensure cookie is set
+            setTimeout(() => {
+              window.location.href = "/WEB/index.html";
+            }, 100);
+          } catch (error) {
+            console.error("Login error:", error);
+            errorMessage.textContent = error.message || "An error occurred while logging in.";
+            errorMessage.classList.add('show');
+          } finally {
+            // Reset button state
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Log In';
+          }
         });
       }
     });
-  </script>
-  <script src="/WEB/JS/script.js"></script>
+    </script>
 </body>
 </html>

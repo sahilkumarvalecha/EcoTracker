@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Dashboard</title>
+  <script type="module">
+    import { ensureAuthenticated } from '/WEB/js/auth.js';
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      const isAuthenticated = await ensureAuthenticated();
+      if (isAuthenticated) {
+        // Load page content
+      }
+    });
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/WEB/JS/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -233,17 +243,8 @@
       <a href="/WEB/admin/environment-monitor.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
         <i class="fas fa-chart-line"></i><span>Environment Monitor</span>
       </a>
-      <a href="/WEB/admin/area-comparison.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-map-marked"></i><span>Area Comparison</span>
-      </a>
-      <a href="/WEB/admin/goals-progress.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-bullseye"></i><span>Goals & Progress</span>
-      </a>
       <a href="/WEB/admin/admin-analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
         <i class="fas fa-chart-pie"></i><span>Admin Analytics</span>
-      </a>
-      <a href="/WEB/admin/inbox-messages.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-        <i class="fas fa-inbox"></i><span>Inbox Messages</span>
       </a>
       <a href="/WEB/admin/user-management.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
         <i class="fas fa-user-cog"></i><span>User Management</span>
@@ -516,6 +517,51 @@
     }
   }
 });
-  </script>    
+</script>
+<script type="module">
+  import { ensureAuthenticated } from '/WEB/js/auth.js';
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const isAuthenticated = await ensureAuthenticated();
+      if (isAuthenticated) {
+        // Load user info if needed
+        const userLink = document.getElementById('user-link');
+        const userNameText = document.getElementById('user-name-text');
+        if (userLink && userNameText) {
+          const userResponse = await fetch('/api/user', {
+            credentials: 'include'
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            userNameText.textContent = userData.name;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+    }
+  });
+</script>
+<!-- <script>
+  fetch('/api/check-auth', {
+    credentials: 'include'
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network error');
+    return response.json();
+  })
+  .then(data => {
+    if (!data.isAuthenticated) {
+      window.location.href = '/';  // Match your Express route
+    }
+  })
+  .catch(error => {
+    console.error('Auth check failed:', error);
+    window.location.href = '/login';  // Match your Express route
+  });
+</script> -->
+      
     </body>
 </html>

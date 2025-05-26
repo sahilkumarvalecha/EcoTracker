@@ -3,11 +3,160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Incident Map</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <title>Incident Map | EcoTracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+      --secondary: #3b82f6;
+      --accent: #f59e0b;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .sidebar-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    
+    .incident-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
+    }
+    
+    .incident-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .map-container {
+      height: 500px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+        backdrop-filter: blur(4px);
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
+      }
+      
+      .main-content {
+        padding-left: 0;
+      }
+      
+      .page-header {
+        margin-left: 60px;
+      }
+      
+      .map-container {
+        height: 350px;
+      }
+    }
+    
+    /* Modern scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Leaflet marker styles */
+    .critical-marker {
+      filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+    }
+    
+    .active-marker {
+      filter: drop-shadow(0 2px 4px rgba(249, 115, 22, 0.3));
+    }
+    
+    .resolved-marker {
+      filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
+    }
+  </style>
 </head>
 <body class="bg-white text-gray-800">
   <div class="flex min-h-screen">
@@ -102,10 +251,51 @@
     // Store markers for easy removal
     let markers = [];
 
-    // Function to clear all existing markers
-    function clearMap() {
-      markers.forEach(marker => map.removeLayer(marker));
-      markers = [];
+    const activeIcon = L.divIcon({
+      className: 'active-marker',
+      html: '<div class="w-6 h-6 bg-orange-400 rounded-full border-2 border-white shadow-lg"></div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    const resolvedIcon = L.divIcon({
+      className: 'resolved-marker',
+      html: '<div class="w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white"><i class="fas fa-check text-xs"></i></div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    L.marker([24.8707, 67.0311], { icon: criticalIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Critical Incident</div><div class='text-sm text-gray-600 mt-1'>Oil spill affecting river ecosystem</div>");
+
+    L.marker([24.8507, 67.0211], { icon: activeIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Active Incident</div><div class='text-sm text-gray-600 mt-1'>Illegal dumping in industrial zone</div>");
+
+    L.marker([24.8407, 67.0111], { icon: resolvedIcon }).addTo(map)
+      .bindPopup("<div class='font-medium text-gray-800'>Resolved Incident</div><div class='text-sm text-gray-600 mt-1'>Wildfire contained and extinguished</div>");
+
+    function searchLocation() {
+      const location = document.getElementById("locationSearch").value;
+      if (!location) return;
+
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length > 0) {
+            const lat = data[0].lat;
+            const lon = data[0].lon;
+            map.setView([lat, lon], 13);
+            
+            // Show success notification
+            showNotification(`Location found ${location}`, 'success');
+          } else {
+            showNotification("Location not found", 'error');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification("Error searching location", 'error');
+        });
     }
 
     // Function to render polygons/circles on the map
