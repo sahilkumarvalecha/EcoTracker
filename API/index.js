@@ -24,7 +24,7 @@ app.use(session({
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: 'http://127.0.0.1:5500',
   credentials: true
 }));
 app.use(express.json());
@@ -263,7 +263,8 @@ const user_id = (!anonymous && req.session && req.session.user_id) ? req.session
       ]
     );
 
-    res.redirect("/index.html?submitted=true");
+    res.status(200).json({ success: true, message: "Report submitted successfully" });
+
 
   } catch (error) {
     console.error("Database error:", error);
