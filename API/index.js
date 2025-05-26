@@ -1,40 +1,26 @@
 require("dotenv").config();
+const express = require("express");
 const multer = require("multer");
 const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
-const session = require('express-session');
-const express = require("express");
 const cors = require("cors");
 const app = express();
+const session = require('express-session');
 
-// CORS Configuration
-// Enhanced CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:5500', 
-      'http://127.0.0.1:5500',
-      'http://localhost:5055'
-    ];
-    
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,  // Set to true if using HTTPS
+    httpOnly: true,
+    sameSite: 'lax'
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With',
-    'Accept'
-  ],
-  exposedHeaders: ['Set-Cookie']
-};
+  proxy: true  // Add this if behind a proxy
+}));
 
 // Middleware
 app.use(cors({
@@ -44,46 +30,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Manual OPTIONS handler - avoids path-to-regexp issue
-app.options(/.*/, (req, res) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  res.sendStatus(200);
-});
-
-app.use((req, res, next) => {
-  console.log(`Incoming ${req.method} request to ${req.path}`);
-  next();
-});
-
-
-// Enhanced session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key_here',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS in production
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    domain: 'localhost' // Add this for local development
-  },
-  name: 'eco.session.id' // Custom cookie name
-}));
-
-// Apply authentication middleware to all routes
-app.use(checkAuth);
 // Serve static files from WEB folder
-app.use(express.static(path.join(__dirname, '../WEB'), {
-  index: false, // Don't serve index.html for directories
-  extensions: ['html', 'htm'] // Only serve these extensions
-}));
+app.use(express.static(path.join(__dirname, '../WEB')));
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -104,39 +52,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Serve static files from WEB folder (update this)
-app.use('/WEB', express.static(path.join(__dirname, '../WEB'), {
-  index: false,
-  extensions: ['html', 'htm']
-}));
-
-// Serve uploads separately
-app.use('/WEB/uploads', express.static(path.join(__dirname, '../WEB/uploads')));
-
-// Signup route
-app.get('/api/session-test', (req, res) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  res.json({ 
-    sessionExists: !!req.session.user_id,
-    user_id: req.session.user_id 
-  });
-});
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, "../WEB/uploads")));
 
 // HTML routes
 app.get('/signup', (req, res) => {
-  if (req.session.user_id) {
-    return res.redirect('/WEB/index.html');
-  }
-  res.sendFile(path.join(__dirname, '../WEB/signup.html'));
+  res.sendFile(path.join(__dirname, '..', 'WEB', 'signup.html'));
 });
 
-// Login route
 app.get('/login', (req, res) => {
-  if (req.session.user_id) {
-    return res.redirect('/WEB/index.html');
-  }
-  res.sendFile(path.join(__dirname, '../WEB/login.html'));
+  res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
 });
 
 app.get('/rsvp', async (req, res) => {
@@ -175,7 +100,7 @@ app.post("/api/avatar", async (req, res) => {
   if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
 
   const { avatar } = req.body;
-  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.user_id]);
+  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.userId]);
 
   res.json({ success: true });
 });
@@ -202,139 +127,61 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-const verifySession = (req, res, next) => {
-  console.log('Current session:', req.session); // Debug log
-  if (!req.session.user_id) {
-    console.error('Session missing user_id!'); // Debug
-    return res.status(401).json({ error: 'Please log in first' });
-  }
-  next();
-};
+app.post('/login', async (req, res) => {
+  const { email, password_hash } = req.body;
 
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'Please enter email and password' 
-    });
+  if (!email || !password_hash) {
+    return res.status(400).json({ message: 'Please enter email and password' });
   }
 
   try {
     const result = await pool.query(
-      'SELECT user_id, name, email, password_hash FROM users WHERE email = $1',
+      'SELECT name, password_hash, user_id FROM users WHERE email = $1',
       [email]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'User not found' 
-      });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const user = result.rows[0];
 
-    // In production, use bcrypt.compare() here
-    if (user.password_hash !== password) {
-      return res.status(401).json({ 
-        success: false,
-        message: 'Incorrect password' 
-      });
+    if (user.password_hash !== password_hash) {
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
     const isAdmin = email.endsWith('@ecotracker.pk');
 
-    // Regenerate session to prevent fixation
-    req.session.regenerate(err => {
-      if (err) {
-        console.error('Session regeneration error:', err);
-        return res.status(500).json({ 
-          success: false,
-          message: 'Session error' 
-        });
-      }
+    req.session.user_id = user.user_id;
+    req.session.email = email;
+    req.session.name = user.name;
+    req.session.isAdmin = isAdmin;
 
-      // Set session data
-      req.session.user_id = user.user_id;
-      req.session.email = email;
-      req.session.name = user.name;
-      req.session.isAdmin = isAdmin;
-
-      // Explicitly save session
-      req.session.save(err => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ 
-            success: false,
-            message: 'Session error' 
-          });
-        }
-
-        res.status(200).json({
-          success: true,
-          name: user.name,
-          isAdmin
-        });
-      });
+    res.status(200).json({
+      success: true,
+      name: user.name,
+      isAdmin
     });
   } catch (err) {
-    console.error('Login error:', err.message);
-    res.status(500).json({ 
-      success: false,
-      message: 'Server error during login' 
-    });
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-
-// Updated checkAuth middleware
-// Enhanced checkAuth middleware
-// Enhanced checkAuth middleware
+// Middleware to check if user is logged in
 function checkAuth(req, res, next) {
-  // Always allow login/signup pages and static assets
-  const publicRoutes = [
-    '/WEB/login.html',
-    '/WEB/signup.html',
-    '/api/login',
-    '/api/signup',
-    '/api/check-auth',
-    '/api/session-debug'
-  ];
-
-  // Allow static assets
-  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot)$/.test(req.path);
-  
-  // Skip auth check for public routes and static assets
-  if (publicRoutes.includes(req.path) || isStaticAsset) {
-    return next();
-  }
-
-  // Check session for authentication
   if (req.session.user_id) {
-    return next();
+    next();
+  } else {
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(401).json({ redirect: '/login' });
+    }
+    res.redirect('/login');
   }
-
-  // Handle API requests differently
-  if (req.xhr || req.headers.accept?.includes('application/json')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  // Redirect to login for HTML requests
-  res.redirect('/WEB/login.html');
 }
 
-// Update your /api/check-auth endpoint
 app.get('/api/check-auth', (req, res) => {
-  res.json({ 
-    isAuthenticated: !!req.session.user_id,
-    // Include any additional user info needed
-    user: req.session.user_id ? {
-      name: req.session.name,
-      isAdmin: req.session.isAdmin
-    } : null
-  });
+  res.json({ isAuthenticated: !!req.session.user_id });
 });
 
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
@@ -354,54 +201,65 @@ app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'admin-dashboard.html'));
 });
 
+// Report submission
+app.get('/api/reports', (req, res) => {
+  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
+});
 
-
-app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => {
-  // Log the incoming request for debugging
-  console.log("Request body:", req.body);
-  console.log("File:", req.file);
+app.post("/api/reports", upload.single("image"), async (req, res) => {
   
   const {
     title,
     description,
     category_id,
     location_id,
+    is_anonymous,
     severity_level,
-    is_anonymous
   } = req.body;
 
-  // Convert checkbox value to boolean properly
-  const isAnonymous = is_anonymous === 'on' || is_anonymous === 'true';
-
-  const user_id = isAnonymous ? null : req.session.user_id;
-
   // Validation
-  if (!title || !description || !category_id || !location_id || !severity_level) {
-    return res.status(400).json({ 
-      error: "Missing required fields",
-      details: { title, description, category_id, location_id, severity_level }
-    });
+  if (
+    !title ||
+    !description ||
+    isNaN(category_id) ||
+    isNaN(location_id) ||
+    !severity_level
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Missing or invalid required fields" });
   }
 
+  const anonymous = is_anonymous === 'on';  // checkbox checked hone par 'on'
+const user_id = (!anonymous && req.session && req.session.user_id) ? req.session.user_id : null;
+
+
+
+  // Generate unique report ID
+  const report_id = uuidv4();
+
+  // Prepare other data
+  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+  const created_at = new Date();
+
   try {
-    const result = await pool.query(
+    await pool.query(
       `INSERT INTO reports (
-        user_id, title, description,
+        report_id, user_id, title, description,
         category_id, location_id,
         image_url, is_anonymous, severity_level, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
-        user_id,
         report_id,
-        is_anonymous ? null : req.session.user_id, // Store null if anonymous
+        user_id,
         title,
         description,
-        category_id,
-        location_id,
-        req.file ? `/uploads/${req.file.filename}` : null,
-        isAnonymous,
+        parseInt(category_id),
+        parseInt(location_id),
+        image_url,
+        anonymous,
         severity_level,
-        new Date()
+        created_at,
       ]
     );
 
@@ -410,19 +268,11 @@ app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => 
 
   } catch (error) {
     console.error("Database error:", error);
-    return res.status(500).json({ 
-      error: "Failed to save report",
-      details: error.message 
-    });
+    res.status(500).json({ error: "Database error" });
   }
 });
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: err.message 
-  });
-});
+
+
 app.get('/api/session', (req, res) => {
   if (req.session.user_id && req.session.name && req.session.email) {
     const { name, email } = req.session;
@@ -434,15 +284,7 @@ app.get('/api/session', (req, res) => {
     res.status(401).json({ error: 'User not logged in' });
   }
 });
-app.get('/api/session-debug', (req, res) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  res.json({
-    sessionId: req.sessionID,
-    sessionData: req.session,
-    cookies: req.cookies
-  });
-});
+
 // Get report count
 app.get("/api/report-count", async (req, res) => {
   try {
@@ -456,12 +298,8 @@ app.get("/api/report-count", async (req, res) => {
 
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.status(500).send("Logout failed");
-    }
-    res.clearCookie('connect.sid');
-    res.redirect('/login');
+    if (err) return res.status(500).send("Logout failed");
+    res.redirect('/login.html');
   });
 });
 
@@ -545,8 +383,44 @@ app.get('/api/analytics', async (req, res) => {
   }
 });
 
+// Analytics Route
+app.get('/api/analytics', async (req, res) => {
+  try {
+    const reportsByLocation = await pool.query(`
+      SELECT l.neighborhood AS location, COUNT(*) 
+      FROM reports r 
+      JOIN locations l ON r.location_id = l.location_id 
+      GROUP BY l.neighborhood
+    `);
 
-  
+    const reportsByCategory = await pool.query(`
+      SELECT c.name AS category, COUNT(*) 
+      FROM reports r 
+      JOIN categories c ON r.category_id = c.category_id 
+      GROUP BY c.name
+    `);
+
+    const locationData = {};
+    const categoryData = {};
+
+    reportsByLocation.rows.forEach(row => {
+      locationData[row.location] = parseInt(row.count);
+    });
+
+    reportsByCategory.rows.forEach(row => {
+      categoryData[row.category] = parseInt(row.count);
+    });
+
+    res.json({
+      reportsByLocation: locationData,
+      reportsByCategory: categoryData
+    });
+
+  } catch (err) {
+    console.error('❌ Failed to fetch analytics data:', err);
+    res.status(500).json({ error: 'Analytics query failed' });
+  }
+});
 
 // Filtered Incidents for Map
 app.get('/api/incidents', async (req, res) => {
@@ -586,128 +460,8 @@ app.get('/api/incidents', async (req, res) => {
     res.json(result.rows || []);
 
   } catch (err) {
-    console.error('❌ Error in /api/incidents:', err);
-    res.status(500).json({ error: 'Database query failed.' });
+    console.error('Database error:', err);
+    res.status(500).json([]); // Return empty array on error
   }
 });
 
-// Get all reports for EcoAlerts feed
-app.get('/api/ecoalerts', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        r.report_id, 
-        r.title, 
-        r.description, 
-        r.image_url, 
-        r.created_at,
-        r.severity_level,
-        c.name AS category,
-        l.neighborhood AS location,
-        CASE 
-          WHEN r.user_id IS NULL THEN 'Anonymous'
-          ELSE u.name 
-        END AS user_name,
-        CASE
-          WHEN r.is_anonymous THEN true
-          ELSE false
-        END AS is_anonymous
-      FROM reports r
-      JOIN categories c ON r.category_id = c.category_id
-      JOIN locations l ON r.location_id = l.location_id
-      LEFT JOIN users u ON r.user_id = u.user_id
-      ORDER BY r.created_at DESC
-    `);
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching ecoalerts:", error);
-    res.status(500).json({ error: "Failed to fetch ecoalerts" });
-  }
-});
-
-// Get comments for a specific report
-app.get('/api/ecoalerts/:report_id/comments', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        c.comment_id,
-        c.text,
-        c.image_url,
-        c.created_at,
-        u.name AS user_name,
-        u.user_id
-      FROM comments c
-      JOIN users u ON c.user_id = u.user_id
-      WHERE c.report_id = $1
-      ORDER BY c.created_at ASC
-    `, [req.params.report_id]);
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching comments:", error);
-    res.status(500).json({ error: "Failed to fetch comments" });
-  }
-});
-
-// Add a new comment to a report
-app.post('/api/ecoalerts/:report_id/comments', upload.single("image"), async (req, res) => {
-  const { text } = req.body;
-  const report_id = req.params.report_id;
-  const user_id = req.session.user_id;
-
-  if (!user_id) {
-    return res.status(401).json({ error: "Not logged in" });
-  }
-
-  try {
-    const result = await pool.query(
-      `INSERT INTO comments (
-        report_id, 
-        user_id, 
-        text, 
-        image_url, 
-        created_at
-      ) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [
-        report_id,
-        user_id,
-        text,
-        req.file ? `/uploads/${req.file.filename}` : null,
-        new Date()
-      ]
-    );
-
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error("Error adding comment:", error);
-    res.status(500).json({ error: "Failed to add comment" });
-  }
-});
-
-// Report submission
-app.get('/api/reports', (req, res) => {
-  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
-});
-
-
-
-
-
-
-
-
-
-//  for admin
-
-
-// Fetch all users (admin only)
-app.get("/api/users", isAdminMiddleware, async (req, res) => {
-  try {
-    const result = await pool.query("SELECT user_id, name, email, avatar FROM users ORDER BY name ASC");
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-});
