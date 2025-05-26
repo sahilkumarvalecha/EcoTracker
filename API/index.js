@@ -10,10 +10,15 @@ const cors = require("cors");
 const app = express();
 
 // CORS Configuration
-const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
-
+// Enhanced CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5500', 
+      'http://127.0.0.1:5500',
+      'http://localhost:5055'
+    ];
+    
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -22,10 +27,15 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept'
+  ],
+  exposedHeaders: ['Set-Cookie']
 };
 
-// Apply CORS middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,44 +58,23 @@ app.use((req, res, next) => {
 });
 
 
+// Enhanced session configuration
 app.use(session({
-<<<<<<< Updated upstream
-  secret: 'your_secret_key',
-  resave: true,
-  saveUninitialized: true,
-=======
-  secret: process.env.SESSION_SECRET || 'your_secret_key',
+  secret: process.env.SESSION_SECRET || 'your_secret_key_here',
   resave: false,
   saveUninitialized: false,
->>>>>>> Stashed changes
   cookie: {
-    secure: false,
+    secure: process.env.NODE_ENV === 'production', // HTTPS in production
     httpOnly: true,
     sameSite: 'lax',
-<<<<<<< Updated upstream
-    maxAge: 24 * 60 * 60 * 1000
-  }
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    domain: 'localhost' // Add this for local development
+  },
+  name: 'eco.session.id' // Custom cookie name
 }));
 
 // Apply authentication middleware to all routes
 app.use(checkAuth);
-=======
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  },
-  proxy: true  // Add this if behind a proxy
-}));
-
-// Middleware
-app.use(cors({
-  origin: true, // Reflects the request origin
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
->>>>>>> Stashed changes
 // Serve static files from WEB folder
 app.use(express.static(path.join(__dirname, '../WEB'), {
   index: false, // Don't serve index.html for directories
@@ -117,12 +106,10 @@ app.use('/WEB', express.static(path.join(__dirname, '../WEB'), {
   extensions: ['html', 'htm']
 }));
 
-<<<<<<< Updated upstream
 // Serve uploads separately
 app.use('/WEB/uploads', express.static(path.join(__dirname, '../WEB/uploads')));
 
 // Signup route
-=======
 app.get('/api/session-test', (req, res) => {
   console.log('Session ID:', req.sessionID);
   console.log('Session data:', req.session);
@@ -133,7 +120,6 @@ app.get('/api/session-test', (req, res) => {
 });
 
 // HTML routes
->>>>>>> Stashed changes
 app.get('/signup', (req, res) => {
   if (req.session.user_id) {
     return res.redirect('/WEB/index.html');
@@ -221,52 +207,87 @@ const verifySession = (req, res, next) => {
   next();
 };
 
-app.post('/login', async (req, res) => {
-  const { email, password_hash } = req.body;
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
 
-  if (!email || !password_hash) {
-    return res.status(400).json({ message: 'Please enter email and password' });
+  if (!email || !password) {
+    return res.status(400).json({ 
+      success: false,
+      message: 'Please enter email and password' 
+    });
   }
 
   try {
     const result = await pool.query(
-      'SELECT name, password_hash, user_id FROM users WHERE email = $1',
+      'SELECT user_id, name, email, password_hash FROM users WHERE email = $1',
       [email]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
     }
 
     const user = result.rows[0];
 
-    if (user.password_hash !== password_hash) {
-      return res.status(401).json({ message: 'Incorrect password' });
+    // In production, use bcrypt.compare() here
+    if (user.password_hash !== password) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Incorrect password' 
+      });
     }
 
     const isAdmin = email.endsWith('@ecotracker.pk');
 
-    req.session.user_id = user.user_id;
-    req.session.email = email;
-    req.session.name = user.name;
-    req.session.isAdmin = isAdmin;
+    // Regenerate session to prevent fixation
+    req.session.regenerate(err => {
+      if (err) {
+        console.error('Session regeneration error:', err);
+        return res.status(500).json({ 
+          success: false,
+          message: 'Session error' 
+        });
+      }
 
+      // Set session data
+      req.session.user_id = user.user_id;
+      req.session.email = email;
+      req.session.name = user.name;
+      req.session.isAdmin = isAdmin;
 
-    res.status(200).json({
-      success: true,
-      name: user.name,
-      isAdmin
+      // Explicitly save session
+      req.session.save(err => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ 
+            success: false,
+            message: 'Session error' 
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          name: user.name,
+          isAdmin
+        });
+      });
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', err.message);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error during login' 
+    });
   }
 });
-// Middleware to check if user is logged in
+
+
 // Updated checkAuth middleware
-// Enhanced authentication middleware
 // Enhanced checkAuth middleware
-// Updated checkAuth middleware
+// Enhanced checkAuth middleware
 function checkAuth(req, res, next) {
   // Always allow login/signup pages and static assets
   const publicRoutes = [
@@ -274,7 +295,8 @@ function checkAuth(req, res, next) {
     '/WEB/signup.html',
     '/api/login',
     '/api/signup',
-    '/api/check-auth'
+    '/api/check-auth',
+    '/api/session-debug'
   ];
 
   // Allow static assets
@@ -368,12 +390,9 @@ app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => 
         image_url, is_anonymous, severity_level, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [
-<<<<<<< Updated upstream
         user_id,
-=======
         report_id,
         is_anonymous ? null : req.session.user_id, // Store null if anonymous
->>>>>>> Stashed changes
         title,
         description,
         category_id,
@@ -417,7 +436,15 @@ app.get('/api/session', (req, res) => {
     res.status(401).json({ error: 'User not logged in' });
   }
 });
-
+app.get('/api/session-debug', (req, res) => {
+  console.log('Session ID:', req.sessionID);
+  console.log('Session data:', req.session);
+  res.json({
+    sessionId: req.sessionID,
+    sessionData: req.session,
+    cookies: req.cookies
+  });
+});
 // Get report count
 app.get("/api/report-count", async (req, res) => {
   try {
@@ -566,7 +593,6 @@ app.get('/api/incidents', async (req, res) => {
   }
 });
 
-<<<<<<< Updated upstream
 // Get all reports for EcoAlerts feed
 app.get('/api/ecoalerts', async (req, res) => {
   try {
@@ -660,7 +686,6 @@ app.post('/api/ecoalerts/:report_id/comments', upload.single("image"), async (re
     res.status(500).json({ error: "Failed to add comment" });
   }
 });
-=======
 
 
 
@@ -685,4 +710,3 @@ app.get("/api/users", isAdminMiddleware, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch users" });
   }
 });
->>>>>>> Stashed changes

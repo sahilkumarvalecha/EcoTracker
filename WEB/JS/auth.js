@@ -1,48 +1,50 @@
 // auth.js - Centralized authentication functions
 
+let authCheckInProgress = false;
+
 // Check authentication status
 export async function checkAuthStatus() {
-    try {
-      const response = await fetch('/api/check-auth', {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Not authenticated');
-      }
-      
-      const data = await response.json();
-      return data.isAuthenticated;
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      return false;
-    }
-  }
+  if (authCheckInProgress) return true;
+  authCheckInProgress = true;
   
-  // Redirect if not authenticated
-  export async function ensureAuthenticated() {
-    const isAuthenticated = await checkAuthStatus();
-    if (!isAuthenticated) {
-      window.location.href = '/WEB/login.html';
-      return false;
+  try {
+    const response = await fetch('/api/check-auth', {
+      credentials: 'include' // Important for cookies
+    });
+    
+    if (!response.ok) {
+      throw new Error('Not authenticated');
     }
+    
+    const data = await response.json();
+    return data.isAuthenticated;
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    return false;
+  } finally {
+    authCheckInProgress = false;
+  }
+}
+
+// Redirect if not authenticated
+export async function ensureAuthenticated() {
+  // Skip check if we're on login page
+  if (window.location.pathname.includes('login.html')) {
     return true;
   }
+
+  const isAuthenticated = await checkAuthStatus();
   
-  // Get user info
-  export async function getUserInfo() {
-    try {
-      const response = await fetch('/api/user', {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to get user info');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to get user info:', error);
-      return null;
-    }
+  if (!isAuthenticated) {
+    // Clear client-side auth data
+    localStorage.removeItem("authToken");
+    
+    // Store current path for redirect after login
+    sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+    
+    window.location.href = '/WEB/login.html';
+    return false;
   }
+  
+  return true;
+}

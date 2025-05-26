@@ -518,6 +518,32 @@
   }
 });
 </script>
+<script type="module">
+  import { ensureAuthenticated } from '/WEB/js/auth.js';
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const isAuthenticated = await ensureAuthenticated();
+      if (isAuthenticated) {
+        // Load user info if needed
+        const userLink = document.getElementById('user-link');
+        const userNameText = document.getElementById('user-name-text');
+        if (userLink && userNameText) {
+          const userResponse = await fetch('/api/user', {
+            credentials: 'include'
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            userNameText.textContent = userData.name;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+    }
+  });
+</script>
 <!-- <script>
   fetch('/api/check-auth', {
     credentials: 'include'
