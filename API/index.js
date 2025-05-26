@@ -354,10 +354,7 @@ app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'admin-dashboard.html'));
 });
 
-// Report submission
-app.get('/api/reports', (req, res) => {
-  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
-});
+
 
 app.post("/api/reports", checkAuth, upload.single("image"), async (req, res) => {
   // Log the incoming request for debugging
@@ -688,7 +685,10 @@ app.post('/api/ecoalerts/:report_id/comments', upload.single("image"), async (re
   }
 });
 
-
+// Report submission
+app.get('/api/reports', (req, res) => {
+  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
+});
 
 
 
