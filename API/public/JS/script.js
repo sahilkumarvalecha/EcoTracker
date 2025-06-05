@@ -1,11 +1,3 @@
-const signupname = document.querySelector("#signup-name");
-const signupemail = document.querySelector("#signup-email");
-const signuppassword = document.querySelector("#signup-password");
-const confirmpassword = document.querySelector("#signup-confirmpassword");
-const signuppassissue = document.querySelector(".signup-passwordissue");
-const confirmpassissue = document.querySelector(".confirm-passwordissue");
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const loginbtn = document.querySelector(".Login-btn");
   const signupbtn = document.querySelector(".signup-btn");
@@ -29,8 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
-            email: loginemail.value,
-            password_hash: loginpassword.value,
+            email: loginemail.value.trim(),
+            password_hash: loginpassword.value.trim(),
           }),
         });
 
@@ -40,9 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("userEmail", loginemail.value);
           localStorage.setItem("userName", data.name);
           localStorage.setItem("isAdmin", data.isAdmin);
-
-          window.location.href = "/index.html"; // ✅ make sure this path exists
-        } else {
+          window.location.href = "index.html";
+        }
+         else {
           alert(data.message);
         }
       } catch (err) {
@@ -63,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const confirmpassword = document.querySelector("#signup-confirmpassword");
       const confirmpassissue = document.querySelector(".confirm-passwordissue");
 
+      confirmpassissue.textContent = "";
+
       if (signuppassword.value !== confirmpassword.value) {
         confirmpassissue.style.color = "darkRed";
         confirmpassissue.textContent = "Password doesn't match";
@@ -74,9 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: signupname.value,
-            email: signupemail.value,
-            password_hash: signuppassword.value,
+            name: signupname.value.trim(),
+            email: signupemail.value.trim(),
+            password_hash: signuppassword.value.trim(),
           }),
         });
 
@@ -96,24 +90,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-// On page load
-// rsvp API
 
+// RSVP API
 function rsvpEvent(eventId) {
-  fetch('http://localhost:5055/rsvp', {
-    method: 'POST',
+  fetch("http://localhost:5055/rsvp", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ event_id: eventId })
+    body: JSON.stringify({ event_id: eventId }),
   })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       alert(data.message || data.error);
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Something went wrong!');
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Something went wrong!");
     });
 }
-
