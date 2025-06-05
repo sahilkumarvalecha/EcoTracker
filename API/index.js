@@ -102,10 +102,12 @@ app.post("/api/avatar", async (req, res) => {
   if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
 
   const { avatar } = req.body;
-  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.userId]);
+  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.user_id]);
 
   res.json({ success: true });
 });
+
+// signup 
 
 app.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
@@ -133,6 +135,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
+// login
 
 app.post('/login', async (req, res) => {
   const { email, password_hash } = req.body;
@@ -322,14 +325,31 @@ app.get('/api/session', (req, res) => {
 // Get report count
 app.get("/api/report-count", async (req, res) => {
   try {
-    const result = await pool.query("SELECT COUNT(*) FROM reports");
-    res.json({ count: parseInt(result.rows[0].count) });
+    const result = await pool.query("SELECT COUNT(report_id) FROM reports");
+   const count = result.rows[0].count;
+    res.json({ count: parseInt(count) }); // Send the count as a number
   } catch (error) {
     console.error("Error fetching report count:", error);
     res.status(500).json({ error: "Failed to fetch count" });
   }
 });
 
+//  high severity count
+app.get('/api/high-severity-count', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*) FROM reports WHERE severity_level = 'High'`
+    );
+    const count = parseInt(result.rows[0].count);
+    res.json({ highSeverityCount: count });
+  } catch (error) {
+    console.error('Error fetching high severity count:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+// logout
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) return res.status(500).send("Logout failed");
