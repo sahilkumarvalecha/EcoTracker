@@ -124,6 +124,11 @@
         width: 100%;
       }
     }
+    #suggestions {
+  position: absolute;
+  width: 100%;
+}
+
   </style>
 </head>
 
@@ -213,8 +218,11 @@
         <!-- Filters -->
         <div class="mb-6 ml-2">
           <div class="flex flex-wrap items-center gap-4 filter-container">
-            <input type="text" placeholder="Enter Keyword or ID"
-              class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <input type="text" id="report-search" placeholder="Enter Keyword or ID"
+              class="border border-gray-300 p-2 rounded-lg w-full md:w-60">
+            <ul id="suggestions" class="bg-white border rounded mt-1 hidden absolute z-10 max-h-60 overflow-y-auto">
+            </ul>
+
             <select
               class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
               <option>All statuses</option>
@@ -306,38 +314,38 @@
   </script>
 
   <!-- reports loading -->
-   <script>
-  async function loadReports() {
-    try {
-      const res = await fetch('/api/reportsPage');
-      const data = await res.json();
+  <script>
+    async function loadReports() {
+      try {
+        const res = await fetch('/api/reportsPage');
+        const data = await res.json();
 
-      const container = document.getElementById('event-list');
-      container.innerHTML = ''; // Clear old content
+        const container = document.getElementById('event-list');
+        container.innerHTML = ''; // Clear old content
 
-      if (data.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">No reports found.</p>';
-        return;
-      }
+        if (data.length === 0) {
+          container.innerHTML = '<p class="text-gray-500">No reports found.</p>';
+          return;
+        }
 
-      data.forEach(report => {
-        const statusClass = {
-          submitted: 'status-submitted bg-blue-100 text-blue-600',
-          inreview: 'status-inreview bg-yellow-100 text-yellow-600',
-          resolved: 'status-resolved bg-green-100 text-green-600'
-        };
+        data.forEach(report => {
+          const statusClass = {
+            submitted: 'status-submitted bg-blue-100 text-blue-600',
+            inreview: 'status-inreview bg-yellow-100 text-yellow-600',
+            resolved: 'status-resolved bg-green-100 text-green-600'
+          };
 
-        const iconClass = {
-          submitted: 'fas fa-exclamation-circle',
-          inreview: 'fas fa-fire',
-          resolved: 'fas fa-skull-crossbones'
-        };
+          const iconClass = {
+            submitted: 'fas fa-exclamation-circle',
+            inreview: 'fas fa-fire',
+            resolved: 'fas fa-skull-crossbones'
+          };
 
-        const reportCard = document.createElement('div');
-        reportCard.className = `bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center`;
-        reportCard.setAttribute('data-status', report.status);
+          const reportCard = document.createElement('div');
+          reportCard.className = `bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center`;
+          reportCard.setAttribute('data-status', report.status);
 
-        reportCard.innerHTML = `
+          reportCard.innerHTML = `
           <div>
             <div class="flex items-center space-x-3">
               <div class="p-2 rounded-lg ${statusClass[report.status] || 'bg-gray-100 text-gray-600'}">
@@ -352,16 +360,71 @@
           <span class="status-badge status-${report.status} capitalize">${report.status}</span>
         `;
 
-        container.appendChild(reportCard);
-      });
-    } catch (err) {
-      console.error('Error fetching reports:', err);
+          container.appendChild(reportCard);
+        });
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+      }
     }
+
+    // Load reports when page loads
+    window.onload = loadReports;
+
+
+    // report search javascript
+    const searchInput = document.getElementById('report-search');
+const suggestionBox = document.getElementById('suggestions');
+
+searchInput.addEventListener('input', async function () {
+  const query = this.value.trim();
+  suggestionBox.innerHTML = '';
+
+  if (query.length === 0) {
+    suggestionBox.classList.add('hidden');
+    return;
   }
 
-  // Load reports when page loads
-  window.onload = loadReports;
-</script>
+  try {
+    const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
+    const suggestions = await res.json();
+
+    if (suggestions.length === 0) {
+      suggestionBox.classList.add('hidden');
+      return;
+    }
+
+    suggestions.forEach(report => {
+      const li = document.createElement('li');
+     li.textContent = `${report.title}`;
+      li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer";
+      li.onclick = () => {
+        searchInput.value = report.title;
+        suggestionBox.classList.add('hidden');
+        // Optional: Scroll to report or show details
+        // Filter the reports on page based on selected title
+document.querySelectorAll('.report-card').forEach(card => {
+  const title = card.querySelector('.font-medium').textContent.toLowerCase();
+  const selected = report.title.toLowerCase();
+ 
+  if (title.includes(selected)) {
+    card.style.display = 'flex'; // show match
+  } else {
+    card.style.display = 'none'; // hide non-match
+  }
+});
+
+      };
+      suggestionBox.appendChild(li);
+    });
+
+    suggestionBox.classList.remove('hidden');
+  } catch (err) {
+    console.error('Suggestion fetch failed:', err);
+    suggestionBox.classList.add('hidden');
+  }
+});
+
+  </script>
 
 </body>
 

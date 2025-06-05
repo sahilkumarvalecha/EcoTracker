@@ -359,6 +359,22 @@ app.get('/api/reportsPage', async (req, res) => {
   }
 });
 
+// Search API - returns matching titles or IDs
+app.get('/api/search-reports', async (req, res) => {
+  const searchQuery = req.query.q;
+
+  try {
+    const result = await pool.query(
+     `SELECT distinct title FROM reports WHERE title ILIKE $1`,
+  [`%${searchQuery}%`]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Search error:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 // logout
