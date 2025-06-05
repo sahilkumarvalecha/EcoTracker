@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Report Incident</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/public/JS/script.js"></script>
+  <script src="/JS/script.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -53,7 +53,7 @@
     </div>
     
     <form id="reportForm" action="http://localhost:5055/api/reports" method="POST" enctype="multipart/form-data" class="space-y-5">
-      <!-- Title -->
+      <!-- Title -->  
       <div>
         <label for="title" class="block text-sm font-medium text-gray-700">Title<span class="text-red-500 ml-1">*</span></label>
         <div class="mt-1 relative rounded-md shadow-sm">

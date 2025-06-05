@@ -5,6 +5,9 @@ const session = require('express-session');
 require('dotenv').config();
 const { Pool } = require('pg');
 const multer = require("multer");
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -49,6 +52,7 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
 
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, "../public/uploads")));
@@ -103,11 +107,10 @@ app.post("/api/avatar", async (req, res) => {
   res.json({ success: true });
 });
 
-// Auth routes
 app.post('/signup', async (req, res) => {
-  const { name, email, password_hash } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!name || !email || !password_hash) {
+  if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please fill all fields!' });
   }
 
@@ -117,13 +120,19 @@ app.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'User already exists!' });
     }
 
-    await pool.query('INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)', [name, email, password_hash]);
+    await pool.query(
+      'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)',
+      [name, email, password]
+    );
+
     res.status(201).json({ message: 'User Registered Successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
 
 app.post('/login', async (req, res) => {
   const { email, password_hash } = req.body;
@@ -149,7 +158,6 @@ app.post('/login', async (req, res) => {
     }
 
     const isAdmin = email.endsWith('@ecotracker.pk');
-
     req.session.user_id = user.user_id;
     req.session.email = email;
     req.session.name = user.name;
@@ -161,11 +169,14 @@ app.post('/login', async (req, res) => {
       name: user.name,
       isAdmin
     });
+
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
 
 // Middleware to check if user is logged in
 function checkAuth(req, res, next) {
@@ -181,6 +192,14 @@ function checkAuth(req, res, next) {
 
 app.get('/api/check-auth', (req, res) => {
   res.json({ isAuthenticated: !!req.session.user_id });
+});
+
+app.get('/check-session', (req, res) => {
+  if (req.session && req.session.user_id) {
+    return res.json({ authenticated: true, email: req.session.user.email });
+  } else {
+    return res.json({ authenticated: false });
+  }
 });
 
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
@@ -210,11 +229,12 @@ function requireLogin(req, res, next) {
 
 // Report submission page
 app.get('/api/reports', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'report-incident.html'));
+  res.sendFile(path.join(__dirname, '..', '/API/public/report-incident.html'));
 });
 
 // Handle report submission
-app.post("/api/reports", requireLogin, upload.single("image"), async (req, res) => {
+app.post("/api/reports" , upload.single("image"), async (req, res) => {
+
   const {
     title,
     description,
@@ -224,6 +244,9 @@ app.post("/api/reports", requireLogin, upload.single("image"), async (req, res) 
     severity_level,
   } = req.body;
 
+  console.log("Received POST /api/reports request");
+  console.log("Body:", req.body);
+  console.log("File:", req.file); 
   // Input validation
   if (
     !title ||
