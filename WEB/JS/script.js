@@ -69,6 +69,7 @@ try {
   const response = await fetch("http://localhost:5055/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", 
     body: JSON.stringify({
       email: loginemail.value,
       password_hash: loginpassword.value,

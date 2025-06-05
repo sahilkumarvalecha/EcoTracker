@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Report Incident</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/WEB/JS/script.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -159,6 +160,25 @@
   </div>
 
   <script>
+    
+    // Add this before your form submission
+const checkSession = async () => {
+  try {
+    const response = await fetch('http://localhost:5055/check-session', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    if (!data.authenticated) {
+      throw new Error('Not authenticated');
+    }
+    return true;
+  } catch (error) {
+    console.error('Session check failed:', error);
+    window.location.href = '/login.html';
+    return false;
+  }
+};
+
     const form = document.getElementById('reportForm');
     const submitBtn = form.querySelector("button[type='submit']");
     const loadingIcon = document.getElementById('loading-icon');
@@ -172,10 +192,13 @@
       try {
         const formData = new FormData(form);
         const response = await fetch('http://localhost:5055/api/reports', {
-          method: 'POST',
-          body: formData,
-          credentials: 'include'
-        });
+        method: 'POST',
+        body: formData,
+        credentials: 'include', // This is crucial
+        headers: {
+        'Accept': 'application/json' // Add this
+      }
+});
 
         const result = await response.json();
         

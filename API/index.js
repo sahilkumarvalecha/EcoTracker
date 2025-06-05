@@ -5,27 +5,50 @@ const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
-const cors = require("cors");
-const app = express();
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+
+const pool = new Pool({
+  user: 'postgres', 
+  host: 'localhost',
+  database: 'EcoTracker',
+  password: 'abc.123',
+  port: 5432,
+});
+
+// 2. Then configure the session store
+const pgStore = new pgSession({
+  pool: pool,
+  tableName: 'user_sessions'
+});
+const app = express();
+
+
+
 
 
 app.use(session({
+  store: new pgSession({
+    pool: pool, // Your existing pg pool
+    tableName: 'user_sessions' // Will create automatically
+  }),
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,  // Set to true if using HTTPS
+    secure: false,
     httpOnly: true,
-    sameSite: 'lax'
-  },
-  proxy: true  // Add this if behind a proxy
+    sameSite: 'lax', // Change back to 'lax'
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
 
+const cors = require("cors");
 // Middleware
 app.use(cors({
-  origin: 'http://127.0.0.1:5500',
-  credentials: true
+  origin: 'http://127.0.0.1:5500',  // Or your exact client origin
+  credentials: true,
+  exposedHeaders: ['set-cookie']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,10 +56,12 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from WEB folder
 app.use(express.static(path.join(__dirname, '../WEB')));
 
-// PostgreSQL connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+
+
+app.use((req, res, next) => {
+  console.log('Incoming session:', req.session);
+  console.log('Session ID:', req.sessionID);
+  next();
 });
 
 // Setup multer for local uploads
@@ -55,6 +80,13 @@ const upload = multer({ storage });
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, "../WEB/uploads")));
 
+app.get('/check-session', (req, res) => {
+  res.json({
+    authenticated: !!req.session.user_id,
+    user_id: req.session.user_id,
+    session: req.session
+  });
+});
 // HTML routes
 app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'signup.html'));
@@ -134,7 +166,6 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ message: 'Please enter email and password' });
   }
 
-  try {
     const result = await pool.query(
       'SELECT name, password_hash, user_id FROM users WHERE email = $1',
       [email]
@@ -152,22 +183,33 @@ app.post('/login', async (req, res) => {
 
     const isAdmin = email.endsWith('@ecotracker.pk');
 
-    req.session.user_id = user.user_id;
-    req.session.email = email;
-    req.session.name = user.name;
-    req.session.isAdmin = isAdmin;
+  req.session.user_id = user.user_id;
+  req.session.email = email;
+  req.session.name = user.name;
+  req.session.isAdmin = isAdmin;
+
+  // Force save the session before responding
+  req.session.save((err) => {
+    if (err) {
+      console.error('Session save error:', err);
+      return res.status(500).json({ message: 'Session error' });
+    }
+    
+    // Set cookie manually for extra assurance
+    res.cookie('connect.sid', req.sessionID, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: false,  // true in production
+      maxAge: 24 * 60 * 60 * 1000
+    });
 
     res.status(200).json({
       success: true,
       name: user.name,
       isAdmin
     });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: 'Server error' });
-  }
+  });
 });
-
 // Middleware to check if user is logged in
 function checkAuth(req, res, next) {
   if (req.session.user_id) {
@@ -201,13 +243,26 @@ app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'WEB', 'admin-dashboard.html'));
 });
 
-// Report submission
+function requireLogin(req, res, next) {
+  console.log('Session in middleware:', req.session); // Debug line
+  if (!req.session.user_id) {
+    console.log('Missing user_id in session'); // Debug
+    return res.status(401).json({ 
+      error: 'Login required',
+      sessionId: req.sessionID // For debugging
+    });
+  }
+  next();
+}
+
+
+// Report submission page
 app.get('/api/reports', (req, res) => {
-  res.sendFile(path.join(__dirname,  '..', 'WEB', 'report-incident.html'));
+  res.sendFile(path.join(__dirname, '..', 'WEB', 'report-incident.html'));
 });
 
-app.post("/api/reports", upload.single("image"), async (req, res) => {
-  
+// Handle report submission
+app.post("/api/reports", requireLogin, upload.single("image"), async (req, res) => {
   const {
     title,
     description,
@@ -217,7 +272,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
     severity_level,
   } = req.body;
 
-  // Validation
+  // Input validation
   if (
     !title ||
     !description ||
@@ -230,15 +285,19 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
       .json({ error: "Missing or invalid required fields" });
   }
 
-  const anonymous = is_anonymous === 'on';  // checkbox checked hone par 'on'
-const user_id = (!anonymous && req.session && req.session.user_id) ? req.session.user_id : null;
+  const anonymous = is_anonymous === 'on';
 
+  // Check session if not anonymous
+  if (!anonymous) {
+    if (!req.session || !req.session.user_id) {
+      return res.status(401).json({ error: "You must be logged in to submit a non-anonymous report." });
+    }
+  }
 
+  const user_id = anonymous ? null : req.session.user_id;
 
   // Generate unique report ID
   const report_id = uuidv4();
-
-  // Prepare other data
   const image_url = req.file ? `/uploads/${req.file.filename}` : null;
   const created_at = new Date();
 
@@ -265,12 +324,12 @@ const user_id = (!anonymous && req.session && req.session.user_id) ? req.session
 
     res.status(200).json({ success: true, message: "Report submitted successfully" });
 
-
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
   }
 });
+
 
 
 app.get('/api/session', (req, res) => {
@@ -341,45 +400,6 @@ app.get('/api/categories', async (req, res) => {
   } catch (err) {
     console.error('❌ Failed to fetch categories:', err.message);
     res.status(500).json({ error: 'Failed to fetch categories' });
-  }
-});
-
-// Analytics Route
-app.get('/api/analytics', async (req, res) => {
-  try {
-    const reportsByLocation = await pool.query(`
-      SELECT l.neighborhood AS location, COUNT(*) 
-      FROM reports r 
-      JOIN locations l ON r.location_id = l.location_id 
-      GROUP BY l.neighborhood
-    `);
-
-    const reportsByCategory = await pool.query(`
-      SELECT c.name AS category, COUNT(*) 
-      FROM reports r 
-      JOIN categories c ON r.category_id = c.category_id 
-      GROUP BY c.name
-    `);
-
-    const locationData = {};
-    const categoryData = {};
-
-    reportsByLocation.rows.forEach(row => {
-      locationData[row.location] = parseInt(row.count);
-    });
-
-    reportsByCategory.rows.forEach(row => {
-      categoryData[row.category] = parseInt(row.count);
-    });
-
-    res.json({
-      reportsByLocation: locationData,
-      reportsByCategory: categoryData
-    });
-
-  } catch (err) {
-    console.error('❌ Failed to fetch analytics data:', err);
-    res.status(500).json({ error: 'Analytics query failed' });
   }
 });
 

@@ -435,6 +435,7 @@
   </script>
   
   <script>
+
     const locationReportData = {
       labels: ["Clifton", "Gulshan", "DHA", "Korangi"],
       datasets: [{
@@ -486,6 +487,10 @@
     
     window.addEventListener("DOMContentLoaded", () => {
       const userName = localStorage.getItem("userName");
+      if (!userName) {
+      window.location.href = "login.html";
+      return;
+  }
       const userEmail = localStorage.getItem("userEmail");
       const isAdmin = localStorage.getItem("isAdmin") === "true";
       const userLink = document.getElementById("user-link");
