@@ -8,47 +8,243 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+      --secondary: #3b82f6;
+      --accent: #f59e0b;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .sidebar-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    
+    .sidebar-item.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .activity-tag {
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .activity-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 40;
+        backdrop-filter: blur(4px);
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
+      }
+      
+      .page-title {
+        margin-left: 60px;
+      }
+    }
+    
+    /* Modern scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Admin specific styles */
+    .admin-panel-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Wider sidebar for admin */
+    .w-72 {
+      width: 18rem;
+    }
+
+    /* Smooth sidebar expansion */
+    #sidebar {
+      transition: width 0.3s ease;
+    }
+
+    /* Admin badge style */
+    .admin-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+    }
+
+    /* Make sure admin items are properly spaced */
+    .admin-only a {
+      margin-left: 0.5rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      main {
+        margin-left: 16rem;
+      }
+    }
+  </style>
 </head>
 <body class="bg-white text-gray-800">
   <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white-600 text-black flex flex-col border-r">
-      <div class="p-4 text-xl font-bold border-b border-green-500">EcoTracker</div>
-      <nav class="flex-1 p-2 space-y-2">
-        <a href="/index.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded bg-green-100 text-green-800 font-semibold">
-          <i class="fas fa-map-marked-alt"></i><span>Map</span>
-        </a>
-        <a href="/Reports.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-file-alt"></i><span>Reports</span>
-        </a>
-        <a href="/events.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-calendar-alt"></i><span>Events</span>
-        </a>
-        <a href="/analytics.html" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-chart-bar"></i><span>Analytics</span>
-        </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-users"></i><span>Community</span>
-        </a>
-        <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-question-circle"></i><span>Help</span>
-        </a>
-        <div class="border-t border-green-500 mt-2 pt-2">
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-user-cog"></i><span>User Management</span>
-          </a>
-          <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-            <i class="fas fa-history"></i><span>System Logs</span>
-          </a>
+
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
+      <i class="fas fa-bars text-gray-600"></i>
+    </button>
+ <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
+
+  <!-- Sidebar -->
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+      <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-leaf text-green-500"></i>
+          <span>EcoTracker</span>
         </div>
+        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="flex-1 p-2 space-y-1">
+        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span>Map</span>
+        </a>
+        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span>Reports</span>
+        </a>
+        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span>Events</span>
+        </a>
+        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span>Analytics</span>
+        </a>
+        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span>Community</span>
+        </a>
+        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span>Help</span>
+        </a>
       </nav>
-      <div class="p-4 border-t border-green-500 text-sm">
-        <a href="/login.html" id="user-link" class="flex items-center space-x-2 p-2 rounded hover:bg-green-500">
-          <i class="fas fa-user-circle"></i>
-          <span id="user-name-text">Signup/Signin</span>
+      <div class="p-4 border-t border-gray-100">
+        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
         </a>
       </div>
     </aside>
@@ -96,6 +292,79 @@
   </div>
 
   <script>
+    // account name
+
+     window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      if (!userName) {
+      window.location.href = "login.html";
+      return;
+      }
+      const userEmail = localStorage.getItem("userEmail");
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+      const sidebar = document.getElementById("sidebar");
+      const adminItems = document.querySelectorAll(".admin-only");
+
+      // Set user info
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "account.html";
+      }
+
+      // Handle admin features
+      if (isAdmin) {
+        console.log("Admin logged in - expanding sidebar"); // Debug log
+        
+        // Expand sidebar by default for admin
+        if (sidebar) {
+          sidebar.classList.remove("w-64"); // Remove default width
+          sidebar.classList.add("w-72"); // Set wider width
+          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+        }
+        
+        // Show admin-only items
+        adminItems.forEach(item => {
+          item.style.display = "block";
+        });
+
+        // Add admin badge to user info
+        if (userNameSpan) {
+          const adminBadge = document.createElement("span");
+          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+          adminBadge.textContent = "Admin";
+          userNameSpan.parentNode.appendChild(adminBadge);
+        }
+      }
+
+      // Add logout button
+      if (userName) {
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+        logoutBtn.addEventListener("click", () => {
+          // Clear all stored data
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("isAdmin");
+          
+          // Send logout request to server
+          fetch('http://localhost:5055/api/public/logout', {
+            method: 'POST',
+            credentials: 'include'
+          })
+          .then(() => {
+            window.location.href = "login.html";
+          });
+        });
+        
+        if (userLink && userLink.parentNode) {
+          userLink.parentNode.appendChild(logoutBtn);
+        }
+      }
+    });
+
     // Initialize the map
     const map = L.map('map').setView([24.8607, 67.0011], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -217,6 +486,9 @@ async function filterAndRenderMap() {
 
     // Load all incidents when page loads
     window.addEventListener('load', loadAllReportedPolygons);
+
+
+
   </script>
 </body>
 </html>

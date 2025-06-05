@@ -181,19 +181,14 @@
       border-left: 2px solid var(--primary);
     }
     
-    /* Fix for main content positioning */
-    main {
-      margin-left: 16rem; /* Match sidebar width */
-    }
-    
     @media (max-width: 768px) {
       main {
-        margin-left: 0;
+        margin-left: 16rem;
       }
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="flex min-h-screen bg-gray-100">
   <div class="flex min-h-screen">
     <!-- Mobile menu button -->
     <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
@@ -203,8 +198,8 @@
     <!-- Sidebar overlay for mobile -->
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed md:static inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out" id="sidebar">
+     <!-- Sidebar -->
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -214,30 +209,36 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <nav class="flex-1 p-2 space-y-1 overflow-y-auto"> 
-        <!-- Regular User Items -->
-        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100 text-green-700">
-          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i><span>Dashboard</span>
+      <nav class="flex-1 p-2 space-y-1">
+        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span>Dashboard</span>
         </a>
-        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i><span>Map</span>
+        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span>Map</span>
         </a>
-        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-file-alt w-5 text-center text-green-500"></i><span>Reports</span>
+        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span>Reports</span>
         </a>
-        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i><span>Events</span>
+        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span>Events</span>
         </a>
-        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i><span>Analytics</span>
+        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span>Analytics</span>
         </a>
-        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-users w-5 text-center text-green-500"></i><span>Community</span>
+        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span>Community</span>
         </a>
-        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-question-circle w-5 text-center text-green-500"></i><span>Help</span>
+        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span>Help</span>
         </a>
-
+        
         <!-- Admin Only Items -->
         <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
           <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
@@ -278,7 +279,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
+    <main class="flex-1 p-6 md:p-6 overflow-x-hidden">
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
           <div class="page-title">

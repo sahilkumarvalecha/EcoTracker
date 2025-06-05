@@ -103,7 +103,7 @@
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed md:static inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out" id="sidebar">
+   <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -113,64 +113,40 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <nav class="flex-1 p-2 space-y-1 overflow-y-auto"> 
-        <!-- Regular User Items -->
-        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100 text-green-700">
-          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i><span>Dashboard</span>
+      <nav class="flex-1 p-2 space-y-1">
+        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span>Dashboard</span>
         </a>
-        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i><span>Map</span>
+        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span>Map</span>
         </a>
-        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-file-alt w-5 text-center text-green-500"></i><span>Reports</span>
+        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span>Reports</span>
         </a>
-        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i><span>Events</span>
+        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span>Events</span>
         </a>
-        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i><span>Analytics</span>
+        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span>Analytics</span>
         </a>
-        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-users w-5 text-center text-green-500"></i><span>Community</span>
+        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span>Community</span>
         </a>
-        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-          <i class="fas fa-question-circle w-5 text-center text-green-500"></i><span>Help</span>
+        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span>Help</span>
         </a>
-
-        <!-- Admin Only Items -->
-        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
-          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
-          
-          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
-          </a>
-          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
-          </a>
-          <a href="/admin/environment-monitor.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
-          </a>
-          <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
-          </a>
-          <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
-          </a>
-          <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
-          </a>
-          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
-          </a>
-          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
-          </a>
-        </div>
       </nav>
-      <div class="p-4 border-t border-green-100">
+      <div class="p-4 border-t border-gray-100">
         <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-          <span id="user-name-text" class="flex-1">Signup/Signin</span>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
         </a>
       </div>
@@ -191,15 +167,6 @@
           <button id="analytics-tab-reports" onclick="switchAnalyticsTab('reports')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Reports</button>
           <button id="analytics-tab-impact" onclick="switchAnalyticsTab('impact')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Impact</button>
         </div>
-
-        <!-- Events Section
-        <div id="analytics-section-events">
-          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6 ml-2">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800">Event Trends</h2>
-            <img src="https://quickchart.io/chart?c={type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{label:'Events',backgroundColor:'#10b981',data:[10,15,20,13,22,18,26,21,17,19,16,20]}]}}" 
-                 alt="Event Chart" 
-                 class="w-full max-w-3xl mb-6 mx-auto">
-          </div> -->
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 analytics-card">
@@ -299,51 +266,6 @@
 
     // Initialize with Events tab active
     document.addEventListener('DOMContentLoaded', () => switchAnalyticsTab('events'));
-    
-    // User session handling
-    window.addEventListener("DOMContentLoaded", () => {
-      const userName = localStorage.getItem("userName");
-      const userLink = document.getElementById("user-link");
-      const userNameSpan = document.getElementById("user-name-text");
-
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "#"; // Prevent redirect if already signed in
-
-        // Optionally add logout option
-        const logoutBtn = document.createElement("button");
-        logoutBtn.textContent = "Logout";
-        logoutBtn.className = "ml-2 text-sm text-red-500 hover:text-red-700 transition-colors";
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("userName");
-          window.location.reload();
-        });
-        userLink.parentNode.appendChild(logoutBtn);
-      }
-    });
-  </script>
-
-  <script>
-      window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
-
-  if (userName && userNameSpan && userLink) {
-    userNameSpan.textContent = userName;
-    userLink.href = "#"; // Prevent redirect if already signed in
-
-    // Optionally add logout option
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userName");
-      window.location.href = "index.html"; 
-    });
-    userLink.parentNode.appendChild(logoutBtn);
-  } 
-});
 </script>
 
   <script src="/JS/sidebar.js"></script>
