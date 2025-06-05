@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Report Incident</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/WEB/JS/script.js"></script>
+  <script src="/public/JS/script.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -160,7 +160,13 @@
   </div>
 
   <script>
-    
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      if (!userName) {
+      window.location.href = "login.html";
+      return;
+      }
+    });
     // Add this before your form submission
 const checkSession = async () => {
   try {
@@ -185,6 +191,10 @@ const checkSession = async () => {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const sessionValid = await checkSession();
+      if (!sessionValid) return;
+      
       submitBtn.disabled = true;
       loadingIcon.classList.remove('opacity-0');
       submitBtn.classList.add('cursor-not-allowed');

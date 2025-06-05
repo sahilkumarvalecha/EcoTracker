@@ -1,73 +1,46 @@
-require("dotenv").config();
-const express = require("express");
-const multer = require("multer");
-const { Pool } = require("pg");
-const { v4: uuidv4 } = require("uuid");
-const path = require("path");
-const fs = require("fs");
-const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
-
-const pool = new Pool({
-  user: 'postgres', 
-  host: 'localhost',
-  database: 'EcoTracker',
-  password: 'abc.123',
-  port: 5432,
-});
-
-// 2. Then configure the session store
-const pgStore = new pgSession({
-  pool: pool,
-  tableName: 'user_sessions'
-});
+const express = require('express');
+const path = require('path');
 const app = express();
+const session = require('express-session');
+require('dotenv').config();
+const { Pool } = require('pg');
+const multer = require("multer");
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-
-
-
+// Setup sessions
 app.use(session({
-  store: new pgSession({
-    pool: pool, // Your existing pg pool
-    tableName: 'user_sessions' // Will create automatically
-  }),
   secret: 'your_secret_key',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
-    secure: false,
     httpOnly: true,
-    sameSite: 'lax', // Change back to 'lax'
-    maxAge: 24 * 60 * 60 * 1000
+    sameSite: 'lax' // or 'strict' if needed
   }
 }));
 
-const cors = require("cors");
-// Middleware
-app.use(cors({
-  origin: 'http://127.0.0.1:5500',  // Or your exact client origin
-  credentials: true,
-  exposedHeaders: ['set-cookie']
-}));
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from WEB folder
-app.use(express.static(path.join(__dirname, '../WEB')));
-
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
 
 app.use((req, res, next) => {
-  console.log('Incoming session:', req.session);
-  console.log('Session ID:', req.sessionID);
+  console.log("Incoming session:", req.session);
   next();
 });
 
 // Setup multer for local uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, "../WEB/uploads");
+    const dir = path.join(__dirname, "../public/uploads");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
     cb(null, dir);
   },
@@ -78,22 +51,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, "../WEB/uploads")));
+app.use('/uploads', express.static(path.join(__dirname, "../public/uploads")));
 
-app.get('/check-session', (req, res) => {
-  res.json({
-    authenticated: !!req.session.user_id,
-    user_id: req.session.user_id,
-    session: req.session
-  });
-});
 // HTML routes
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'signup.html'));
+  res.sendFile(path.join(__dirname, '..', 'signup.html'));
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'login.html'));
+  res.sendFile(path.join(__dirname, '..', 'login.html'));
 });
 
 app.get('/rsvp', async (req, res) => {
@@ -108,7 +74,7 @@ app.get('/rsvp', async (req, res) => {
     const eventDate = new Date(event.date);
 
     if (eventDate >= today.setHours(0, 0, 0, 0)) {
-      res.sendFile(path.join(__dirname, '..', 'WEB', 'events.html'));
+      res.sendFile(path.join(__dirname, '..', 'events.html'));
     } else {
       res.send('Event is done. Thank you!');
     }
@@ -166,6 +132,7 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ message: 'Please enter email and password' });
   }
 
+  try {
     const result = await pool.query(
       'SELECT name, password_hash, user_id FROM users WHERE email = $1',
       [email]
@@ -183,33 +150,23 @@ app.post('/login', async (req, res) => {
 
     const isAdmin = email.endsWith('@ecotracker.pk');
 
-  req.session.user_id = user.user_id;
-  req.session.email = email;
-  req.session.name = user.name;
-  req.session.isAdmin = isAdmin;
-
-  // Force save the session before responding
-  req.session.save((err) => {
-    if (err) {
-      console.error('Session save error:', err);
-      return res.status(500).json({ message: 'Session error' });
-    }
-    
-    // Set cookie manually for extra assurance
-    res.cookie('connect.sid', req.sessionID, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: false,  // true in production
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    req.session.user_id = user.user_id;
+    req.session.email = email;
+    req.session.name = user.name;
+    req.session.isAdmin = isAdmin;
 
     res.status(200).json({
       success: true,
+      message: "Logged in successfully", 
       name: user.name,
       isAdmin
     });
-  });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
+
 // Middleware to check if user is logged in
 function checkAuth(req, res, next) {
   if (req.session.user_id) {
@@ -227,7 +184,7 @@ app.get('/api/check-auth', (req, res) => {
 });
 
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // Middleware to protect admin routes
@@ -240,17 +197,12 @@ function isAdminMiddleware(req, res, next) {
 }
 
 app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'admin-dashboard.html'));
+  res.sendFile(path.join(__dirname, '..', 'admin-dashboard.html'));
 });
 
 function requireLogin(req, res, next) {
-  console.log('Session in middleware:', req.session); // Debug line
   if (!req.session.user_id) {
-    console.log('Missing user_id in session'); // Debug
-    return res.status(401).json({ 
-      error: 'Login required',
-      sessionId: req.sessionID // For debugging
-    });
+    return res.status(401).json({ error: 'Login required' });
   }
   next();
 }
@@ -258,7 +210,7 @@ function requireLogin(req, res, next) {
 
 // Report submission page
 app.get('/api/reports', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'WEB', 'report-incident.html'));
+  res.sendFile(path.join(__dirname, '..', 'report-incident.html'));
 });
 
 // Handle report submission
