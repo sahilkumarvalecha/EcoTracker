@@ -348,6 +348,18 @@ app.get('/api/high-severity-count', async (req, res) => {
   }
 });
 
+// reports from database
+app.get('/api/reportsPage', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM reports ORDER BY created_at DESC');
+    res.json(result.rows); 
+  } catch (error) {
+    console.error('Error fetching reports:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 
 // logout
 app.get('/logout', (req, res) => {
