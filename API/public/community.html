@@ -85,11 +85,11 @@
       background-color: var(--primary-dark);
     }
     .tab-content {
-    transition: all 0.4s ease-in-out;
-    opacity: 0;
-    transform: translateY(10px);
-    display: none;
-  }
+  display: none; /* Start hidden */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease-in-out;
+}
   .tab-btn {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -102,10 +102,10 @@
     color: white;
   }
   .tab-content.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-  }
+  display: block; /* Show when active */
+  opacity: 1;
+  transform: translateY(0);
+}
   .area-box {
     @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
   }
@@ -732,14 +732,31 @@ function switchTab(tab) {
   tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
   tabs[tab].classList.remove('text-gray-500');
 
-   // Toggle tab contents
-  Object.values(contents).forEach(c => c.classList.add('hidden'));
+  // Toggle tab contents
+  Object.values(contents).forEach(c => {
+    c.classList.add('hidden');
+    c.classList.remove('active');
+  });
+  
   contents[tab].classList.remove('hidden');
+  contents[tab].classList.add('active');
 
   // Save to localStorage
   localStorage.setItem('lastActiveTab', tab);
-};
+}
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize tabs and contents references
+  const tabs = {
+    members: document.getElementById('tab-members'),
+    discussions: document.getElementById('tab-discussions'),
+    alerts: document.getElementById('tab-alerts')
+  };
+  
+  const contents = {
+    members: document.getElementById('members'),
+    discussions: document.getElementById('discussions'),
+    alerts: document.getElementById('ecoalerts')
+  };
       const lastTab = localStorage.getItem('lastActiveTab') || 'members';
       switchTab(lastTab);
     });
