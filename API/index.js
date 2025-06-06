@@ -518,6 +518,22 @@ app.get('/api/incidents', async (req, res) => {
     res.status(500).json([]); // Return empty array on error
   }
 });
+app.get('/api/chats', async (req, res) => {
+  const { area } = req.query;
+  const result = await pool.query(
+    'SELECT sender, message, is_user FROM chats WHERE area = $1 ORDER BY created_at ASC',
+    [area]
+  );
+  res.json(result.rows);
+});
+app.post('/api/chats', async (req, res) => {
+  const { area, sender, message, is_user } = req.body;
+  await pool.query(
+    'INSERT INTO chats (area, sender, message, is_user) VALUES ($1, $2, $3, $4)',
+    [area, sender, message, is_user]
+  );
+  res.status(201).send("Message saved");
+});
 
 // Start the server
 const PORT = process.env.PORT || 5055;

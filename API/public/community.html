@@ -44,7 +44,9 @@
       background-color: var(--primary);
       border-radius: 2px;
     }
-    
+    .area-card {
+      @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
+      }
     .help-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -72,6 +74,26 @@
   display: block;
   opacity: 1;
 }
+  .area-box {
+    @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
+  }
+
+  .icon-wrapper {
+    @apply bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600;
+  }
+
+  .chat-bubble {
+    @apply p-3 rounded-lg w-fit max-w-md;
+  }
+
+  .chat-bubble.user {
+    @apply bg-green-500 text-white ml-auto;
+  }
+
+  .chat-bubble.other {
+    @apply bg-gray-100 text-gray-800;
+  }
+
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -348,77 +370,51 @@
         <!-- ====================== -->
         <!-- DISCUSSIONS TAB -->
         <!-- ====================== -->
-        <div id="discussions" class="tab-content">
-          <!-- Areas in Karachi -->
-          <section class="mb-8">
-            <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors">
-                <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600">
-                  <i class="fas fa-umbrella-beach"></i>
-                </div>
-                <p class="font-medium">Clifton</p>
-                <p class="text-xs text-gray-600">18 discussions</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors">
-                <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600">
-                  <i class="fas fa-building"></i>
-                </div>
-                <p class="font-medium">Gulshan</p>
-                <p class="text-xs text-gray-600">24 discussions</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors">
-                <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600">
-                  <i class="fas fa-home"></i>
-                </div>
-                <p class="font-medium">DHA</p>
-                <p class="text-xs text-gray-600">15 discussions</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors">
-                <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600">
-                  <i class="fas fa-industry"></i>
-                </div>
-                <p class="font-medium">Korangi</p>
-                <p class="text-xs text-gray-600">32 discussions</p>
-              </div>
-            </div>
-          </section>
+<div id="discussions" class="tab-content">
+  <!-- Areas in Karachi -->
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div onclick="selectArea('Clifton'), loadChats('Clifton')" class="area-box area-card" data-area="Clifton">
+        <div class="icon-wrapper"><i class="fas fa-umbrella-beach"></i></div>
+        <p class="font-medium">Clifton</p>
+        <p class="text-xs text-gray-600">18 discussions</p>
+      </div>
+      <div onclick="selectArea('Gulshan'), loadChats('Gulshan')" class="area-box area-card" data-area="Gulshan">
+        <div class="icon-wrapper"><i class="fas fa-building"></i></div>
+        <p class="font-medium">Gulshan</p>
+        <p class="text-xs text-gray-600">24 discussions</p>
+      </div>
+      <div onclick="selectArea('DHA'), loadChats('DHA')" class="area-box area-card" data-area="DHA">
+        <div class="icon-wrapper"><i class="fas fa-home"></i></div>
+        <p class="font-medium">DHA</p>
+        <p class="text-xs text-gray-600">15 discussions</p>
+      </div>
+      <div onclick="selectArea('Korangi'), loadChats('Korangi')" class="area-box area-card" data-area="Korangi">
+        <div class="icon-wrapper"><i class="fas fa-industry"></i></div>
+        <p class="font-medium">Korangi</p>
+        <p class="text-xs text-gray-600">32 discussions</p>
+      </div>
+    </div>
+  </section>
 
-          <!-- Live Chat Section -->
-          <section>
-            <h2 class="text-lg font-semibold mb-4">Community Chat</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4" style="height: 400px; overflow-y: auto;">
-              <!-- Chat messages -->
-              <div class="space-y-2">
-                <div class="chat-bubble other">
-                  <p class="font-medium">Alex Kim (Clifton):</p>
-                  <p>Has anyone noticed the increased waste on Sea View beach?</p>
-                </div>
-                <div class="chat-bubble user">
-                  <p class="font-medium">You:</p>
-                  <p>Yes! I was there yesterday. Mostly plastic bottles and food wrappers.</p>
-                </div>
-                <div class="chat-bubble other">
-                  <p class="font-medium">Priya Singh (Gulshan):</p>
-                  <p>We're organizing a cleanup this weekend. Join us!</p>
-                  <img src="https://images.unsplash.com/photo-1604871000636-074fa5117945" alt="Cleanup poster" class="w-full rounded-lg mt-2">
-                </div>
-                <div class="chat-bubble other">
-                  <p class="font-medium">Samira Chen (DHA):</p>
-                  <p>Great initiative! I'll bring 5 volunteers from our society.</p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Message Input -->
-            <div class="flex">
-              <input type="text" placeholder="Type your message..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-              <button class="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-lg transition-colors">
-                <i class="fas fa-paper-plane"></i>
-              </button>
-            </div>
-          </section>
-        </div>
+  <!-- Live Chat Section -->
+  <section>
+    <h2 class="text-lg font-semibold mb-4">Community Chat <span id="selected-area" class="text-sm text-gray-500">– Clifton</span></h2>
+    <div id="chat-box" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 h-[400px] overflow-y-auto space-y-2">
+      <p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>
+    </div>
+
+    <!-- Message Input -->
+    <div class="flex">
+      <input id="message-input" type="text" placeholder="Type your message..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+      <button onclick="sendMessage()" class="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-lg transition-colors">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </section>
+</div>
+
 
         <!-- ====================== -->
         <!-- ECOALERTS TAB -->
@@ -827,6 +823,68 @@ function switchTab(tabName, event) {
         this.classList.add('bg-green-100', 'border-green-300');
       });
     });
+
+    //chat section
+    let selectedArea = "Clifton"; // Default
+
+function selectArea(area) {
+  selectedArea = area;
+  document.getElementById("selected-area").textContent = `– ${area}`;
+}
+
+// Load chats for selected area
+function loadChats(area) {
+  selectedArea = area;
+  fetch(`/api/chats?area=${area}`)
+    .then(res => res.json())
+    .then(data => {
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = "";
+      if (data.length === 0) {
+        chatBox.innerHTML = `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>`;
+      } else {
+        data.forEach(msg => {
+          chatBox.innerHTML += `
+            <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
+              <p class="font-medium">${msg.sender} (${area}):</p>
+              <p>${msg.message}</p>
+            </div>
+          `;
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    })
+    .catch(err => console.error("Failed to load chats:", err));
+}
+
+// Send message
+function sendMessage() {
+  const input = document.getElementById("message-input");
+  const message = input.value.trim();
+  if (!message) return;
+
+  fetch('/api/chats', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      area: selectedArea,
+      sender: "You",
+      message: message,
+      is_user: true
+    })
+  })
+    .then(() => {
+      input.value = "";
+      loadChats(selectedArea);
+    })
+    .catch(err => console.error("Failed to send message:", err));
+}
+
+// Initial load
+document.addEventListener("DOMContentLoaded", () => {
+  loadChats(selectedArea);
+});
+
   </script>
   
 </body>
