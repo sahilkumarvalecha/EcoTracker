@@ -62,6 +62,34 @@
     .submit-btn:hover {
       background-color: var(--primary-dark);
     }
+     /* Admin specific styles */
+    .admin-panel-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Wider sidebar for admin */
+    .w-72 {
+      width: 18rem;
+    }
+
+    /* Smooth sidebar expansion */
+    #sidebar {
+      transition: width 0.3s ease;
+    }
+
+    /* Admin badge style */
+    .admin-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+    }
+
+    /* Make sure admin items are properly spaced */
+    .admin-only a {
+      margin-left: 0.5rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--primary);
+    }
     
     @media (max-width: 768px) {
       .sidebar {
@@ -151,6 +179,37 @@
           <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
           <span>Help</span>
         </a>
+
+        <!-- Admin Only Items -->
+        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+
+          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+          </a>
+          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+          </a>
+          <a href="/admin/environment-monitor.html"
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+          </a>
+          <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+          </a>
+          <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+          </a>
+          <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+          </a>
+          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+          </a>
+          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+          </a>
+        </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
         <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
@@ -401,6 +460,8 @@
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const closeSidebarButton = document.getElementById('close-sidebar');
     const sidebar = document.querySelector('.sidebar');
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
+     const adminItems = document.querySelectorAll(".admin-only");
     
     function toggleSidebar() {
       sidebar.classList.toggle('open');
@@ -453,6 +514,31 @@
   if (userName && userNameSpan && userLink) {
     userNameSpan.textContent = userName;
     userLink.href = "#"; // Prevent redirect if already signed in
+
+     // Handle admin features
+      if (isAdmin) {
+        console.log("Admin logged in - expanding sidebar"); // Debug log
+
+        // Expand sidebar by default for admin
+        if (sidebar) {
+          sidebar.classList.remove("w-64"); // Remove default width
+          sidebar.classList.add("w-72"); // Set wider width
+          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+        }
+
+        // Show admin-only items
+        adminItems.forEach(item => {
+          item.style.display = "block";
+        });
+
+        // Add admin badge to user info
+        if (userNameSpan) {
+          const adminBadge = document.createElement("span");
+          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+          adminBadge.textContent = "Admin";
+          userNameSpan.parentNode.appendChild(adminBadge);
+        }
+      }
 
     // Optionally add logout option
     const logoutBtn = document.createElement("button");

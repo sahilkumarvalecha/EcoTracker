@@ -15,10 +15,13 @@
       --primary: #10b981;
       --primary-dark: #059669;
       --primary-light: #d1fae5;
+      --secondary: #3b82f6;
+      --accent: #f59e0b;
     }
 
     body {
       font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
     }
 
     .sidebar-item {
@@ -47,35 +50,39 @@
       border-radius: 2px;
     }
 
-    .report-card {
+    .card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
-    .report-card:hover {
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .activity-tag {
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-tag:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .status-badge {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
     }
 
-    .status-submitted {
-      background-color: #dbeafe;
-      color: #1d4ed8;
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
 
-    .status-inreview {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
-
-    .status-resolved {
-      background-color: #dcfce7;
-      color: #166534;
-    }
 
     @media (max-width: 768px) {
       .sidebar {
@@ -83,7 +90,7 @@
         z-index: 50;
         height: 100vh;
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .sidebar.open {
@@ -99,36 +106,72 @@
         bottom: 0;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 40;
+        backdrop-filter: blur(4px);
       }
 
       .sidebar-overlay.open {
         display: block;
       }
 
-      .main-content {
-        padding-left: 0;
-      }
-
-      .page-header {
+      .page-title {
         margin-left: 60px;
-        /* Space for mobile menu button */
-      }
-
-      .filter-container {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .filter-container input,
-      .filter-container select {
-        width: 100%;
       }
     }
-    #suggestions {
-  position: absolute;
-  width: 100%;
-}
 
+    /* Modern scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Admin specific styles */
+    .admin-panel-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Wider sidebar for admin */
+    .w-72 {
+      width: 18rem;
+    }
+
+    /* Smooth sidebar expansion */
+    #sidebar {
+      transition: width 0.3s ease;
+    }
+
+    /* Admin badge style */
+    .admin-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+    }
+
+    /* Make sure admin items are properly spaced */
+    .admin-only a {
+      margin-left: 0.5rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      main {
+        margin-left: 16rem;
+      }
+    }
   </style>
 </head>
 
@@ -182,6 +225,38 @@
           <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
           <span>Help</span>
         </a>
+
+        <!-- Admin Only Items -->
+        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+
+          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+          </a>
+          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+          </a>
+          <a href="/admin/environment-monitor.html"
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+          </a>
+          <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+          </a>
+          <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+          </a>
+          <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+          </a>
+          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+          </a>
+          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+          </a>
+        </div>
+
       </nav>
       <div class="p-4 border-t border-gray-100">
         <a href="/login.html" id="user-link"
@@ -296,10 +371,37 @@
       const userName = localStorage.getItem("userName");
       const userLink = document.getElementById("user-link");
       const userNameSpan = document.getElementById("user-name-text");
+       const isAdmin = localStorage.getItem("isAdmin") === "true";
+        const adminItems = document.querySelectorAll(".admin-only");
 
       if (userName && userNameSpan && userLink) {
         userNameSpan.textContent = userName;
         userLink.href = "#"; // Prevent redirect if already signed in
+
+         // Handle admin features
+      if (isAdmin) {
+        console.log("Admin logged in - expanding sidebar"); // Debug log
+
+        // Expand sidebar by default for admin
+        if (sidebar) {
+          sidebar.classList.remove("w-64"); // Remove default width
+          sidebar.classList.add("w-72"); // Set wider width
+          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+        }
+
+        // Show admin-only items
+        adminItems.forEach(item => {
+          item.style.display = "block";
+        });
+
+        // Add admin badge to user info
+        if (userNameSpan) {
+          const adminBadge = document.createElement("span");
+          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+          adminBadge.textContent = "Admin";
+          userNameSpan.parentNode.appendChild(adminBadge);
+        }
+      }
 
         // Optionally add logout option
         const logoutBtn = document.createElement("button");
