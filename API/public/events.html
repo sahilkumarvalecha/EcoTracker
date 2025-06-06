@@ -6,35 +6,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Events</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
+
     :root {
       --primary: #10b981;
       --primary-dark: #059669;
       --primary-light: #d1fae5;
     }
-    
+
     body {
       font-family: 'Inter', sans-serif;
     }
-    
+
     .sidebar-item {
       transition: all 0.2s ease;
       position: relative;
     }
-    
+
     .sidebar-item:hover {
       background-color: var(--primary-light);
     }
-    
+
     .sidebar-item.active {
       background-color: var(--primary-light);
       color: var(--primary-dark);
       font-weight: 500;
     }
-    
+
     .sidebar-item.active::after {
       content: '';
       position: absolute;
@@ -45,17 +46,17 @@
       background-color: var(--primary);
       border-radius: 2px;
     }
-    
+
     .event-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .event-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
-     /* Admin specific styles */
+    /* Admin specific styles */
     .admin-panel-title {
       font-size: 0.75rem;
       letter-spacing: 0.05em;
@@ -83,7 +84,7 @@
       padding-left: 0.5rem;
       border-left: 2px solid var(--primary);
     }
-    
+
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -92,11 +93,11 @@
         transform: translateX(-100%);
         transition: transform 0.3s ease;
       }
-      
+
       .sidebar.open {
         transform: translateX(0);
       }
-      
+
       .sidebar-overlay {
         display: none;
         position: fixed;
@@ -104,27 +105,28 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         z-index: 40;
       }
-      
+
       .sidebar-overlay.open {
         display: block;
       }
-      
+
       .main-content {
         padding-left: 0;
       }
-      
+
       .page-header {
-        margin-left: 60px; /* Space for mobile menu button */
+        margin-left: 60px;
+        /* Space for mobile menu button */
       }
-      
+
       .filter-container {
         flex-direction: column;
         align-items: stretch;
       }
-      
+
       .filter-container input,
       .filter-container select {
         width: 100%;
@@ -140,10 +142,10 @@
     <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
       <i class="fas fa-bars text-gray-600"></i>
     </button>
-    
+
     <!-- Sidebar overlay for mobile -->
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    
+
     <!-- Sidebar -->
     <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
@@ -216,7 +218,8 @@
         </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
-        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+        <a href="/login.html" id="user-link"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
           <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
@@ -235,73 +238,50 @@
 
         <!-- Tabs -->
         <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
-          <button id="tab-all" onclick="switchTab('all')" class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">All</button>
-          <button id="tab-active" onclick="switchTab('active')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Active</button>
-          <button id="tab-upcoming" onclick="switchTab('upcoming')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Upcoming</button>
-          <button id="tab-past" onclick="switchTab('past')" class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Past</button>
+          <button id="tab-all" onclick="switchTab('all')"
+            class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">All</button>
+          <button id="tab-upcoming" onclick="switchTab('upcoming')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Upcoming</button>
+          <button id="tab-past" onclick="switchTab('past')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Past</button>
         </div>
 
         <!-- Filters -->
         <div class="mb-6 ml-3">
           <div class="flex flex-wrap items-center gap-4 filter-container">
-            <input type="text" placeholder="Event name or ID" class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
-            <select onchange="filterByStatus(this.value)" class="border border-gray-300 p-2 rounded-lg w-full md:w-40 bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <input type="text" placeholder="Event name or ID"
+              class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <select onchange="filterByStatus(this.value)"
+              class="border border-gray-300 p-2 rounded-lg w-full md:w-40 bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
               <option value="all">All statuses</option>
-              <option value="Active">Active</option>
               <option value="Upcoming">Upcoming</option>
               <option value="Past">Past</option>
             </select>
-            <input type="date" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
-            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">Apply Filters</button>
+            <input type="date"
+              class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+            <button
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">Apply
+              Filters</button>
           </div>
         </div>
 
         <!-- Event List -->
-        <div id="event-list" class="space-y-4">
-          <div class="flex justify-between items-center bg-white rounded-lg p-4 shadow-sm border border-gray-100 event-card" data-status="active">
-            <div class="flex items-center space-x-4">
-              <div class="p-3 rounded-lg bg-green-100 text-green-600">
-                <i class="fas fa-folder-open text-lg"></i>
-              </div>
-              <div>
-                <p class="font-medium text-lg">Cleanup Drive</p>
-                <p class="text-sm text-gray-500">Riverbank - Active - Today</p>
-              </div>
-            </div>
-            <button onclick="rsvpEvent('1')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-              RSVP
-            </button>
-          </div>
-
-          <div class="flex justify-between items-center bg-white rounded-lg p-4 shadow-sm border border-gray-100 event-card" data-status="upcoming">
-            <div class="flex items-center space-x-4">
-              <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600">
-                <i class="fas fa-folder-open text-lg"></i>
-              </div>
-              <div>
-                <p class="font-medium text-lg">Tree Planting</p>
-                <p class="text-sm text-gray-500">Lakeview - Upcoming - Tomorrow</p>
-              </div>
-            </div>
-            <button onclick="rsvpEvent('2')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-             RSVP
-            </button>
-          </div>
-
-          <div class="flex justify-between items-center bg-white rounded-lg p-4 shadow-sm border border-gray-100 event-card" data-status="past">
-            <div class="flex items-center space-x-4">
-              <div class="p-3 rounded-lg bg-gray-100 text-gray-600">
-                <i class="fas fa-folder-open text-lg"></i>
-              </div>
-              <div>
-                <p class="font-medium text-lg">Awareness Talk</p>
-                <p class="text-sm text-gray-500">Forest Edge - Past - 2d ago</p>
-              </div>
-            </div>
-            <button disabled class="bg-gray-200 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed shadow-sm">
-              Done
-            </button>
-          </div>
+        <div class="bg-white p-6 rounded-lg shadow-md" id="events-show">
+          <h2 class="text-xl font-semibold mb-4">All Events</h2>
+          <table class="w-full table-auto text-left border-collapse">
+            <thead>
+              <tr class="bg-green-100">
+                <th class="px-4 py-2">Name</th>
+                <th class="px-4 py-2">Location</th>
+                <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Date</th>
+                 <th class="px-4 py-2">RSVP</th>
+              </tr>
+            </thead>
+            <tbody id="events-table-body">
+              <!-- Events will be added here dynamically -->
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
@@ -314,17 +294,17 @@
     const closeSidebarButton = document.getElementById('close-sidebar');
     const sidebar = document.querySelector('.sidebar');
     const isAdmin = localStorage.getItem("isAdmin") === "true";
-     const adminItems = document.querySelectorAll(".admin-only");
-    
+    const adminItems = document.querySelectorAll(".admin-only");
+
     function toggleSidebar() {
       sidebar.classList.toggle('open');
       sidebarOverlay.classList.toggle('open');
     }
-    
+
     mobileMenuButton.addEventListener('click', toggleSidebar);
     sidebarOverlay.addEventListener('click', toggleSidebar);
     closeSidebarButton.addEventListener('click', toggleSidebar);
-    
+
     function switchTab(tab) {
       document.querySelectorAll('[id^="tab-"]').forEach(el => {
         el.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
@@ -335,7 +315,7 @@
 
       const events = document.querySelectorAll('#event-list > div');
       events.forEach(event => {
-        event.style.display = (tab === 'all' || event.dataset.status === tab) ? 'flex' : 'none';
+        event.style.display = (tab === 'all' || event.dataset.status.toLowerCase() === tab.toLowerCase()) ? 'flex' : 'none';
       });
 
       // Sync dropdown with tab
@@ -345,7 +325,7 @@
     function filterByStatus(status) {
       const events = document.querySelectorAll('#event-list > div');
       events.forEach(event => {
-        event.style.display = (status === 'all' || event.dataset.status === status.toLowerCase()) ? 'flex' : 'none';
+        event.style.display = (status === 'all' ||  event.dataset.status.toLowerCase() === status.toLowerCase()) ? 'flex' : 'none';
       });
 
       // Sync tab with dropdown
@@ -360,15 +340,11 @@
         tabBtn.classList.remove('text-gray-500');
       }
     }
-    
-    function rsvpEvent(eventId) {
-      alert(`RSVP for event ${eventId} would be processed here`);
-      // Your actual RSVP logic would go here
-    }
-    
+
+
     // Initialize with All tab active
     document.addEventListener('DOMContentLoaded', () => switchTab('all'));
-    
+
     // User session handling
     window.addEventListener("DOMContentLoaded", () => {
       const userName = localStorage.getItem("userName");
@@ -379,30 +355,30 @@
         userNameSpan.textContent = userName;
         userLink.href = "#"; // Prevent redirect if already signed in
 
-         // Handle admin features
-      if (isAdmin) {
-        console.log("Admin logged in - expanding sidebar"); // Debug log
+        // Handle admin features
+        if (isAdmin) {
+          console.log("Admin logged in - expanding sidebar"); // Debug log
 
-        // Expand sidebar by default for admin
-        if (sidebar) {
-          sidebar.classList.remove("w-64"); // Remove default width
-          sidebar.classList.add("w-72"); // Set wider width
-          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          // Expand sidebar by default for admin
+          if (sidebar) {
+            sidebar.classList.remove("w-64"); // Remove default width
+            sidebar.classList.add("w-72"); // Set wider width
+            sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          }
+
+          // Show admin-only items
+          adminItems.forEach(item => {
+            item.style.display = "block";
+          });
+
+          // Add admin badge to user info
+          if (userNameSpan) {
+            const adminBadge = document.createElement("span");
+            adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+            adminBadge.textContent = "Admin";
+            userNameSpan.parentNode.appendChild(adminBadge);
+          }
         }
-
-        // Show admin-only items
-        adminItems.forEach(item => {
-          item.style.display = "block";
-        });
-
-        // Add admin badge to user info
-        if (userNameSpan) {
-          const adminBadge = document.createElement("span");
-          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-          adminBadge.textContent = "Admin";
-          userNameSpan.parentNode.appendChild(adminBadge);
-        }
-      }
 
         // Optionally add logout option
         const logoutBtn = document.createElement("button");
@@ -415,6 +391,60 @@
         userLink.parentNode.appendChild(logoutBtn);
       }
     });
+
+let allEvents = [];
+    // events fetch
+    fetch('/api/eventsFetch')
+    .then(res => res.json())
+    .then(data => {
+      allEvents = data;
+      renderEvents('all'); // show all on load
+    });
+
+  // Render filtered events
+  function renderEvents(status) {
+    const tbody = document.getElementById('events-table-body');
+    tbody.innerHTML = ''; // clear table
+
+    // Normalize status
+    const normalizedStatus = status.toLowerCase();
+
+    const filteredEvents = normalizedStatus === 'all'
+      ? allEvents
+      : allEvents.filter(event => event.status.toLowerCase() === normalizedStatus);
+
+    filteredEvents.forEach(event => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="border px-4 py-2">${event.name}</td>
+        <td class="border px-4 py-2">${event.location}</td>
+        <td class="border px-4 py-2">${event.status}</td>
+        <td class="border px-4 py-2">${new Date(event.date).toLocaleDateString()}</td>
+        <td class="border px-4 py-2">
+          <button class="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded" onclick="rsvpEvent(${event.id}, '${event.name}')">
+            RSVP</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+      // RSVP 
+      function rsvpEvent(id, name) {
+    alert(`You've RSVP'd for event: ${name}`);
+    
+    // If you want to send RSVP to backend:
+    /*
+    fetch('/api/rsvp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: id })
+    })
+    .then(res => res.json())
+    .then(data => alert('RSVP confirmed!'))
+    .catch(err => console.error('RSVP error:', err));
+    */
+  }
   </script>
 </body>
 
