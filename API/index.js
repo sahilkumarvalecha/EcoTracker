@@ -518,22 +518,38 @@ app.get('/api/incidents', async (req, res) => {
     res.status(500).json([]); // Return empty array on error
   }
 });
+
 app.get('/api/chats', async (req, res) => {
   const { area } = req.query;
-  const result = await pool.query(
-    'SELECT sender, message, is_user FROM chats WHERE area = $1 ORDER BY created_at ASC',
-    [area]
-  );
+
+  const result = await pool.query(`
+    SELECT chats.message, chats.is_user, users.name AS sender
+    FROM chats
+    JOIN users ON chats.user_id = users.user_id
+    WHERE chats.area = $1
+    ORDER BY chats.created_at ASC
+  `, [area]);
+
   res.json(result.rows);
 });
+
+
 app.post('/api/chats', async (req, res) => {
-  const { area, sender, message, is_user } = req.body;
+  const userId = req.session.user_id;
+  const { area, message, is_user } = req.body;
+
+  if (!userId) {
+    return res.status(401).send("Not authenticated");
+  }
+
   await pool.query(
-    'INSERT INTO chats (area, sender, message, is_user) VALUES ($1, $2, $3, $4)',
-    [area, sender, message, is_user]
+    'INSERT INTO chats (area, user_id, message, is_user) VALUES ($1, $2, $3, $4)',
+    [area, userId, message, is_user]
   );
+
   res.status(201).send("Message saved");
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 5055;

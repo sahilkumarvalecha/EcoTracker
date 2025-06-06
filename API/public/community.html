@@ -44,9 +44,26 @@
       background-color: var(--primary);
       border-radius: 2px;
     }
-    .area-card {
-      @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
-      }
+
+  .area-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .area-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 128, 0, 0.1);
+    border-color: #86efac;
+  }
+
+  .area-card.active {
+    background-color: #f0fdf4;
+    border-color: #22c55e;
+  }
+
     .help-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -64,16 +81,28 @@
     .submit-btn:hover {
       background-color: var(--primary-dark);
     }
-.tab-content {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
+    .tab-content {
+    transition: all 0.4s ease-in-out;
+    opacity: 0;
+    transform: translateY(10px);
+    display: none;
+  }
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
 
-.tab-content.active {
-  display: block;
-  opacity: 1;
-}
+  .tab-btn.active {
+    background-color: #22c55e;
+    color: white;
+  }
+  .tab-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
   .area-box {
     @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
   }
@@ -246,9 +275,9 @@
 
         <!-- Tabs -->
         <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6 ml-2">
-          <button onclick="switchTab('members')" class="tab-button font-medium text-green-600 border-b-2 border-green-600 pb-2 px-1">Members</button>
-          <button onclick="switchTab('discussions')" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Discussions</button>
-          <button onclick="switchTab('ecoalerts')" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">EcoAlerts</button>
+          <button onclick="switchTab('members'), highlightTab(this)" class="tab-button font-medium text-green-600 border-b-2 border-green-600 pb-2 px-1 tab-btn">Members</button>
+          <button onclick="switchTab('discussions'), highlightTab(this)" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 tab-btn">Discussions</button>
+          <button onclick="switchTab('ecoalerts'), highlightTab(this)" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 tab-btn">EcoAlerts</button>
         </div>
 
         <!-- ====================== -->
@@ -375,22 +404,22 @@
   <section class="mb-8">
     <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div onclick="selectArea('Clifton'), loadChats('Clifton')" class="area-box area-card" data-area="Clifton">
+      <div onclick="selectArea('Clifton'), loadChats('Clifton')" class="area-box area-card cursor-pointer" data-area="Clifton">
         <div class="icon-wrapper"><i class="fas fa-umbrella-beach"></i></div>
         <p class="font-medium">Clifton</p>
         <p class="text-xs text-gray-600">18 discussions</p>
       </div>
-      <div onclick="selectArea('Gulshan'), loadChats('Gulshan')" class="area-box area-card" data-area="Gulshan">
+      <div onclick="selectArea('Gulshan'), loadChats('Gulshan')" class="area-box area-card cursor-pointer" data-area="Gulshan">
         <div class="icon-wrapper"><i class="fas fa-building"></i></div>
         <p class="font-medium">Gulshan</p>
         <p class="text-xs text-gray-600">24 discussions</p>
       </div>
-      <div onclick="selectArea('DHA'), loadChats('DHA')" class="area-box area-card" data-area="DHA">
+      <div onclick="selectArea('DHA'), loadChats('DHA')" class="area-box area-card cursor-pointer" data-area="DHA">
         <div class="icon-wrapper"><i class="fas fa-home"></i></div>
         <p class="font-medium">DHA</p>
         <p class="text-xs text-gray-600">15 discussions</p>
       </div>
-      <div onclick="selectArea('Korangi'), loadChats('Korangi')" class="area-box area-card" data-area="Korangi">
+      <div onclick="selectArea('Korangi'), loadChats('Korangi')" class="area-box area-card cursor-pointer" data-area="Korangi">
         <div class="icon-wrapper"><i class="fas fa-industry"></i></div>
         <p class="font-medium">Korangi</p>
         <p class="text-xs text-gray-600">32 discussions</p>
@@ -694,6 +723,12 @@ function switchTab(tabName, event) {
   localStorage.setItem('lastActiveTab', tabName);
 }
 
+function highlightTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  tab.classList.add('active');
+}
+
+
     // account name
      window.addEventListener("DOMContentLoaded", () => {
       const userName = localStorage.getItem("userName");
@@ -827,10 +862,18 @@ function switchTab(tabName, event) {
     //chat section
     let selectedArea = "Clifton"; // Default
 
-function selectArea(area) {
+    function selectArea(area) {
   selectedArea = area;
   document.getElementById("selected-area").textContent = `– ${area}`;
+
+  document.querySelectorAll('.area-card').forEach(card => {
+    card.classList.remove('active');
+  });
+
+  const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
+  if (activeCard) activeCard.classList.add('active');
 }
+
 
 // Load chats for selected area
 function loadChats(area) {
@@ -844,13 +887,14 @@ function loadChats(area) {
         chatBox.innerHTML = `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>`;
       } else {
         data.forEach(msg => {
-          chatBox.innerHTML += `
-            <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
-              <p class="font-medium">${msg.sender} (${area}):</p>
-              <p>${msg.message}</p>
-            </div>
-          `;
+         chatBox.innerHTML += `
+           <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
+            <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
+           <p>${msg.message}</p>
+           </div>
+           `;
         });
+
         chatBox.scrollTop = chatBox.scrollHeight;
       }
     })
@@ -868,7 +912,6 @@ function sendMessage() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       area: selectedArea,
-      sender: "You",
       message: message,
       is_user: true
     })
