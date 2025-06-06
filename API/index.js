@@ -424,9 +424,7 @@ app.post('/rsvp', async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5055;
-app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
+
 
 // Get all categories (for dropdown if needed)
 app.get('/api/categories', async (req, res) => {
@@ -434,7 +432,7 @@ app.get('/api/categories', async (req, res) => {
     const result = await pool.query('SELECT category_id, name FROM categories');
     res.json(result.rows);
   } catch (err) {
-    console.error('❌ Failed to fetch categories:', err.message);
+    console.error('Failed to fetch categories:', err.message);
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
@@ -521,3 +519,6 @@ app.get('/api/incidents', async (req, res) => {
   }
 });
 
+// Start the server
+const PORT = process.env.PORT || 5055;
+app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
