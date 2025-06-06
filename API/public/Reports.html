@@ -83,6 +83,11 @@
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
 
+    /* dropdown */
+    #status-filter:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
 
     @media (max-width: 768px) {
       .sidebar {
@@ -281,11 +286,13 @@
         <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
           <button id="tab-all" onclick="switchTab('all')"
             class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">All</button>
-          <button id="tab-submitted" onclick="switchTab('submitted')"
-            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Submitted</button>
+          <button id="tab-reported" onclick="switchTab('reported')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Reported</button>
           <button id="tab-inreview" onclick="switchTab('inreview')"
             class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">In
             Review</button>
+          <button id="tab-verified" onclick="switchTab('verified')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Verified</button>
           <button id="tab-resolved" onclick="switchTab('resolved')"
             class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Resolved</button>
         </div>
@@ -298,13 +305,13 @@
             <ul id="suggestions" class="bg-white border rounded mt-1 hidden absolute z-10 max-h-60 overflow-y-auto">
             </ul>
 
-            <select
-              class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" >
-              <option>Report Status</option>
-              <option>Reported</option>
-              <option>In Review</option>
-              <option>Verified</option>
-              <option>Resolved</option>
+            <select id="status-filter"
+              class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+              <option value="all">All Statuses</option>
+              <option value="reported">Reported</option>
+              <option value="inreview">In Review</option>
+              <option value="verified">Verified</option>
+              <option value="resolved">Resolved</option>
             </select>
             <input type="date"
               class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
@@ -317,6 +324,18 @@
         <!-- Reports List -->
         <div id="event-list" class="space-y-3">
           <!-- We'll clear this and add dynamic reports here -->
+          <table id="reportsTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Icon</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be inserted here -->
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
@@ -352,15 +371,13 @@
         activeTab.classList.remove('text-gray-500');
       }
 
-      // Show/hide reports based on status
-      const reports = document.querySelectorAll('#event-list > div');
-      reports.forEach(report => {
-        if (tab === 'all' || report.dataset.status === tab) {
-          report.style.display = 'flex';
-        } else {
-          report.style.display = 'none';
-        }
-      });
+      // // Show/hide reports based on status
+      // const reports = document.querySelectorAll('.report-card');
+      // reports.forEach(report => {
+      //   report.style.display = (tab === 'all' || report.dataset.status === tab)
+      //     ? 'flex'
+      //     : 'none';
+      // });
     }
 
     // Initialize with All tab active
@@ -371,37 +388,37 @@
       const userName = localStorage.getItem("userName");
       const userLink = document.getElementById("user-link");
       const userNameSpan = document.getElementById("user-name-text");
-       const isAdmin = localStorage.getItem("isAdmin") === "true";
-        const adminItems = document.querySelectorAll(".admin-only");
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+      const adminItems = document.querySelectorAll(".admin-only");
 
       if (userName && userNameSpan && userLink) {
         userNameSpan.textContent = userName;
         userLink.href = "#"; // Prevent redirect if already signed in
 
-         // Handle admin features
-      if (isAdmin) {
-        console.log("Admin logged in - expanding sidebar"); // Debug log
+        // Handle admin features
+        if (isAdmin) {
+          console.log("Admin logged in - expanding sidebar"); // Debug log
 
-        // Expand sidebar by default for admin
-        if (sidebar) {
-          sidebar.classList.remove("w-64"); // Remove default width
-          sidebar.classList.add("w-72"); // Set wider width
-          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          // Expand sidebar by default for admin
+          if (sidebar) {
+            sidebar.classList.remove("w-64"); // Remove default width
+            sidebar.classList.add("w-72"); // Set wider width
+            sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          }
+
+          // Show admin-only items
+          adminItems.forEach(item => {
+            item.style.display = "block";
+          });
+
+          // Add admin badge to user info
+          if (userNameSpan) {
+            const adminBadge = document.createElement("span");
+            adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+            adminBadge.textContent = "Admin";
+            userNameSpan.parentNode.appendChild(adminBadge);
+          }
         }
-
-        // Show admin-only items
-        adminItems.forEach(item => {
-          item.style.display = "block";
-        });
-
-        // Add admin badge to user info
-        if (userNameSpan) {
-          const adminBadge = document.createElement("span");
-          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-          adminBadge.textContent = "Admin";
-          userNameSpan.parentNode.appendChild(adminBadge);
-        }
-      }
 
         // Optionally add logout option
         const logoutBtn = document.createElement("button");
@@ -414,7 +431,57 @@
         userLink.parentNode.appendChild(logoutBtn);
       }
     });
+
+    // dropdown switiching
+    const statusFilter = document.getElementById('status-filter');
+    const tabs = {
+      all: document.getElementById('tab-all'),
+      reported: document.getElementById('tab-reported'),
+      inreview: document.getElementById('tab-inreview'),
+      verified: document.getElementById('tab-verified'),
+      resolved: document.getElementById('tab-resolved')
+    };
+
+    // 2. Switch Tab Function (updated)
+    function switchTab(tab) {
+      // Validate input
+      if (!tabs[tab]) return;
+
+      // Update tabs UI
+      Object.values(tabs).forEach(t => {
+        t.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+        t.classList.add('text-gray-500');
+      });
+
+      tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+      tabs[tab].classList.remove('text-gray-500');
+
+      // Sync dropdown
+      statusFilter.value = tab;
+      // Filter reports
+      filterReportsByStatus(tab);
+    }
+
+    // 3. Dropdown Event Listener
+    statusFilter.addEventListener('change', function () {
+      switchTab(this.value);
+    });
+
+    // 4. Improved Filter Function
+    function filterReportsByStatus(status) {
+      const reports = document.querySelectorAll('.report-card');
+
+      reports.forEach(report => {
+        if (status === 'all' || report.dataset.status === status) {
+          report.style.display = 'flex';
+        } else {
+          report.style.display = 'none';
+        }
+      });
+    }
   </script>
+
+
 
   <!-- reports loading -->
   <script>
@@ -433,9 +500,10 @@
 
         data.forEach(report => {
           const statusClass = {
-            submitted: 'status-submitted bg-blue-100 text-blue-600',
-            inreview: 'status-inreview bg-yellow-100 text-yellow-600',
-            resolved: 'status-resolved bg-green-100 text-green-600'
+            reported: 'bg-blue-100 text-blue-600',
+            inreview: 'bg-yellow-100 text-yellow-600',
+            verified: 'bg-purple-100 text-purple-600',
+            resolved: 'bg-green-100 text-green-600'
           };
 
           const iconClass = {
@@ -446,13 +514,13 @@
 
           const reportCard = document.createElement('div');
           reportCard.className = `bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center`;
-          reportCard.setAttribute('data-status', report.status);
+          reportCard.setAttribute('data-status', report.report_status);
 
           reportCard.innerHTML = `
           <div>
             <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg ${statusClass[report.status] || 'bg-gray-100 text-gray-600'}">
-                <i class="${iconClass[report.status] || 'fas fa-info-circle'}"></i>
+              <div class="p-2 rounded-lg ${statusClass[report.report_status] || 'bg-gray-100 text-gray-600'}">
+                <i class="${iconClass[report.report_status] || 'fas fa-info-circle'}"></i>
               </div>
               <div>
                 <p class="font-medium">${report.title}</p>
@@ -460,7 +528,7 @@
               </div>
             </div>
           </div>
-          <span class="status-badge status-${report.status} capitalize">${report.status}</span>
+          <span class="status-badge status-${report.report_status} capitalize">${report.report_status}</span>
         `;
 
           container.appendChild(reportCard);
@@ -476,56 +544,56 @@
 
     // report search javascript
     const searchInput = document.getElementById('report-search');
-const suggestionBox = document.getElementById('suggestions');
+    const suggestionBox = document.getElementById('suggestions');
 
-searchInput.addEventListener('input', async function () {
-  const query = this.value.trim();
-  suggestionBox.innerHTML = '';
+    searchInput.addEventListener('input', async function () {
+      const query = this.value.trim();
+      suggestionBox.innerHTML = '';
 
-  if (query.length === 0) {
-    suggestionBox.classList.add('hidden');
-    return;
-  }
-
-  try {
-    const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
-    const suggestions = await res.json();
-
-    if (suggestions.length === 0) {
-      suggestionBox.classList.add('hidden');
-      return;
-    }
-
-    suggestions.forEach(report => {
-      const li = document.createElement('li');
-     li.textContent = `${report.title}`;
-      li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer";
-      li.onclick = () => {
-        searchInput.value = report.title;
+      if (query.length === 0) {
         suggestionBox.classList.add('hidden');
-        // Optional: Scroll to report or show details
-        // Filter the reports on page based on selected title
-document.querySelectorAll('.report-card').forEach(card => {
-  const title = card.querySelector('.font-medium').textContent.toLowerCase();
-  const selected = report.title.toLowerCase();
- 
-  if (title.includes(selected)) {
-    card.style.display = 'flex'; // show match
-  } else {
-    card.style.display = 'none'; // hide non-match
-  }
-});
+        return;
+      }
 
-      };
-      suggestionBox.appendChild(li);
+      try {
+        const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
+        const suggestions = await res.json();
+
+        if (suggestions.length === 0) {
+          suggestionBox.classList.add('hidden');
+          return;
+        }
+
+        suggestions.forEach(report => {
+          const li = document.createElement('li');
+          li.textContent = `${report.title}`;
+          li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer";
+          li.onclick = () => {
+            searchInput.value = report.title;
+            suggestionBox.classList.add('hidden');
+            // Optional: Scroll to report or show details
+            // Filter the reports on page based on selected title
+            document.querySelectorAll('.report-card').forEach(card => {
+              const title = card.querySelector('.font-medium').textContent.toLowerCase();
+              const selected = report.title.toLowerCase();
+
+              if (title.includes(selected)) {
+                card.style.display = 'flex'; // show match
+              } else {
+                card.style.display = 'none'; // hide non-match
+              }
+            });
+
+          };
+          suggestionBox.appendChild(li);
+        });
+
+        suggestionBox.classList.remove('hidden');
+      } catch (err) {
+        console.error('Suggestion fetch failed:', err);
+        suggestionBox.classList.add('hidden');
+      }
     });
-
-    suggestionBox.classList.remove('hidden');
-  } catch (err) {
-    console.error('Suggestion fetch failed:', err);
-    suggestionBox.classList.add('hidden');
-  }
-});
   </script>
 
 </body>
