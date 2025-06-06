@@ -455,46 +455,17 @@
         <!-- ====================== -->
         <!-- ECOALERTS TAB -->
         <!-- ====================== -->
+        
         <div id="ecoalerts" class="tab-content hidden">
-          <div class="max-w-3xl mx-auto">
-            <!-- Create New Alert -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 alert-post">
-              <h2 class="text-xl font-semibold mb-4 text-center">Create New EcoAlert</h2>
-              <textarea class="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" rows="4" placeholder="Describe the environmental issue..."></textarea>
-              
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2 text-center">Issue Category:</label>
-                <div class="grid grid-cols-2 gap-3">
-                  <button class="category-btn border border-gray-300 p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Waste Dumping</button>
-                  <button class="category-btn border border-gray-300 p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Water Pollution</button>
-                  <button class="category-btn border border-gray-300 p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Air Quality</button>
-                  <button class="category-btn border border-gray-300 p-3 rounded-lg text-sm hover:bg-green-50 transition-colors duration-200">Noise Pollution</button>
-                </div>
-              </div>
-              
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2 text-center">Area:</label>
-                <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                  <option>Clifton</option>
-                  <option>Gulshan</option>
-                  <option>DHA</option>
-                  <option>Korangi</option>
-                </select>
-              </div>
-              
-              <div class="flex justify-between items-center">
-                <div>
-                  <input type="file" id="alert-image" class="hidden" accept="image/*">
-                  <label for="alert-image" class="cursor-pointer text-green-600 hover:text-green-800 flex items-center transition-colors">
-                    <i class="fas fa-image mr-2"></i> Add Photo
-                  </label>
-                </div>
-                <button class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors duration-200">
-                  <i class="fas fa-bell mr-2"></i> Post Alert
-                </button>
-              </div>
-            </div>
-
+          <div class="max-w-md mx-auto py-10 px-4 flex justify-center">
+            <!-- Create New Alert Button -->
+            <a href="/report-incident.html"
+               class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all">
+              <i class="fas fa-plus-circle text-lg"></i>
+              <span >Report Incident</span>
+            </a>
+          </div>
+        
             <!-- Alert Feed -->
             <div class="space-y-6">
               <!-- Alert 1 - Beach Pollution -->
