@@ -352,31 +352,6 @@
     sidebarOverlay.addEventListener('click', toggleSidebar);
     closeSidebarButton.addEventListener('click', toggleSidebar);
 
-    function switchTab(tab) {
-      // Remove active styles from all tabs
-      document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        el.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-        el.classList.add('text-gray-500');
-      });
-
-      // Add active styles to clicked tab
-      const activeTab = document.getElementById('tab-' + tab);
-      if (activeTab) {
-        activeTab.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-        activeTab.classList.remove('text-gray-500');
-      }
-
-      // // Show/hide reports based on status
-      // const reports = document.querySelectorAll('.report-card');
-      // reports.forEach(report => {
-      //   report.style.display = (tab === 'all' || report.dataset.status === tab)
-      //     ? 'flex'
-      //     : 'none';
-      // });
-    }
-
-    // Initialize with All tab active
-    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
 
     // User session handling
     window.addEventListener("DOMContentLoaded", () => {

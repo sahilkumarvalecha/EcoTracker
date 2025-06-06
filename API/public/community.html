@@ -18,6 +18,9 @@
     body {
       font-family: 'Inter', sans-serif;
     }
+    .hidden{
+      display: none;
+    }
     
     .sidebar-item {
       transition: all 0.2s ease;
@@ -170,6 +173,7 @@
       to { opacity: 1; }
       }
     }
+
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -274,16 +278,19 @@
         </div>
 
         <!-- Tabs -->
-        <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6 ml-2">
-          <button onclick="switchTab('members'), highlightTab(this)" class="tab-button font-medium text-green-600 border-b-2 border-green-600 pb-2 px-1 tab-btn">Members</button>
-          <button onclick="switchTab('discussions'), highlightTab(this)" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 tab-btn">Discussions</button>
-          <button onclick="switchTab('ecoalerts'), highlightTab(this)" class="tab-button font-medium text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1 tab-btn">EcoAlerts</button>
+<div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
+          <button id="tab-members" onclick="switchTab('members')"
+            class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">Members</button>
+          <button id="tab-discussions" onclick="switchTab('discussions')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Discussions</button>
+          <button id="tab-alerts" onclick="switchTab('alerts')"
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">EcoAlerts</button>
         </div>
 
         <!-- ====================== -->
         <!-- MEMBERS TAB -->
         <!-- ====================== -->
-        <div id="members" class="tab-content active">
+        <div id="members" class="tab-content">
           <!-- Top Contributors -->
           <section class="mb-8 ml-3">
             <h2 class="text-xl font-semibold mb-6">Top Contributors</h2>
@@ -399,7 +406,7 @@
         <!-- ====================== -->
         <!-- DISCUSSIONS TAB -->
         <!-- ====================== -->
-<div id="discussions" class="tab-content">
+<div id="discussions" class="tab-content hidden">
   <!-- Areas in Karachi -->
   <section class="mb-8">
     <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
@@ -448,7 +455,7 @@
         <!-- ====================== -->
         <!-- ECOALERTS TAB -->
         <!-- ====================== -->
-        <div id="ecoalerts" class="tab-content">
+        <div id="ecoalerts" class="tab-content hidden">
           <div class="max-w-3xl mx-auto">
             <!-- Create New Alert -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 alert-post">
@@ -699,38 +706,46 @@
 
   <script>
 
-    // Tab switching functionality
-function switchTab(tabName, event) {
-  // Hide all tab contents
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.classList.remove('active');
+// Tab switching functionality
+// Update your switchTab function to this:
+
+const tabs = {
+  members: document.getElementById('tab-members'),
+  discussions: document.getElementById('tab-discussions'),
+  alerts: document.getElementById('tab-alerts')
+};
+const contents = {
+  members: document.getElementById('members'),
+  discussions: document.getElementById('discussions'),
+  alerts: document.getElementById('ecoalerts')
+};
+function switchTab(tab) {
+  // Validate input
+  if (!tabs[tab] || !contents[tab]) return;
+
+  // Update tabs UI
+  Object.values(tabs).forEach(t => {
+    t.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+    t.classList.add('text-gray-500');
   });
-  
-  // Show the selected tab content
-  document.getElementById(tabName).classList.add('active');
-  
-  // Update tab button styles
-  document.querySelectorAll('.tab-button').forEach(button => {
-    button.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
-    button.classList.add('text-gray-500');
-  });
-  
-  // Style the active tab button
-  event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
-  event.currentTarget.classList.remove('text-gray-500');
-  
-  // Store the active tab in localStorage
-  localStorage.setItem('lastActiveTab', tabName);
-}
 
-function highlightTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  tab.classList.add('active');
-}
+  tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+  tabs[tab].classList.remove('text-gray-500');
 
+   // Toggle tab contents
+  Object.values(contents).forEach(c => c.classList.add('hidden'));
+  contents[tab].classList.remove('hidden');
 
+  // Save to localStorage
+  localStorage.setItem('lastActiveTab', tab);
+};
+document.addEventListener('DOMContentLoaded', () => {
+      const lastTab = localStorage.getItem('lastActiveTab') || 'members';
+      switchTab(lastTab);
+    });
     // account name
-     window.addEventListener("DOMContentLoaded", () => {
+     window.addEventListener("DOMContentLoaded", () =>{
+       
       const userName = localStorage.getItem("userName");
       if (!userName) {
       window.location.href = "login.html";
@@ -751,8 +766,6 @@ function highlightTab(tab) {
 
       // Handle admin features
       if (isAdmin) {
-        console.log("Admin logged in - expanding sidebar"); // Debug log
-        
         // Expand sidebar by default for admin
         if (sidebar) {
           sidebar.classList.remove("w-64"); // Remove default width
@@ -773,16 +786,8 @@ function highlightTab(tab) {
           userNameSpan.parentNode.appendChild(adminBadge);
         }
       }
-      const lastActiveTab = localStorage.getItem('lastActiveTab') || 'members';
-  const initialTabButton = document.querySelector(`[onclick*="switchTab('${lastActiveTab}')"]`);
   
-  if (initialTabButton) {
-    // Create a mock event object
-    const mockEvent = {
-      currentTarget: initialTabButton
-    };
-    switchTab(lastActiveTab, mockEvent);
-  }
+ 
       // Add logout button
       if (userName) {
         const logoutBtn = document.createElement("button");
@@ -922,18 +927,12 @@ function sendMessage() {
     })
     .catch(err => console.error("Failed to send message:", err));
 }
-
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
   loadChats(selectedArea);
 });
 
+    
   </script>
-  
 </body>
 </html>
-
-
-
-
-
