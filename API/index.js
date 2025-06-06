@@ -550,6 +550,42 @@ app.post('/api/chats', async (req, res) => {
   res.status(201).send("Message saved");
 });
 
+// event create
+app.post('/api/events', async (req, res) => {
+  const { name, location, status, date } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO events (name, location, status, date) VALUES ($1, $2, $3, $4)',
+      [name, location, status, date]
+    );
+    res.status(201).json({ message: "Event created", event: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create event" });
+  }
+});
+// fetch events
+app.get('/api/eventsFetch', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM events ORDER BY date DESC');
+    res.json(result.rows); 
+  } catch (error) {
+    console.error('Error fetching reports:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// events count
+app.get("/api/events-count", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT COUNT(id) FROM events");
+   const count = result.rows[0].count;
+    res.json({ count: parseInt(count) }); // Send the count as a number
+  } catch (error) {
+    console.error("Error fetching report count:", error);
+    res.status(500).json({ error: "Failed to fetch count" });
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 5055;
