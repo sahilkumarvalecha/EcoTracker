@@ -326,11 +326,6 @@
           <!-- We'll clear this and add dynamic reports here -->
           <table id="reportsTable">
             <thead>
-              <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Icon</th>
-              </tr>
             </thead>
             <tbody>
               <!-- Data will be inserted here -->
@@ -512,10 +507,19 @@
             resolved: 'fas fa-skull-crossbones'
           };
 
+          // Get severity level (default to empty if not provided)
+      const severity = (report.severity || '').toLowerCase();
+
+       const severityColor = {
+        high: 'bg-red-50 border-l-4 border-red-500',
+        medium: 'bg-amber-50 border-l-4 border-amber-500',
+        low: 'bg-green-50 border-l-4 border-green-500',
+        critical: 'bg-orange-50 border-l-4 border-orange-500'
+      };
+
           const reportCard = document.createElement('div');
           reportCard.className = `bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center`;
           reportCard.setAttribute('data-status', report.report_status);
-
           reportCard.innerHTML = `
           <div>
             <div class="flex items-center space-x-3">
@@ -528,7 +532,9 @@
               </div>
             </div>
           </div>
-          <span class="status-badge status-${report.report_status} capitalize">${report.report_status}</span>
+          <span class="px-3 py-1 rounded-full text-xs ${
+          statusClass[report.report_status] || 'bg-gray-100 text-gray-600'
+        } capitalize">${report.report_status || 'unknown'}</span>
         `;
 
           container.appendChild(reportCard);
@@ -539,7 +545,7 @@
     }
 
     // Load reports when page loads
-    window.onload = loadReports;
+    window.addEventListener('DOMContentLoaded', loadReports);
 
 
     // report search javascript
