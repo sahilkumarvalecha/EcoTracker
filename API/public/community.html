@@ -62,6 +62,21 @@
     .submit-btn:hover {
       background-color: var(--primary-dark);
     }
+.tab-content {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
     
     @media (max-width: 768px) {
       .sidebar {
@@ -97,6 +112,11 @@
       
       .page-header {
         margin-left: 60px; /* Space for mobile menu button */
+      }
+
+      @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
       }
     }
   </style>
@@ -623,6 +643,30 @@
 
   <script>
 
+    // Tab switching functionality
+function switchTab(tabName, event) {
+  // Hide all tab contents
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // Show the selected tab content
+  document.getElementById(tabName).classList.add('active');
+  
+  // Update tab button styles
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
+    button.classList.add('text-gray-500');
+  });
+  
+  // Style the active tab button
+  event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+  event.currentTarget.classList.remove('text-gray-500');
+  
+  // Store the active tab in localStorage
+  localStorage.setItem('lastActiveTab', tabName);
+}
+
     // account name
      window.addEventListener("DOMContentLoaded", () => {
       const userName = localStorage.getItem("userName");
@@ -667,7 +711,16 @@
           userNameSpan.parentNode.appendChild(adminBadge);
         }
       }
-
+      const lastActiveTab = localStorage.getItem('lastActiveTab') || 'members';
+  const initialTabButton = document.querySelector(`[onclick*="switchTab('${lastActiveTab}')"]`);
+  
+  if (initialTabButton) {
+    // Create a mock event object
+    const mockEvent = {
+      currentTarget: initialTabButton
+    };
+    switchTab(lastActiveTab, mockEvent);
+  }
       // Add logout button
       if (userName) {
         const logoutBtn = document.createElement("button");
@@ -708,22 +761,7 @@
     mobileMenuButton.addEventListener('click', toggleSidebar);
     sidebarOverlay.addEventListener('click', toggleSidebar);
     closeSidebarButton.addEventListener('click', toggleSidebar);
-    
-    // Tab switching functionality
-    function switchTab(tabName) {
-     
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.getElementById(tabName).classList.add('active');
-      
-      document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
-        button.classList.add('text-gray-500');
-      });
-      event.currentTarget.classList.add('text-green-600', 'border-b-2', 'border-green-600');
-      event.currentTarget.classList.remove('text-gray-500');
-    }
+  
 
     // Like button toggle for EcoAlerts
     document.querySelectorAll('.like-btn').forEach(btn => {
