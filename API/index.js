@@ -463,9 +463,6 @@ app.post('/api/rsvp', async (req, res) => {
 });
 
 
-
-
-
 // Get all categories (for dropdown if needed)
 app.get('/api/categories', async (req, res) => {
   try {
@@ -702,6 +699,97 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
     await pool.query('ROLLBACK');
     console.error('Voting error:', err);
     res.status(500).json({ error: 'Voting failed' });
+  }
+});
+
+// user update
+app.post('/api/updateUser', async (req, res) => {
+  try {
+    const { user_id, name, email, password } = req.body;
+    
+    // Validate input
+    if (!user_id || !name || !email) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    
+    // Update logic here
+    const userCheck = await pool.query('SELECT * FROM users WHERE user_id = $1', [user_id]);
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+     let updateQuery;
+    let queryParams;
+    
+    if (password) {
+      // Store password directly (assuming it's already hashed or you want plain text)
+      updateQuery = `
+        UPDATE users 
+        SET name = $1, email = $2, password_hash = $3 
+        WHERE user_id = $4 
+        RETURNING user_id, name, email`;
+      queryParams = [name, email, password, user_id];
+    } else {
+      updateQuery = `
+        UPDATE users 
+        SET name = $1, email = $2 
+        WHERE user_id = $3 
+        RETURNING user_id, name, email`;
+      queryParams = [name, email, user_id];
+    }
+    
+    const result = await pool.query(updateQuery, queryParams);
+    
+    res.json({ 
+      success: true, 
+      user: result.rows[0],
+      message: 'User updated successfully'
+    });
+  } catch (error) {
+    console.error('Update error:', error);
+  }
+});
+
+// for user update
+app.get('/api/user/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching user:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+// delete user
+app.post('/api/deleteUser', async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    // Execute the delete query
+    const result = await pool.query('DELETE FROM users WHERE user_id = $1', [user_id]);
+
+    if (result.rowCount === 0) {
+      // No user found to delete
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
