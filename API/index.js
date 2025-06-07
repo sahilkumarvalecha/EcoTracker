@@ -702,6 +702,31 @@ app.post("/api/createUser", async (req, res) => {
   }
 });
 
+// delete user
+app.post('/api/deleteUser', async (req, res) => {
+  const { user_id } = req.body;
+
+  console.log("Received request to delete user:", user_id); // ✅ Add this
+  if (!user_id) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    // Execute the delete query
+    const result = await pool.query('DELETE FROM users WHERE user_id = $1', [user_id]);
+
+    if (result.rowCount === 0) {
+      // No user found to delete
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
