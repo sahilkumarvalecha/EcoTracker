@@ -275,7 +275,7 @@
                 <th class="px-4 py-2">Location</th>
                 <th class="px-4 py-2">Status</th>
                 <th class="px-4 py-2">Date</th>
-                 <th class="px-4 py-2">RSVP</th>
+                <!-- <th class="px-4 py-2"> RSVP</th> -->
               </tr>
             </thead>
             <tbody id="events-table-body">
@@ -295,6 +295,21 @@
     const sidebar = document.querySelector('.sidebar');
     const isAdmin = localStorage.getItem("isAdmin") === "true";
     const adminItems = document.querySelectorAll(".admin-only");
+    const user_id = localStorage.getItem("user_id") || '';
+
+
+    // ensure user logged in
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if user is logged in
+      const user_id = localStorage.getItem("user_id");
+      if (!user_id) {
+        alert("Please log in to view events");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Rest of your existing events page code...
+    });
 
     function toggleSidebar() {
       sidebar.classList.toggle('open');
@@ -325,7 +340,7 @@
     function filterByStatus(status) {
       const events = document.querySelectorAll('#event-list > div');
       events.forEach(event => {
-        event.style.display = (status === 'all' ||  event.dataset.status.toLowerCase() === status.toLowerCase()) ? 'flex' : 'none';
+        event.style.display = (status === 'all' || event.dataset.status.toLowerCase() === status.toLowerCase()) ? 'flex' : 'none';
       });
 
       // Sync tab with dropdown
@@ -392,59 +407,134 @@
       }
     });
 
-let allEvents = [];
+    let allEvents = [];
     // events fetch
     fetch('/api/eventsFetch')
-    .then(res => res.json())
-    .then(data => {
-      allEvents = data;
-      renderEvents('all'); // show all on load
-    });
+      .then(res => res.json())
+      .then(data => {
+        allEvents = data;
+        renderEvents('all'); // show all on load
+      });
 
-  // Render filtered events
-  function renderEvents(status) {
-    const tbody = document.getElementById('events-table-body');
-    tbody.innerHTML = ''; // clear table
+    // Render filtered events
+    function renderEvents(status) {
+      const tbody = document.getElementById('events-table-body');
+      tbody.innerHTML = ''; // clear table
 
-    // Normalize status
-    const normalizedStatus = status.toLowerCase();
+      // Normalize status
+      const normalizedStatus = status.toLowerCase();
 
-    const filteredEvents = normalizedStatus === 'all'
-      ? allEvents
-      : allEvents.filter(event => event.status.toLowerCase() === normalizedStatus);
+      const filteredEvents = normalizedStatus === 'all'
+        ? allEvents
+        : allEvents.filter(event => event.status.toLowerCase() === normalizedStatus);
 
-    filteredEvents.forEach(event => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+      filteredEvents.forEach(event => {
+        const tr = document.createElement('tr');
+         const hasRsvped = userRsvpedEvents.has(event.id);
+
+         // Determine button text and disabled attribute dynamically
+     const buttonText = hasRsvped ? 'RSVPed' : 'RSVP';
+    const isDisabled = hasRsvped;
+
+        tr.innerHTML = `
         <td class="border px-4 py-2">${event.name}</td>
         <td class="border px-4 py-2">${event.location}</td>
         <td class="border px-4 py-2">${event.status}</td>
         <td class="border px-4 py-2">${new Date(event.date).toLocaleDateString()}</td>
         <td class="border px-4 py-2">
-          <button class="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded" onclick="rsvpEvent(${event.id}, '${event.name}')">
-            RSVP</button>
+          <button
+          class="px-3 py-1 rounded text-white ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-700'}"
+          onclick="${isDisabled ? 'return false;' : `rsvpEvent(${event.id}, '${event.name}', this)`}"
+          ${isDisabled ? 'disabled' : ''}>
+          ${buttonText}
+        </button>
         </td>
       `;
-      tbody.appendChild(tr);
-    });
-  }
 
-      // RSVP 
-      function rsvpEvent(id, name) {
-    alert(`You've RSVP'd for event: ${name}`);
-    
-    // If you want to send RSVP to backend:
-    /*
-    fetch('/api/rsvp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ eventId: id })
-    })
-    .then(res => res.json())
-    .then(data => alert('RSVP confirmed!'))
-    .catch(err => console.error('RSVP error:', err));
-    */
-  }
+        tbody.appendChild(tr);
+      });
+    }
+    // RSVP API
+    // RSVP API
+    let userRsvpedEvents = new Set();
+
+    // Load user's RSVPs when page loads
+    function loadUserRsvps() {
+      const user_id = localStorage.getItem("user_id");
+      if (!user_id) {
+        console.log("User not logged in - skipping RSVP load");
+        return Promise.resolve();
+      }
+
+      return fetch(`/api/userRsvps?userId=${user_id}`)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          if (Array.isArray(data)) {
+            userRsvpedEvents = new Set(data.map(item => item.event_id));
+            renderEvents('all');
+          } else {
+            console.error("Unexpected RSVP data format:", data);
+          }
+        })
+        .catch(err => {
+          console.error("Error loading user RSVPs:", err);
+        });
+    }
+
+    // Call this when page loads
+    document.addEventListener("DOMContentLoaded", () => {
+      loadUserRsvps();
+    });
+
+    // RSVP function
+    function rsvpEvent(id, name, btn) {
+      const user_id = localStorage.getItem("user_id");
+      if (!user_id) {
+        alert("Session expired. Please log in again.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+        },
+        body: JSON.stringify({
+          user_id: user_id,
+          event_id: id
+        })
+      })
+        .then(async response => {
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.message || "RSVP failed");
+          }
+          return data;
+        })
+        .then(data => {
+          if (data.success) {
+            alert(`RSVP confirmed for event: ${name}`);
+            userRsvpedEvents.add(id);
+            renderEvents('all');
+          }
+        })
+        .catch(error => {
+          console.error("RSVP error:", error);
+          alert(`RSVP failed: ${error.message}`);
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'RSVP';
+        });
+    }
   </script>
 </body>
 

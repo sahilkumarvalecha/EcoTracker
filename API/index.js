@@ -66,27 +66,27 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'login.html'));
 });
 
-app.get('/rsvp', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM events LIMIT 1');
-    const event = result.rows[0];
-    if (!event) {
-      return res.send('No event found.');
-    }
+// app.get('/rsvp', async (req, res) => {
+//   try {
+//     const result = await pool.query('SELECT * FROM events LIMIT 1');
+//     const event = result.rows[0];
+//     if (!event) {
+//       return res.send('No event found.');
+//     }
 
-    const today = new Date();
-    const eventDate = new Date(event.date);
+//     const today = new Date();
+//     const eventDate = new Date(event.date);
 
-    if (eventDate >= today.setHours(0, 0, 0, 0)) {
-      res.sendFile(path.join(__dirname, '..', 'events.html'));
-    } else {
-      res.send('Event is done. Thank you!');
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
+//     if (eventDate >= today.setHours(0, 0, 0, 0)) {
+//       res.sendFile(path.join(__dirname, '..', 'events.html'));
+//     } else {
+//       res.send('Event is done. Thank you!');
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 // User routes
 app.get("/api/user", async (req, res) => {
@@ -170,6 +170,7 @@ app.post('/login', async (req, res) => {
       success: true,
       message: "Logged in successfully", 
       name: user.name,
+      user_id: user.user_id,
       isAdmin
     });
 
@@ -406,23 +407,48 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-app.post('/rsvp', async (req, res) => {
-  const eventId = req.body.event_id;
-  const userId = req.session.user_id;
+// rsvp get and post
+app.get('/api/userRsvps', async (req, res) => {
+  const { userId } = req.query;
 
   if (!userId) {
-    return res.json({ error: 'Please log in first' });
+    return res.status(400).json({ error: 'Missing userId' });
   }
 
-  const sql = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
   try {
-    await pool.query(sql, [userId, eventId]);
-    res.json({ message: 'RSVP successfully saved!' });
+    const query = 'SELECT event_id FROM rsvp WHERE user_id = $1';
+    const result = await pool.query(query, [userId]);
+    res.json(result.rows); // Return database results directly
   } catch (err) {
-    console.error(err);
-    res.json({ error: 'Failed to save RSVP' });
+    console.error('Fetch RSVP error:', err);
+    res.status(500).json({ error: 'Server error fetching RSVPs' });
   }
 });
+app.post('/api/rsvp', async (req, res) => {
+  try {
+    const { user_id, event_id } = req.body;
+     console.log("Incoming RSVP:", req.body); 
+    if (!user_id || !event_id) {
+      return res.status(400).json({ error: "Missing user_id or event_id" }); // ✅ Always return
+    }
+
+    const checkQuery = 'SELECT * FROM rsvp WHERE user_id = $1 AND event_id = $2';
+    const result = await pool.query(checkQuery, [user_id, event_id]);
+
+    if (result.rows.length > 0) {
+      return res.status(409).json({ success: false, message: "Already RSVPed" }); // ✅
+    }
+
+    const insertQuery = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
+    await pool.query(insertQuery, [user_id, event_id]);
+    return res.json({ success: true }); // ✅ Critical: Don’t forget `return`!
+  } catch (err) {
+    console.error("RSVP error:", err);
+    return res.status(500).json({ error: "Database error" }); // ✅
+  }
+});
+
+
 
 
 

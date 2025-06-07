@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("userEmail", loginemail.value);
           localStorage.setItem("userName", data.name);
           localStorage.setItem("isAdmin", data.isAdmin);
+         localStorage.setItem("user_id", data.user_id);
           window.location.href = "index.html";
         }
          else {
@@ -91,21 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// RSVP API
-function rsvpEvent(eventId) {
-  fetch("http://localhost:5055/rsvp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ event_id: eventId }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      alert(data.message || data.error);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Something went wrong!");
-    });
-}
+
+
+// events js
+ 
+
