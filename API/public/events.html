@@ -431,10 +431,17 @@
       filteredEvents.forEach(event => {
         const tr = document.createElement('tr');
          const hasRsvped = userRsvpedEvents.has(event.id);
+          const isCompleted = event.status.toLowerCase() === 'completed';
 
          // Determine button text and disabled attribute dynamically
-     const buttonText = hasRsvped ? 'RSVPed' : 'RSVP';
-    const isDisabled = hasRsvped;
+    let buttonText, isDisabled;
+    if (isCompleted) {
+      buttonText = 'Completed';
+      isDisabled = true;
+    } else {
+      buttonText = hasRsvped ? 'Accepted' : 'RSVP';
+      isDisabled = hasRsvped;
+    }
 
         tr.innerHTML = `
         <td class="border px-4 py-2">${event.name}</td>

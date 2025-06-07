@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,32 +9,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
+
     :root {
       --primary: #10b981;
       --primary-dark: #059669;
       --primary-light: #d1fae5;
     }
-    
+
     body {
       font-family: 'Inter', sans-serif;
     }
-    
+
     .sidebar-item {
       transition: all 0.2s ease;
       position: relative;
     }
-    
+
     .sidebar-item:hover {
       background-color: var(--primary-light);
     }
-    
+
     .sidebar-item.active {
       background-color: var(--primary-light);
       color: var(--primary-dark);
       font-weight: 500;
     }
-    
+
     .sidebar-item.active::after {
       content: '';
       position: absolute;
@@ -44,25 +45,26 @@
       background-color: var(--primary);
       border-radius: 2px;
     }
-    
+
     .help-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .help-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    
+
     .submit-btn {
       background-color: var(--primary);
       transition: background-color 0.2s ease;
     }
-    
+
     .submit-btn:hover {
       background-color: var(--primary-dark);
     }
-     /* Admin specific styles */
+
+    /* Admin specific styles */
     .admin-panel-title {
       font-size: 0.75rem;
       letter-spacing: 0.05em;
@@ -90,7 +92,7 @@
       padding-left: 0.5rem;
       border-left: 2px solid var(--primary);
     }
-    
+
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -99,11 +101,11 @@
         transform: translateX(-100%);
         transition: transform 0.3s ease;
       }
-      
+
       .sidebar.open {
         transform: translateX(0);
       }
-      
+
       .sidebar-overlay {
         display: none;
         position: fixed;
@@ -111,34 +113,61 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         z-index: 40;
       }
-      
+
       .sidebar-overlay.open {
         display: block;
       }
-      
+
       .main-content {
         padding-left: 0;
       }
-      
+
       .page-header {
-        margin-left: 60px; /* Space for mobile menu button */
+        margin-left: 60px;
+        /* Space for mobile menu button */
       }
     }
+
+    /* switching tabs */
+     .tab-button {
+    transition: all 0.3s ease;
+  }
+  
+  .tab-button:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .active-tab {
+    background-color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+     border-bottom: 3px solid #10B981; /*Green-500 color */
+     
+  
+  }
+  
+  .faq-item {
+    transition: all 0.2s ease;
+  }
+  
+  .faq-item:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
     <!-- Mobile menu button -->
     <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
       <i class="fas fa-bars text-gray-600"></i>
     </button>
-    
+
     <!-- Sidebar overlay for mobile -->
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    
+
     <!-- Sidebar -->
     <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
@@ -212,7 +241,8 @@
         </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
-        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+        <a href="/login.html" id="user-link"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
           <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
@@ -234,8 +264,8 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="fas fa-search text-gray-400"></i>
           </div>
-          <input type="text" placeholder="Search help articles..." 
-                class="search-input w-full py-4 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400">
+          <input type="text" placeholder="Search help articles..."
+            class="search-input w-full py-4 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400">
         </div>
 
         <!-- Help Categories -->
@@ -276,20 +306,25 @@
         <div class="mb-12 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
-            <div class="text-sm text-gray-500">Can't find your answer? <a href="#contact" class="text-green-600 hover:underline">Contact us</a></div>
+            <div class="text-sm text-gray-500">Can't find your answer? <a href="#contact"
+                class="text-green-600 hover:underline">Contact us</a></div>
           </div>
-          
+
           <div class="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg max-w-max">
-            <button onclick="switchTab('general')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="general">
+            <button onclick="switchTab('general')"
+              class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="general">
               General
             </button>
-            <button onclick="switchTab('reporting')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="reporting">
+            <button onclick="switchTab('reporting')"
+              class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="reporting">
               Reporting
             </button>
-            <button onclick="switchTab('community')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="community">
+            <button onclick="switchTab('community')"
+              class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="community">
               Community
             </button>
-            <button onclick="switchTab('technical')" class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="technical">
+            <button onclick="switchTab('technical')"
+              class="tab-button px-4 py-2 rounded-md font-medium text-sm transition" data-tab="technical">
               Technical
             </button>
           </div>
@@ -305,7 +340,9 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>To create an account, click on the "Sign Up" button in the top right corner of the homepage. You'll need to provide your email address, create a password, and verify your email to complete registration.</p>
+                  <p>To create an account, click on the "Sign Up" button in the top right corner of the homepage. You'll
+                    need to provide your email address, create a password, and verify your email to complete
+                    registration.</p>
                 </div>
               </div>
               <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -317,7 +354,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Yes, EcoTracker is completely free for community members. Our platform is supported by grants and donations to promote environmental awareness.</p>
+                  <p>Yes, EcoTracker is completely free for community members. Our platform is supported by grants and
+                    donations to promote environmental awareness.</p>
                 </div>
               </div>
             </div>
@@ -334,7 +372,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Navigate to the EcoAlerts tab in the Community Hub. Click "Post Alert" and fill out the form with details about the issue, including location, category, and photos if available.</p>
+                  <p>Navigate to the EcoAlerts tab in the Community Hub. Click "Post Alert" and fill out the form with
+                    details about the issue, including location, category, and photos if available.</p>
                 </div>
               </div>
               <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -346,7 +385,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Your report enters our verification queue. Our team reviews each submission, and verified reports are forwarded to the appropriate authorities. You can track progress in your dashboard.</p>
+                  <p>Your report enters our verification queue. Our team reviews each submission, and verified reports
+                    are forwarded to the appropriate authorities. You can track progress in your dashboard.</p>
                 </div>
               </div>
             </div>
@@ -363,7 +403,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Go to the Community Hub and select the Discussions tab. Choose an area of interest and participate in existing conversations or start new ones.</p>
+                  <p>Go to the Community Hub and select the Discussions tab. Choose an area of interest and participate
+                    in existing conversations or start new ones.</p>
                 </div>
               </div>
               <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -375,7 +416,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Absolutely! Use the Events section to create and promote environmental activities. You can invite community members and track participation.</p>
+                  <p>Absolutely! Use the Events section to create and promote environmental activities. You can invite
+                    community members and track participation.</p>
                 </div>
               </div>
             </div>
@@ -392,7 +434,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>First, try refreshing your browser. If the issue persists, clear your browser cache or try accessing from a different browser. Contact support if the problem continues.</p>
+                  <p>First, try refreshing your browser. If the issue persists, clear your browser cache or try
+                    accessing from a different browser. Contact support if the problem continues.</p>
                 </div>
               </div>
               <div class="faq-item bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -404,7 +447,8 @@
                   <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform"></i>
                 </h3>
                 <div class="answer mt-3 pl-8 text-sm text-gray-600 hidden">
-                  <p>Click "Forgot Password" on the login page. You'll receive an email with instructions to reset your password. The link expires in 24 hours for security.</p>
+                  <p>Click "Forgot Password" on the login page. You'll receive an email with instructions to reset your
+                    password. The link expires in 24 hours for security.</p>
                 </div>
               </div>
             </div>
@@ -416,16 +460,18 @@
           <div class="max-w-2xl mx-auto">
             <h2 class="text-2xl font-bold mb-2">Contact Support</h2>
             <p class="text-gray-600 mb-6">Can't find what you're looking for? Our support team is here to help.</p>
-            
-            <form class="space-y-5">
+
+            <form id="contactForm" class="space-y-5">
               <div>
-                <label class="block text-sm font-medium mb-2 text-gray-700">Your Email</label>
-                <input type="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                <label class="block text-sm font-medium mb-2 text-gray-700" for="email">Your Email</label>
+                <input id="email" name="email" type="email" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
               </div>
               <div>
-                <label class="block text-sm font-medium mb-2 text-gray-700">Subject</label>
-                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                  <option>Select a topic</option>
+                <label class="block text-sm font-medium mb-2 text-gray-700" for="subject">Subject</label>
+                <select id="subject" name="subject" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                  <option value="" disabled selected>Select a topic</option>
                   <option>Account Issues</option>
                   <option>Reporting Problems</option>
                   <option>Technical Support</option>
@@ -434,24 +480,23 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-2 text-gray-700">Message</label>
-                <textarea rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"></textarea>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="subscribe" class="rounded text-green-500 focus:ring-green-500">
-                <label for="subscribe" class="ml-2 text-sm text-gray-600">Subscribe to our newsletter</label>
+                <label class="block text-sm font-medium mb-2 text-gray-700" for="message">Message</label>
+                <textarea id="message" name="message" rows="4" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"></textarea>
               </div>
               <button type="submit" class="submit-btn px-6 py-3 rounded-lg text-white font-medium">
                 Send Message <i class="fas fa-paper-plane ml-2"></i>
               </button>
             </form>
+
           </div>
         </div>
+
       </div>
     </main>
   </div>
-  
-  
+
+
 
 
   <script>
@@ -461,13 +506,13 @@
     const closeSidebarButton = document.getElementById('close-sidebar');
     const sidebar = document.querySelector('.sidebar');
     const isAdmin = localStorage.getItem("isAdmin") === "true";
-     const adminItems = document.querySelectorAll(".admin-only");
-    
+    const adminItems = document.querySelectorAll(".admin-only");
+
     function toggleSidebar() {
       sidebar.classList.toggle('open');
       sidebarOverlay.classList.toggle('open');
     }
-    
+
     mobileMenuButton.addEventListener('click', toggleSidebar);
     sidebarOverlay.addEventListener('click', toggleSidebar);
     closeSidebarButton.addEventListener('click', toggleSidebar);
@@ -478,10 +523,10 @@
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
-      
+
       // Show selected tab content
       document.getElementById(tabName).classList.add('active');
-      
+
       // Update tab buttons
       document.querySelectorAll('.tab-button').forEach(button => {
         if (button.getAttribute('data-tab') === tabName) {
@@ -493,66 +538,144 @@
         }
       });
     }
-    
+
 
     // FAQ answer toggle
     function toggleAnswer(question) {
       const answer = question.nextElementSibling;
       const icon = question.querySelector('.fa-chevron-down');
-      
+
       answer.classList.toggle('hidden');
       icon.classList.toggle('rotate-180');
     }
 
   </script>
   <script>
-      window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
 
-  if (userName && userNameSpan && userLink) {
-    userNameSpan.textContent = userName;
-    userLink.href = "#"; // Prevent redirect if already signed in
+      if (userName && userNameSpan && userLink) {
+        userNameSpan.textContent = userName;
+        userLink.href = "#"; // Prevent redirect if already signed in
 
-     // Handle admin features
-      if (isAdmin) {
-        console.log("Admin logged in - expanding sidebar"); // Debug log
+        // Handle admin features
+        if (isAdmin) {
+          console.log("Admin logged in - expanding sidebar"); // Debug log
 
-        // Expand sidebar by default for admin
-        if (sidebar) {
-          sidebar.classList.remove("w-64"); // Remove default width
-          sidebar.classList.add("w-72"); // Set wider width
-          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          // Expand sidebar by default for admin
+          if (sidebar) {
+            sidebar.classList.remove("w-64"); // Remove default width
+            sidebar.classList.add("w-72"); // Set wider width
+            sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+          }
+
+          // Show admin-only items
+          adminItems.forEach(item => {
+            item.style.display = "block";
+          });
+
+          // Add admin badge to user info
+          if (userNameSpan) {
+            const adminBadge = document.createElement("span");
+            adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+            adminBadge.textContent = "Admin";
+            userNameSpan.parentNode.appendChild(adminBadge);
+          }
         }
 
-        // Show admin-only items
-        adminItems.forEach(item => {
-          item.style.display = "block";
+        // Optionally add logout option
+        const logoutBtn = document.createElement("button");
+        logoutBtn.textContent = "Logout";
+        logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          window.location.href = "index.html";
         });
-
-        // Add admin badge to user info
-        if (userNameSpan) {
-          const adminBadge = document.createElement("span");
-          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-          adminBadge.textContent = "Admin";
-          userNameSpan.parentNode.appendChild(adminBadge);
-        }
+        userLink.parentNode.appendChild(logoutBtn);
       }
-
-    // Optionally add logout option
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userName");
-      window.location.href = "index.html"; 
+      switchTab('general');
     });
-    userLink.parentNode.appendChild(logoutBtn);
-  } 
-  switchTab('general');
+
+
+    // Contact
+    document.getElementById('contactForm').addEventListener('submit', async (event) => {
+  event.preventDefault(); // Stop default form submission reload
+
+  const email = event.target.email.value.trim();
+  const subject = event.target.subject.value.trim();
+  const message = event.target.message.value.trim();
+
+  // Optional: Basic validation
+  if (!email || !subject || !message) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/contact', {  // Your backend API endpoint here
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, subject, message })
+    });
+
+    if (response.ok) {
+      alert('Message sent successfully! We will get back to you soon.');
+      event.target.reset(); // Clear form after success
+    } else {
+      alert('Something went wrong. Please try again later.');
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    alert('Server error. Please try again later.');
+  }
 });
+
+
+
+//  switch tabs fr questions
+// Function to switch between tabs
+  function switchTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+      content.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabId).classList.remove('hidden');
+    document.getElementById(tabId).classList.add('active');
+    
+    // Update active tab button styling
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.classList.remove('active-tab');
+      button.classList.remove('bg-white', 'shadow-sm');
+    });
+    
+    // Add active class to clicked button
+    document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active-tab');
+    document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('bg-white', 'shadow-sm');
+  }
+
+  // Function to toggle FAQ answers
+  function toggleAnswer(element) {
+    const answer = element.nextElementSibling;
+    const icon = element.querySelector('.fa-chevron-down');
+    
+    answer.classList.toggle('hidden');
+    icon.classList.toggle('transform');
+    icon.classList.toggle('rotate-180');
+  }
+
+  // Initialize first tab as active
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.tab-button').classList.add('bg-white', 'shadow-sm');
+  });
   </script>
 
 </body>
+
 </html>

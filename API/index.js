@@ -768,8 +768,6 @@ app.get('/api/user/:id', async (req, res) => {
   }
 });
 
-
-
 // delete user
 app.post('/api/deleteUser', async (req, res) => {
   const { user_id } = req.body;
@@ -793,6 +791,36 @@ app.post('/api/deleteUser', async (req, res) => {
   }
 });
 
+// contact form send message
+app.post('/api/contact', async (req, res) => {
+  const { email, subject, message } = req.body;
+
+  if (!email || !message) {
+    return res.status(400).json({ error: 'Email and message are required.' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO contact_messages (email, subject, message) VALUES ($1, $2, $3)',
+      [email, subject || null, message]
+    );
+    res.status(200).json({ message: 'Message stored successfully.' });
+  } catch (err) {
+    console.error('DB insertion error:', err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// Get message
+app.get('/api/messages', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT email, subject, message, received_at FROM contact_messages ORDER BY received_at DESC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
