@@ -449,9 +449,6 @@ app.post('/api/rsvp', async (req, res) => {
 });
 
 
-
-
-
 // Get all categories (for dropdown if needed)
 app.get('/api/categories', async (req, res) => {
   try {
@@ -670,6 +667,38 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Voting failed' });
+  }
+});
+
+// user add
+app.post("/api/createUser", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    // Check if user exists
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ message: "User already exists." });
+    }
+
+    // Insert new user
+    await pool.query(
+      "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+      [name, email, password]
+    );
+
+    return res.status(201).json({ message: "User created successfully." });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
