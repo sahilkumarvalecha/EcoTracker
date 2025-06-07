@@ -106,26 +106,6 @@
   opacity: 1;
   transform: translateY(0);
 }
-  .area-box {
-    @apply bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center cursor-pointer hover:bg-green-50 transition-colors;
-  }
-
-  .icon-wrapper {
-    @apply bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 text-green-600;
-  }
-
-  .chat-bubble {
-    @apply p-3 rounded-lg w-fit max-w-md;
-  }
-
-  .chat-bubble.user {
-    @apply bg-green-500 text-white ml-auto;
-  }
-
-  .chat-bubble.other {
-    @apply bg-gray-100 text-gray-800;
-  }
-
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -172,6 +152,136 @@
       from { opacity: 0; }
       to { opacity: 1; }
       }
+      /* Category Colors */
+.category-polution {
+   background-color: #fef3c7; color: #92400e; 
+  }
+.category-wildlife { 
+  background-color: #d1fae5; color: #065f46; }
+.category-deforestation { background-color: #e0e7ff; color: #3730a3; 
+}
+.category-waste {
+   background-color: #fce7f3; color: #9d174d;
+   }
+
+/* Vote Buttons */
+.vote-btn {
+  transition: all 0.2s;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.upvote-btn:hover {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.downvote-btn:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.vote-active-up {
+  color: #16a34a !important;
+}
+
+.vote-active-down {
+  color: #dc2626 !important;
+}
+
+/* Image Container */
+.report-image-container {
+  max-height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+/* Progress Bar */
+.progress-bar {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.progress-submitted {
+   background-color: #fca5a5; 
+  }
+.progress-review {
+   background-color: #93c5fd; 
+  }
+.progress-resolved {
+   background-color: #86efac;
+     }
+     #ecoalerts-feed {
+  min-height: 300px;
+  position: relative;
+}
+
+.loading-spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  color: #ef4444;
+}
+
+.error-state i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+}
+.animate-pulse {
+  animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.comment-section {
+  transition: all 0.3s ease;
+}
+
+.comment-section.hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.comment-section:not(.hidden) {
+  max-height: 1000px;
+  opacity: 1;
+}
     }
 
   </style>
@@ -467,8 +577,11 @@
           </div>
         
             <!-- Alert Feed -->
-            <div id="ecoalerts-feed" class="space-y-6"></div>
-            </div>  
+            <div id="ecoalerts-feed">
+              <div class="loading-spinner">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-green-500"></i>
+              </div>
+            </div>
               </div>
             </div>
           </div>
@@ -478,382 +591,542 @@
   </div>
 
   <script>
+    // Main Application Controller
+    class CommunityApp {
+  constructor() {
+    this.selectedArea = "Clifton";
+    this.voteDebounce = {};
+    this.initialize(); // line 599
+  }
 
-// Tab switching functionality
-// Update your switchTab function to this:
+  async initialize() {
+    this.checkAuth();
+    this.setupUIComponents(); //line 604 
+    await this.loadInitialData();
+  }
 
-const tabs = {
-  members: document.getElementById('tab-members'),
-  discussions: document.getElementById('tab-discussions'),
-  alerts: document.getElementById('tab-alerts')
-};
-const contents = {
-  members: document.getElementById('members'),
-  discussions: document.getElementById('discussions'),
-  alerts: document.getElementById('ecoalerts')
-};
-function switchTab(tab) {
-  // Validate input
-  if (!tabs[tab] || !contents[tab]) return;
-
-  // Update tabs UI
-  Object.values(tabs).forEach(t => {
-    t.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-    t.classList.add('text-gray-500');
-  });
-
-  tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-  tabs[tab].classList.remove('text-gray-500');
-
-  // Toggle tab contents
-  Object.values(contents).forEach(c => {
-    c.classList.add('hidden');
-    c.classList.remove('active');
-  });
-  
-  contents[tab].classList.remove('hidden');
-  contents[tab].classList.add('active');
-
-  // Save to localStorage
-  localStorage.setItem('lastActiveTab', tab);
-}
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize tabs and contents references
-  const tabs = {
-    members: document.getElementById('tab-members'),
-    discussions: document.getElementById('tab-discussions'),
-    alerts: document.getElementById('tab-alerts')
-  };
-  
-  const contents = {
-    members: document.getElementById('members'),
-    discussions: document.getElementById('discussions'),
-    alerts: document.getElementById('ecoalerts')
-  };
-      const lastTab = localStorage.getItem('lastActiveTab') || 'members';
-      switchTab(lastTab);
-    });
-    // account name
-     window.addEventListener("DOMContentLoaded", () =>{
-       
-      const userName = localStorage.getItem("userName");
-      if (!userName) {
-      window.location.href = "login.html";
-      return;
+    
+      // Authentication
+      checkAuth() {
+        const userName = localStorage.getItem("userName");
+        if (!userName) {
+          window.location.href = "login.html";
+          return;
+        }
+        this.setupUserProfile();
       }
-      const userEmail = localStorage.getItem("userEmail");
-      const isAdmin = localStorage.getItem("isAdmin") === "true";
-      const userLink = document.getElementById("user-link");
-      const userNameSpan = document.getElementById("user-name-text");
-      const sidebar = document.getElementById("sidebar");
-      const adminItems = document.querySelectorAll(".admin-only");
-
-      // Set user info
-      if (userName && userNameSpan && userLink) {
-        userNameSpan.textContent = userName;
-        userLink.href = "account.html";
-      }
-
-      // Handle admin features
-      if (isAdmin) {
-        // Expand sidebar by default for admin
-        if (sidebar) {
-          sidebar.classList.remove("w-64"); // Remove default width
-          sidebar.classList.add("w-72"); // Set wider width
-          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
+    
+      setupUserProfile() {
+        const userName = localStorage.getItem("userName");
+        const isAdmin = localStorage.getItem("isAdmin") === "true";
+        
+        // Set basic user info
+        const userNameSpan = document.getElementById("user-name-text");
+        if (userNameSpan) userNameSpan.textContent = userName;
+        
+        // Admin specific setup
+        if (isAdmin) {
+          this.setupAdminFeatures();
         }
         
-        // Show admin-only items
-        adminItems.forEach(item => {
+        this.addLogoutButton();
+      }
+    
+      setupAdminFeatures() {
+        const sidebar = document.getElementById("sidebar");
+        if (sidebar) {
+          sidebar.classList.add("w-72", "shadow-lg");
+        }
+        
+        document.querySelectorAll(".admin-only").forEach(item => {
           item.style.display = "block";
         });
-
-        // Add admin badge to user info
-        if (userNameSpan) {
-          const adminBadge = document.createElement("span");
-          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-          adminBadge.textContent = "Admin";
-          userNameSpan.parentNode.appendChild(adminBadge);
-        }
+        
+        const adminBadge = document.createElement("span");
+        adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+        adminBadge.textContent = "Admin";
+        document.getElementById("user-name-text")?.parentNode.appendChild(adminBadge);
       }
-  
- 
-      // Add logout button
-      if (userName) {
+    
+      addLogoutButton() {
         const logoutBtn = document.createElement("button");
         logoutBtn.textContent = "Logout";
         logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-        logoutBtn.addEventListener("click", () => {
-          // Clear all stored data
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("isAdmin");
-          
-          // Send logout request to server
-          fetch('http://localhost:5055/api/public/logout', {
+        logoutBtn.addEventListener("click", this.handleLogout.bind(this));
+        document.getElementById("user-link")?.parentNode.appendChild(logoutBtn);
+      }
+    
+      async handleLogout() {
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("isAdmin");
+        
+        try {
+          await fetch('http://localhost:5055/api/public/logout', {
             method: 'POST',
             credentials: 'include'
-          })
-          .then(() => {
-            window.location.href = "login.html";
+          });
+          window.location.href = "login.html";
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
+      }
+      setupVoting() {
+      const feed = document.getElementById('ecoalerts-feed');
+       if (!feed) return;
+       feed.addEventListener('click', e => {
+       if (e.target.closest('.vote-btn')) {
+      this.handleVote(e);
+     }
+   });
+  }
+
+      // UI Components
+      setupUIComponents() {
+        this.setupTabs();
+        this.setupSidebar();
+        this.setupVoting(); //line 679
+        this.setupChat();
+      }
+    
+      setupTabs() {
+        const tabs = {
+          members: document.getElementById('tab-members'),
+          discussions: document.getElementById('tab-discussions'),
+          alerts: document.getElementById('tab-alerts')
+        };
+        
+        const contents = {
+          members: document.getElementById('members'),
+          discussions: document.getElementById('discussions'),
+          alerts: document.getElementById('ecoalerts')
+        };
+        
+        const lastTab = localStorage.getItem('lastActiveTab') || 'members';
+        this.switchTab(lastTab, tabs, contents);
+        
+        // Add event listeners to tab buttons
+        Object.entries(tabs).forEach(([tabName, tabElement]) => {
+          tabElement?.addEventListener('click', () => {
+            this.switchTab(tabName, tabs, contents);
           });
         });
-        
-        if (userLink && userLink.parentNode) {
-          userLink.parentNode.appendChild(logoutBtn);
-        }
       }
-    });
-    // Mobile sidebar toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const closeSidebarButton = document.getElementById('close-sidebar');
-    const sidebar = document.querySelector('.sidebar');
     
-    function toggleSidebar() {
-      sidebar.classList.toggle('open');
-      sidebarOverlay.classList.toggle('open');
-    }
+      switchTab(tab, tabs, contents) {
+        if (!tabs[tab] || !contents[tab]) return;
     
-    mobileMenuButton.addEventListener('click', toggleSidebar);
-    sidebarOverlay.addEventListener('click', toggleSidebar);
-    closeSidebarButton.addEventListener('click', toggleSidebar);
-  
-
-    // Like button toggle for EcoAlerts
-    document.querySelectorAll('.like-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const icon = this.querySelector('i');
-        const countSpan = this.querySelector('span');
-        let count = parseInt(this.getAttribute('data-likes'));
-        
-        if (icon.classList.contains('far')) {
-          // Not liked yet - like it
-          icon.classList.remove('far');
-          icon.classList.add('fas', 'text-red-500');
-          this.classList.add('text-red-500');
-          count++;
-        } else {
-          // Already liked - unlike it
-          icon.classList.remove('fas', 'text-red-500');
-          icon.classList.add('far');
-          this.classList.remove('text-red-500');
-          count--;
-        }
-        
-        countSpan.textContent = count;
-        this.setAttribute('data-likes', count);
-      });
-    });
-
-    // Category selection
-    document.querySelectorAll('.category-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('bg-green-100', 'border-green-300'));
-        this.classList.add('bg-green-100', 'border-green-300');
-      });
-    });
-
-    //chat section
-    let selectedArea = "Clifton"; // Default
-
-    function selectArea(area) {
-  selectedArea = area;
-  document.getElementById("selected-area").textContent = `– ${area}`;
-
-  document.querySelectorAll('.area-card').forEach(card => {
-    card.classList.remove('active');
-  });
-
-  const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
-  if (activeCard) activeCard.classList.add('active');
-}
-
-
-// Load chats for selected area
-function loadChats(area) {
-  selectedArea = area;
-  fetch(`/api/chats?area=${area}`)
-    .then(res => res.json())
-    .then(data => {
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML = "";
-      if (data.length === 0) {
-        chatBox.innerHTML = `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>`;
-      } else {
-        data.forEach(msg => {
-         chatBox.innerHTML += `
-           <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
-            <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
-           <p>${msg.message}</p>
-           </div>
-           `;
+        // Update tabs UI
+        Object.values(tabs).forEach(t => {
+          t?.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+          t?.classList.add('text-gray-500');
         });
-
-        chatBox.scrollTop = chatBox.scrollHeight;
+    
+        tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
+        tabs[tab].classList.remove('text-gray-500');
+    
+        // Toggle tab contents
+        Object.values(contents).forEach(c => {
+          c?.classList.add('hidden');
+          c?.classList.remove('active');
+        });
+        
+        contents[tab].classList.remove('hidden');
+        contents[tab].classList.add('active');
+    
+        localStorage.setItem('lastActiveTab', tab);
       }
-    })
-    .catch(err => console.error("Failed to load chats:", err));
-}
+    
+      setupSidebar() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const closeSidebarButton = document.getElementById('close-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        
+        const toggleSidebar = () => {
+          sidebar?.classList.toggle('open');
+          sidebarOverlay?.classList.toggle('open');
+        };
+        
+        mobileMenuButton?.addEventListener('click', toggleSidebar);
+        sidebarOverlay?.addEventListener('click', toggleSidebar);
+        closeSidebarButton?.addEventListener('click', toggleSidebar);
+      }
+    
+      // Feed Management
+      async loadInitialData() {
+        await this.loadReports();
+        this.loadChats(this.selectedArea);
+      }
+    
+      async loadReports() {
+    const feed = document.getElementById('ecoalerts-feed');
+    if (!feed) {
+      console.error('Feed container not found');
+      return;
+    }
 
-// Send message
-function sendMessage() {
-  const input = document.getElementById("message-input");
-  const message = input.value.trim();
-  if (!message) return;
+    try {
+      this.showLoadingState(feed);
+      
+      const response = await fetch('http://localhost:5055/api/reports-feed', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Debug: Check what's being received
+      console.log('API response:', data);
+      
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid data format - expected array');
+      }
+      
+      this.renderReports(data);
+      
+    } catch (error) {
+      console.error('Error loading reports:', error);
+      this.showErrorState(feed, error.message || 'Failed to load reports');
+    } finally {
+      this.hideLoadingState(feed);
+    }
+  }
 
-  fetch('/api/chats', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      area: selectedArea,
-      message: message,
-      is_user: true
-    })
-  })
-    .then(() => {
-      input.value = "";
-      loadChats(selectedArea);
-    })
-    .catch(err => console.error("Failed to send message:", err));
-}
-// Initial load
-document.addEventListener("DOMContentLoaded", () => {
-  loadChats(selectedArea);
-});
+  showLoadingState(feed) {
+    // Clear any existing content
+    feed.innerHTML = '';
+    
+    const spinner = document.createElement('div');
+    spinner.className = 'text-center py-10';
+    spinner.innerHTML = `
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
+      <p class="mt-2 text-gray-600">Loading reports...</p>
+    `;
+    feed.appendChild(spinner);
+  }
 
-async function fetchReports() {
-  const res = await fetch('/api/reports-feed');
-  const data = await res.json();
+  showErrorState(feed, message) {
+    feed.innerHTML = `
+      <div class="error-state text-center py-10 text-gray-500">
+        <i class="fas fa-exclamation-triangle text-2xl mb-2 text-red-500"></i>
+        <p class="mb-4">${message}</p>
+        <button onclick="window.communityApp.loadReports()" 
+                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+          Try Again
+        </button>
+      </div>`;
+  }
 
-  const feedContainer = document.querySelector('#ecoalerts-feed');
-  if (!feedContainer) return;
+  hideLoadingState(feed) {
+    // The loading state is replaced by content, so no need to hide anything here
+  }
 
-  feedContainer.innerHTML = '';
-  data.forEach(report => {
-    feedContainer.innerHTML += generateReportCard({ ...report, id: report.report_id });
+  renderReports(reports) {
+    const feed = document.getElementById('ecoalerts-feed');
+    if (!feed) return;
 
-  });
-}
+    if (!reports || reports.length === 0) {
+      feed.innerHTML = `
+        <div class="text-center py-10 text-gray-500">
+          <i class="fas fa-inbox text-2xl mb-2"></i>
+          <p>No reports yet. Be the first to report an incident!</p>
+        </div>`;
+      return;
+    }
 
-function generateReportCard(report) {
-  const username = report.is_anonymous ? 'Anonymous' : report.user_name;
-  const userImage = report.is_anonymous || !report.user_image 
-                    ? '/default-avatar.png' 
-                    : report.user_image;
-  const progressColor = getProgressColor(report.status);
+    // Clear the feed first
+    feed.innerHTML = '';
+    
+    // Add each report card
+    reports.forEach(report => {
+      const card = this.createReportCard(report);
+      feed.appendChild(card);
+    });
 
-  return `
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 alert-post">
-      <div class="flex items-center mb-4">
-        <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl overflow-hidden">
-          <img src="${userImage}" class="w-full h-full object-cover rounded-full" alt="User Avatar">
+    // Setup voting handlers
+    this.setupVoting();
+  }
+
+  createReportCard(report) {
+    const card = document.createElement('div');
+    card.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow mb-4';
+    card.innerHTML = this.generateReportCardHTML(report);
+    return card;
+  }
+
+  generateReportCardHTML(report) {
+    const username = report.is_anonymous ? 'Anonymous' : report.user_name;
+    const userImage = report.is_anonymous || !report.user_image 
+                     ? '/default-avatar.png' 
+                     : report.user_image;
+    const progressColor = `progress-${report.status.toLowerCase().replace(' ', '-')}`;
+    const categoryClass = this.getCategoryClass(report.category);
+
+    return `
+      <!-- Header with user info -->
+      <div class="flex items-start gap-4">
+        <!-- User Avatar -->
+        <div class="flex-shrink-0">
+          <img src="${userImage}" 
+               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
+               alt="User avatar"
+               onerror="this.src='/default-avatar.png'">
         </div>
-        <div class="flex-1">
-          <p class="font-semibold">${username}</p>
-          <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> ${report.location} · ${timeAgo(report.created_at)}</p>
-        </div>
-        <div class="flex flex-col items-center mr-4 vote-controls" data-report-id="${report.id}">
-          <button class="upvote-btn text-gray-400 hover:text-green-500"><i class="fas fa-arrow-up"></i></button>
-          <span class="vote-score text-sm font-semibold">${report.likes}</span>
-          <button class="downvote-btn text-gray-400 hover:text-red-500"><i class="fas fa-arrow-down"></i></button>
+        
+        <!-- Main Content -->
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-semibold text-gray-900">${username}</p>
+              <p class="text-sm text-gray-500">
+                <i class="fas fa-map-marker-alt mr-1"></i> 
+                ${report.location} · ${this.timeAgo(report.created_at)}
+              </p>
+            </div>
+            
+            <!-- Category Badge -->
+            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${categoryClass}">
+              ${report.category}
+            </span>
+          </div>
+          
+          <!-- Report Content -->
+          <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">${report.title}</h3>
+            <p class="text-gray-700 mb-4">${report.description}</p>
+            
+            ${report.image ? `
+            <div class="report-image-container mb-4">
+              <img src="${report.image}" 
+                   class="report-image max-w-full h-auto rounded-lg" 
+                   alt="Report image"
+                   onerror="this.parentElement.remove()">
+            </div>` : ''}
+          </div>
         </div>
       </div>
-
-      <div class="text-center mb-4">
-        <span class="inline-block bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">${report.category}</span>
-      </div>
-
-      <p class="mb-4 text-center">${report.description}</p>
-
-      ${report.image ? `
-        <div class="flex justify-center mb-4">
-          <img src="${report.image}" class="max-w-full h-auto rounded-lg" style="max-height: 400px;">
-        </div>` : ''}
-
-      <div class="mb-4">
-        <p class="text-sm font-medium mb-2 text-center">Approval Progress: <span class="${progressColor}">${report.status}</span></p>
+      
+      <!-- Progress Bar -->
+      <div class="mt-5">
+        <div class="flex justify-between text-sm text-gray-600 mb-1">
+          <span>Status: ${report.status}</span>
+          <span>${report.progress}%</span>
+        </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
           <div class="h-2.5 rounded-full ${progressColor}" style="width: ${report.progress}%"></div>
         </div>
       </div>
 
-      <div class="border-t pt-4">
-        ${renderCommentInput(report.id)}
-        <div class="space-y-3 mt-3" id="comments-${report.id}"></div>
+      <!-- Reddit-style Voting at Bottom -->
+      <div class="mt-4 flex items-center gap-2 text-sm" data-report-id="${report.report_id}">
+        <button class="vote-btn upvote-btn flex items-center gap-1 text-gray-500 hover:text-green-500"
+                data-vote-type="up">
+          <i class="fas fa-arrow-up"></i>
+          <span class="upvote-count font-medium">${report.upvotes || 0}</span>
+        </button>
+        
+        <span class="text-gray-400 mx-1">|</span>
+        
+        <button class="vote-btn downvote-btn flex items-center gap-1 text-gray-500 hover:text-red-500"
+                data-vote-type="down">
+          <i class="fas fa-arrow-down"></i>
+          <span class="downvote-count font-medium">${report.downvotes || 0}</span>
+        </button>
+        
+        <span class="text-gray-400 mx-1">|</span>
+        
+        <button class="flex items-center gap-1 text-gray-500 hover:text-blue-500 comment-toggle">
+          <i class="far fa-comment"></i>
+          <span>${report.comment_count || 0} comments</span>
+        </button>
       </div>
-    </div>`;
-}
 
-function renderCommentInput(reportId) {
-  return `
-    <div class="flex items-center mb-3">
-      <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-        <i class="fas fa-user"></i>
-      </div>
-      <div class="flex-1 relative">
-        <input type="text" placeholder="Add a comment..." 
-               class="w-full p-3 border border-gray-300 rounded-lg pr-10 comment-input" 
-               data-report-id="${reportId}">
-        <label class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
-          <i class="fas fa-image text-green-600 hover:text-green-800 transition-colors"></i>
-          <input type="file" class="hidden" accept="image/*">
-        </label>
-      </div>
-    </div>`;
-}
-
-function getProgressColor(status) {
-  switch (status) {
-    case 'Submitted': return 'text-red-500 progress-red';
-    case 'Under Review': return 'text-blue-500 progress-blue';
-    case 'Resolved': return 'text-green-500 progress-green';
-    default: return 'text-gray-500 progress-gray';
+      <!-- Comment Section (Initially Hidden) -->
+      <div class="comment-section mt-4 pt-4 border-t border-gray-100 hidden">
+        ${this.renderCommentInput(report.report_id)}
+        <div class="space-y-3 mt-3 comments-list" id="comments-${report.report_id}"></div>
+      </div>`;
   }
-}
 
-function timeAgo(timestamp) {
-  // Replace with actual implementation if needed
-  return 'Just now';
-}
+  renderCommentInput(reportId) {
+    return `
+      <div class="flex items-center mb-3">
+        <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="flex-1 relative">
+          <input type="text" placeholder="Add a comment..." 
+                class="w-full p-3 border border-gray-300 rounded-lg pr-10 comment-input" 
+                data-report-id="${reportId}">
+          <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-800 comment-submit">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>`;
+  }
 
-// Safe event binding after DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const feed = document.querySelector('#ecoalerts-feed');
-  if (!feed) return;
+  // Improved Voting System
+  async handleVote(e) {
+    const voteBtn = e.target.closest('.vote-btn');
+    if (!voteBtn) return;
 
-  feed.addEventListener('click', async e => {
-    const parent = e.target.closest('.vote-controls');
-    if (!parent) return;
-
-    const reportId = parent.dataset.reportId;
-    let vote;
-    if (e.target.closest('.upvote-btn')) vote = 1;
-    if (e.target.closest('.downvote-btn')) vote = -1;
-    if (!vote) return;
-
-    try {
-      const res = await fetch(`/api/reports/${reportId}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ vote })
-      });
-
-      if (!res.ok) throw new Error('Failed to vote');
-
-      const result = await res.json();
-      const scoreElement = parent.querySelector('.vote-score');
-      scoreElement.textContent = result.new_score;
-
-    } catch (err) {
-      console.error('Voting error:', err);
-      alert('Could not register your vote. Try again.');
+    // Debounce to prevent rapid clicks
+    const reportId = voteBtn.closest('[data-report-id]').dataset.reportId;
+    if (this.voteDebounce[reportId]) {
+      clearTimeout(this.voteDebounce[reportId]);
     }
-  });
 
-  fetchReports(); // Initial load
-});
-  </script>
+    // Immediate UI feedback
+    const voteType = voteBtn.dataset.voteType;
+    const isUpvote = voteType === 'up';
+    voteBtn.classList.add('animate-pulse');
+
+    this.voteDebounce[reportId] = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/reports/${reportId}/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ vote: isUpvote ? 1 : -1 })
+        });
+
+        if (!res.ok) throw new Error('Failed to vote');
+
+        const result = await res.json();
+        
+        // Update counts
+        const voteContainer = voteBtn.closest('[data-report-id]');
+        if (voteContainer) {
+          voteContainer.querySelector('.upvote-count').textContent = result.upvotes || 0;
+          voteContainer.querySelector('.downvote-count').textContent = result.downvotes || 0;
+        }
+
+        // Visual feedback
+        voteBtn.classList.remove('animate-pulse');
+        voteBtn.classList.toggle('text-gray-500');
+        voteBtn.classList.toggle(isUpvote ? 'text-green-500' : 'text-red-500');
+
+      } catch (err) {
+        console.error('Voting error:', err);
+        voteBtn.classList.remove('animate-pulse');
+      }
+    }, 300); // 300ms debounce
+  }
+    
+      // Chat System
+      setupChat() {
+        document.getElementById("message-input")?.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") this.sendMessage();
+        });
+        
+        document.querySelectorAll('.area-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const area = card.dataset.area;
+            this.selectArea(area);
+          });
+        });
+      }
+    
+      selectArea(area) {
+        this.selectedArea = area;
+        document.getElementById("selected-area").textContent = `– ${area}`;
+    
+        document.querySelectorAll('.area-card').forEach(card => {
+          card.classList.remove('active');
+        });
+    
+        const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
+        if (activeCard) activeCard.classList.add('active');
+        
+        this.loadChats(area);
+      }
+    
+      loadChats(area) {
+        fetch(`/api/chats?area=${area}`)
+          .then(res => res.json())
+          .then(data => {
+            const chatBox = document.getElementById("chat-box");
+            if (!chatBox) return;
+            
+            chatBox.innerHTML = data.length === 0 ? 
+              `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>` :
+              data.map(msg => `
+                <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
+                  <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
+                  <p>${msg.message}</p>
+                </div>
+              `).join('');
+    
+            chatBox.scrollTop = chatBox.scrollHeight;
+          })
+          .catch(err => console.error("Failed to load chats:", err));
+      }
+    
+      sendMessage() {
+        const input = document.getElementById("message-input");
+        const message = input?.value.trim();
+        if (!message) return;
+    
+        fetch('/api/chats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            area: this.selectedArea,
+            message: message,
+            is_user: true
+          })
+        })
+          .then(() => {
+            if (input) input.value = "";
+            this.loadChats(this.selectedArea);
+          })
+          .catch(err => console.error("Failed to send message:", err));
+      }
+    
+      // Utility Functions
+      timeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        const intervals = {
+          year: 31536000,
+          month: 2592000,
+          week: 604800,
+          day: 86400,
+          hour: 3600,
+          minute: 60
+        };
+        
+        for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+          const interval = Math.floor(seconds / secondsInUnit);
+          if (interval >= 1) {
+            return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`; 
+          }
+        }
+        
+        return 'Just now';
+      }
+    
+      getCategoryClass(category) {
+        const categoryMap = {
+          'Pollution': 'bg-yellow-100 text-yellow-800',
+          'Wildlife': 'bg-green-100 text-green-800',
+          'Deforestation': 'bg-blue-100 text-blue-800',
+          'Waste': 'bg-purple-100 text-purple-800'
+        };
+        return categoryMap[category] || 'bg-gray-100 text-gray-800';
+      }
+    }
+    
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      window.communityApp = new CommunityApp(); //line 1119
+    });
+    </script>
 </body>
 </html>

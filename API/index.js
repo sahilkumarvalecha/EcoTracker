@@ -12,14 +12,27 @@ const fs = require('fs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Setup sessions
+const pgSession = require('connect-pg-simple')(session);
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
 app.use(session({
+  store: new pgSession({
+    pool: pool,
+    tableName: 'user_sessions',
+    createTableIfMissing: true
+  }),
   secret: 'your_secret_key',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
+    secure: false, // Set to true if using HTTPS
     httpOnly: true,
-    sameSite: 'lax' // or 'strict' if needed
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
@@ -28,15 +41,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// PostgreSQL connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
 
 
 app.use((req, res, next) => {
-  console.log("Incoming session:", req.session);
+  // Only log session for specific routes if needed
+  if (req.path.startsWith('/api')) {
+    console.log(`[${new Date().toISOString()}] Session for ${req.path}:`, {
+      id: req.sessionID,
+      userId: req.session.user_id
+    });
+  }
   next();
 });
 
@@ -651,14 +665,16 @@ app.get('/api/reports-feed', async (req, res) => {
 });
 
 
+// Improved vote endpoint
 app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
   const reportId = req.params.id;
-  const { vote } = req.body; // expect 1 or -1
+  const { vote } = req.body;
   const userId = req.session.user_id;
 
-  if (![1, -1].includes(vote)) return res.status(400).json({ error: 'Invalid vote' });
-
   try {
+    await pool.query('BEGIN');
+
+    // Update vote
     await pool.query(`
       INSERT INTO report_votes (user_id, report_id, vote_type)
       VALUES ($1, $2, $3)
@@ -666,9 +682,25 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
       DO UPDATE SET vote_type = EXCLUDED.vote_type
     `, [userId, reportId, vote]);
 
-    return res.json({ success: true });
+    // Get updated counts
+    const { rows } = await pool.query(`
+      SELECT 
+        SUM(CASE WHEN vote_type = 1 THEN 1 ELSE 0 END) as upvotes,
+        SUM(CASE WHEN vote_type = -1 THEN 1 ELSE 0 END) as downvotes
+      FROM report_votes 
+      WHERE report_id = $1
+    `, [reportId]);
+
+    await pool.query('COMMIT');
+    
+    res.json({ 
+      success: true,
+      upvotes: rows[0].upvotes || 0,
+      downvotes: rows[0].downvotes || 0
+    });
   } catch (err) {
-    console.error(err);
+    await pool.query('ROLLBACK');
+    console.error('Voting error:', err);
     res.status(500).json({ error: 'Voting failed' });
   }
 });
