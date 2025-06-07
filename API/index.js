@@ -670,43 +670,77 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
   }
 });
 
-// user add
-app.post("/api/createUser", async (req, res) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
+// user update
+app.post('/api/updateUser', async (req, res) => {
   try {
-    // Check if user exists
-    const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res.status(409).json({ message: "User already exists." });
+    const { user_id, name, email, password } = req.body;
+    
+    // Validate input
+    if (!user_id || !name || !email) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
-
-    // Insert new user
-    await pool.query(
-      "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
-      [name, email, password]
-    );
-
-    return res.status(201).json({ message: "User created successfully." });
+    
+    // Update logic here
+    const userCheck = await pool.query('SELECT * FROM users WHERE user_id = $1', [user_id]);
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+     let updateQuery;
+    let queryParams;
+    
+    if (password) {
+      // Store password directly (assuming it's already hashed or you want plain text)
+      updateQuery = `
+        UPDATE users 
+        SET name = $1, email = $2, password_hash = $3 
+        WHERE user_id = $4 
+        RETURNING user_id, name, email`;
+      queryParams = [name, email, password, user_id];
+    } else {
+      updateQuery = `
+        UPDATE users 
+        SET name = $1, email = $2 
+        WHERE user_id = $3 
+        RETURNING user_id, name, email`;
+      queryParams = [name, email, user_id];
+    }
+    
+    const result = await pool.query(updateQuery, queryParams);
+    
+    res.json({ 
+      success: true, 
+      user: result.rows[0],
+      message: 'User updated successfully'
+    });
   } catch (error) {
-    console.error("Error creating user:", error);
-    return res.status(500).json({ message: "Server error" });
+    console.error('Update error:', error);
   }
 });
+
+// for user update
+app.get('/api/user/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching user:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 // delete user
 app.post('/api/deleteUser', async (req, res) => {
   const { user_id } = req.body;
-
-  console.log("Received request to delete user:", user_id); // ✅ Add this
   if (!user_id) {
     return res.status(400).json({ message: 'User ID is required' });
   }
