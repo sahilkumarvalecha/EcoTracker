@@ -613,6 +613,66 @@ app.get("/api/events-count", async (req, res) => {
   }
 });
 
+
+app.get('/api/reports-feed', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        r.report_id,
+        r.title,
+        r.description,
+        r.image_url AS image,
+        r.created_at,
+        r.is_anonymous,
+        u.name AS user_name,
+        COALESCE(u.avatar, '/default-avatar.png') AS user_image,
+        l.neighborhood AS location,
+        c.name AS category,
+        SUM(rv.vote_type) AS likes,
+        r.report_status AS status,
+        CASE 
+          WHEN r.report_status = 'Submitted' THEN 25
+          WHEN r.report_status = 'Under Review' THEN 50
+          WHEN r.report_status = 'Resolved' THEN 100
+          ELSE 0 END AS progress
+      FROM reports r
+      LEFT JOIN users u ON r.user_id = u.user_id
+      LEFT JOIN locations l ON r.location_id = l.location_id
+      LEFT JOIN categories c ON r.category_id = c.category_id
+      LEFT JOIN report_votes rv ON r.report_id = rv.report_id
+      GROUP BY r.report_id, u.name, u.avatar, l.neighborhood, c.name, r.image_url, r.created_at, r.is_anonymous, r.report_status
+      ORDER BY r.created_at DESC;
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch reports feed" });
+  }
+});
+
+
+app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
+  const reportId = req.params.id;
+  const { vote } = req.body; // expect 1 or -1
+  const userId = req.session.user_id;
+
+  if (![1, -1].includes(vote)) return res.status(400).json({ error: 'Invalid vote' });
+
+  try {
+    await pool.query(`
+      INSERT INTO report_votes (user_id, report_id, vote_type)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (user_id, report_id)
+      DO UPDATE SET vote_type = EXCLUDED.vote_type
+    `, [userId, reportId, vote]);
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Voting failed' });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
