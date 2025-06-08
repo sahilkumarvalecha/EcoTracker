@@ -140,7 +140,6 @@ app.post('/signup', async (req, res) => {
       'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) returning *',
       [name, email, password]
     );
-    req.session.user_id = newUser.user_id;
     res.status(201).json({ message: 'User Registered Successfully' });
   } catch (err) {
     console.error(err.message);
