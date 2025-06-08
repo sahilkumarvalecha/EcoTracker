@@ -51,25 +51,15 @@
             border-radius: 2px;
         }
 
-        .card {
+        .report-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             border-radius: 12px;
             overflow: hidden;
         }
 
-        .card:hover {
+        .report-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .activity-tag {
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .activity-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .progress-bar {
@@ -83,7 +73,6 @@
             border-radius: 4px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
-
 
         @media (max-width: 768px) {
             .sidebar {
@@ -113,10 +102,6 @@
             .sidebar-overlay.open {
                 display: block;
             }
-
-            .page-title {
-                margin-left: 60px;
-            }
         }
 
         /* Modern scrollbar */
@@ -145,35 +130,11 @@
             letter-spacing: 0.05em;
         }
 
-        /* Wider sidebar for admin */
-        .w-72 {
-            width: 18rem;
-        }
-
-        /* Smooth sidebar expansion */
-        #sidebar {
-            transition: width 0.3s ease;
-        }
-
         /* Admin badge style */
         .admin-badge {
             font-size: 0.65rem;
             padding: 0.15rem 0.5rem;
         }
-
-        /* Make sure admin items are properly spaced */
-        .admin-only a {
-            margin-left: 0.5rem;
-            padding-left: 0.5rem;
-            border-left: 2px solid var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            main {
-                margin-left: 16rem;
-            }
-        }
-    </style>
     </style>
 </head>
 
@@ -225,35 +186,43 @@
                     <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
 
                     <a href="/admin/moderate-reports.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+                        <i class="fas fa-check-double w-5 text-center text-green-500"></i>
+                        <span>Moderate Reports</span>
                     </a>
-                    <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
-                        <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+                    <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                        <i class="fas fa-calendar-check w-5 text-center text-green-500"></i>
+                        <span>Manage Events</span>
                     </a>
                     <a href="/admin/environment-monitor.html"
                         class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+                        <i class="fas fa-chart-line w-5 text-center text-green-500"></i>
+                        <span>Environment Monitor</span>
                     </a>
                     <a href="/admin/area-comparison.html"
                         class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+                        <i class="fas fa-map-marked w-5 text-center text-green-500"></i>
+                        <span>Area Comparison</span>
                     </a>
                     <a href="/admin/goals-progress.html"
                         class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+                        <i class="fas fa-bullseye w-5 text-center text-green-500"></i>
+                        <span>Goals & Progress</span>
                     </a>
                     <a href="/admin/admin-analytics.html"
                         class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+                        <i class="fas fa-chart-pie w-5 text-center text-green-500"></i>
+                        <span>Admin Analytics</span>
                     </a>
                     <a href="/admin/inbox-messages.html"
                         class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-                        <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+                        <i class="fas fa-inbox w-5 text-center text-green-500"></i>
+                        <span>Inbox Messages</span>
                     </a>
                     <a href="/admin/user-management.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
-                        <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                        <i class="fas fa-user-cog w-5 text-center text-green-500"></i>
+                        <span>User Management</span>
                     </a>
                 </div>
             </nav>
@@ -266,357 +235,420 @@
                 </a>
             </div>
         </aside>
-<!-- ====================== -->
-        <!-- ECOALERTS TAB -->
-        <!-- ====================== -->
-        
-        <div id="ecoalerts" class="tab-content hidden">
-          
-              <!-- Alert Feed -->
-              <div id="moderate-feed">
-                <div class="loading-spinner">
-                  <i class="fas fa-circle-notch fa-spin text-3xl text-green-500"></i>
-                </div>
-              </div>
-              
-                </div>
-            </div>
-            </div>
-        </div>
 
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800">Moderate Reports</h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Search reports..." 
+                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-filter mr-2"></i> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Pending Review</p>
+                                <h3 class="text-2xl font-bold" id="pending-count">0</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">In Review</p>
+                                <h3 class="text-2xl font-bold" id="inreview-count">0</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Resolved Today</p>
+                                <h3 class="text-2xl font-bold" id="resolved-count">0</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-500">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Feed -->
+                <div id="moderate-feed" class="space-y-4">
+                    <div class="text-center py-10">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
+                        <p class="mt-2 text-gray-600">Loading reports for moderation...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        window.addEventListener("DOMContentLoaded", () => {
-            const isAdmin = localStorage.getItem("isAdmin") === "true";
-            const userName = localStorage.getItem("userName");
-            const userNameSpan = document.getElementById("user-name-text");
-            const userLink = document.getElementById("user-link");
-            const sidebar = document.querySelector("aside");
-            const adminItems = document.querySelectorAll(".admin-only");
-
-            // Set user info
-            if (userName && userNameSpan && userLink) {
-                userNameSpan.textContent = userName;
-                userLink.href = "account.html";
+        class ModerateReportsApp {
+            constructor() {
+                this.initialize();
             }
 
-            // Handle admin features
-            if (isAdmin) {
-                // Expand sidebar for admin
-                if (sidebar) {
-                    sidebar.classList.remove("w-64");
-                    sidebar.classList.add("w-72", "shadow-lg");
-                }
+            async initialize() {
+                this.checkAdminStatus();
+                await this.loadReports();
+                this.setupEventListeners();
+                this.updateStats();
+            }
 
-                // Show admin-only sections
-                adminItems.forEach(item => {
-                    item.style.display = "block";
+            checkAdminStatus() {
+                const isAdmin = localStorage.getItem("isAdmin") === "true";
+                if (!isAdmin) {
+                    window.location.href = "login.html";
+                    return;
+                }
+                
+                // Show admin items
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'block';
                 });
-
-                // Add "Admin" badge
-                if (userNameSpan) {
-                    const adminBadge = document.createElement("span");
-                    adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-                    adminBadge.textContent = "Admin";
-                    userNameSpan.parentNode.appendChild(adminBadge);
+                
+                // Add admin badge
+                const userName = localStorage.getItem("userName");
+                if (userName) {
+                    document.getElementById('user-name-text').textContent = userName;
+                    const adminBadge = document.createElement('span');
+                    adminBadge.className = 'ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full admin-badge';
+                    adminBadge.textContent = 'Admin';
+                    document.getElementById('user-name-text').parentNode.appendChild(adminBadge);
                 }
             }
 
-            // Add logout button
-            if (userName && userLink) {
-                const logoutBtn = document.createElement("button");
-                logoutBtn.textContent = "Logout";
-                logoutBtn.className = "ml-4 text-sm text-red-500 underline hover:text-red-700";
-                logoutBtn.addEventListener("click", () => {
-                    // Send logout request to server
+            async loadReports() {
+                const feed = document.getElementById('moderate-feed');
+                if (!feed) return;
+
+                try {
+                    this.showLoadingState(feed);
+                    
+                    const res = await fetch('/api/moderate-reports');
+                    if (!res.ok) throw new Error('Failed to fetch reports');
+                    
+                    const reports = await res.json();
+                    console.log('Fetched reports:', reports);
+                    
+                    this.renderReports(reports);
+                    this.updateStats(reports);
+                } catch (error) {
+                    console.error('Error loading reports:', error);
+                    this.showErrorState(feed, error.message);
+                }
+            }
+
+            showLoadingState(feed) {
+                feed.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
+                        <p class="mt-2 text-gray-600">Loading reports for moderation...</p>
+                    </div>`;
+            }
+
+            showErrorState(feed, message) {
+                feed.innerHTML = `
+                    <div class="text-center py-10 text-gray-500">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-2 text-red-500"></i>
+                        <p class="mb-4">${message}</p>
+                        <button onclick="moderateApp.loadReports()" 
+                                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                            Try Again
+                        </button>
+                    </div>`;
+            }
+
+            renderReports(reports) {
+                const feed = document.getElementById('moderate-feed');
+                if (!feed) return;
+
+                if (!reports || reports.length === 0) {
+                    feed.innerHTML = `
+                        <div class="text-center py-10 text-gray-500">
+                            <i class="fas fa-inbox text-2xl mb-2"></i>
+                            <p>No reports need moderation at this time.</p>
+                        </div>`;
+                    return;
+                }
+
+                feed.innerHTML = '';
+                reports.forEach(report => {
+                    const card = this.createReportCard(report);
+                    feed.appendChild(card);
+                });
+            }
+
+            createReportCard(report) {
+                const card = document.createElement('div');
+                card.className = 'report-card bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow';
+                card.innerHTML = this.generateReportCardHTML(report);
+                return card;
+            }
+
+            generateReportCardHTML(report) {
+                const username = report.is_anonymous ? 'Anonymous' : report.user_name;
+                const userImage = report.is_anonymous || !report.user_image 
+                    ? '/API/public/uploads/image.png' 
+                    : `/API/public/uploads/${report.user_image}`;
+
+                const categoryClass = this.getCategoryClass(report.category);
+                const statusClass = this.getStatusClass(report.status);
+                
+                // Calculate progress based on algorithm
+                const voteProgress = Math.min(50, (report.upvotes || 0) * 10);
+                const adminProgress = report.status === 'Resolved' ? 100 - voteProgress :
+                                  report.status === 'inreview' ? 25 : 0;
+                const totalProgress = Math.min(100, voteProgress + adminProgress);
+
+                return `
+                    <!-- Header with user info -->
+                    <div class="flex items-start gap-4">
+                        <!-- User Avatar -->
+                        <div class="flex-shrink-0">
+                            <img src="${userImage}"
+                               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
+                               alt="User avatar">
+                        </div>
+                        
+                        <!-- Main Content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-semibold text-gray-900">${username}</p>
+                                    <p class="text-sm text-gray-500">
+                                        <i class="fas fa-map-marker-alt mr-1"></i> 
+                                        ${report.location} · ${this.timeAgo(report.created_at)}
+                                    </p>
+                                </div>
+                                
+                                <!-- Status and Category -->
+                                <div class="flex flex-col items-end space-y-1">
+                                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${statusClass}">
+                                        ${report.status}
+                                    </span>
+                                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${categoryClass}">
+                                        ${report.category}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Report Content -->
+                            <div class="mt-3">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">${report.title}</h3>
+                                <p class="text-gray-700 mb-4">${report.description}</p>
+                                
+                                ${report.image ? `
+                                <div class="report-image-container mb-4">
+                                    <img src="${report.image}" 
+                                         class="report-image max-w-full h-auto rounded-lg" 
+                                         alt="Report image"
+                                         onerror="this.parentElement.remove()">
+                                </div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-5">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Progress</span>
+                            <span>${totalProgress}% (${report.upvotes || 0}↑ ${report.downvotes || 0}↓)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full bg-gradient-to-r from-green-500 to-blue-500" 
+                                 style="width: ${totalProgress}%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span>Community: ${voteProgress}%</span>
+                            <span class="ml-2">Admin: ${adminProgress}%</span>
+                        </div>
+                    </div>
+
+                    <!-- Admin Actions -->
+                    <div class="mt-4 flex justify-end gap-2" data-report-id="${report.report_id}">
+                        ${report.status === 'reported' ? `
+                        <button class="admin-action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                                data-action="verify">
+                            <i class="fas fa-check-circle mr-2"></i> Verify Report
+                        </button>` : ''}
+                        
+                        ${report.status === 'inreview' ? `
+                        <button class="admin-action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+                                data-action="resolve">
+                            <i class="fas fa-flag-checkered mr-2"></i> Resolve Report
+                        </button>` : ''}
+                        
+                        ${report.status === 'Resolved' ? `
+                        <button class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed"
+                                disabled>
+                            <i class="fas fa-check-double mr-2"></i> Resolved
+                        </button>` : ''}
+                    </div>
+
+                    <!-- Comment Section -->
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <h4 class="text-sm font-medium text-gray-500 mb-2">
+                            <i class="fas fa-comments mr-1"></i> ${report.comment_count || 0} Comments
+                        </h4>
+                        <div class="space-y-3 mt-3" id="comments-${report.report_id}"></div>
+                    </div>`;
+            }
+
+            updateStats(reports = []) {
+                if (!reports || reports.length === 0) {
+                    document.getElementById('pending-count').textContent = '0';
+                    document.getElementById('inreview-count').textContent = '0';
+                    document.getElementById('resolved-count').textContent = '0';
+                    return;
+                }
+
+                const pending = reports.filter(r => r.status === 'reported').length;
+                const inreview = reports.filter(r => r.status === 'inreview').length;
+                const resolved = reports.filter(r => r.status === 'Resolved').length;
+
+                document.getElementById('pending-count').textContent = pending;
+                document.getElementById('inreview-count').textContent = inreview;
+                document.getElementById('resolved-count').textContent = resolved;
+            }
+
+            setupEventListeners() {
+                document.addEventListener('click', async (e) => {
+                    const actionBtn = e.target.closest('.admin-action-btn');
+                    if (!actionBtn) return;
+
+                    const reportId = actionBtn.closest('[data-report-id]').dataset.reportId;
+                    const action = actionBtn.dataset.action;
+                    
+                    try {
+                        const newStatus = action === 'verify' ? 'inreview' : 'Resolved';
+                        const response = await fetch(`/api/reports/${reportId}/status`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ status: newStatus })
+                        });
+
+                        if (!response.ok) throw new Error('Failed to update status');
+
+                        this.showStatusUpdateToast(action);
+                        await this.loadReports();
+
+                    } catch (err) {
+                        console.error('Status update error:', err);
+                        alert('Failed to update report status');
+                    }
+                });
+            }
+
+            showStatusUpdateToast(action) {
+                const message = action === 'verify' 
+                    ? 'Report verified and moved to in review' 
+                    : 'Report marked as resolved';
+                
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center';
+                toast.innerHTML = `
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${message}</span>`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // Utility functions
+            getCategoryClass(category) {
+                const categoryMap = {
+                    'Pollution': 'bg-yellow-100 text-yellow-800',
+                    'Wildlife': 'bg-green-100 text-green-800',
+                    'Deforestation': 'bg-blue-100 text-blue-800',
+                    'Waste': 'bg-purple-100 text-purple-800'
+                };
+                return categoryMap[category] || 'bg-gray-100 text-gray-800';
+            }
+
+            getStatusClass(status) {
+                const statusMap = {
+                    'reported': 'bg-gray-100 text-gray-800',
+                    'inreview': 'bg-blue-100 text-blue-800',
+                    'Resolved': 'bg-green-100 text-green-800'
+                };
+                return statusMap[status] || 'bg-gray-100 text-gray-800';
+            }
+
+            timeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const seconds = Math.floor((now - date) / 1000);
+                
+                const intervals = {
+                    year: 31536000,
+                    month: 2592000,
+                    week: 604800,
+                    day: 86400,
+                    hour: 3600,
+                    minute: 60
+                };
+                
+                for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                    const interval = Math.floor(seconds / secondsInUnit);
+                    if (interval >= 1) {
+                        return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
+                    }
+                }
+                
+                return 'Just now';
+            }
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.moderateApp = new ModerateReportsApp();
+            
+            // Add logout functionality
+            const userName = localStorage.getItem("userName");
+            if (userName) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.className = 'ml-4 text-sm text-red-500 hover:text-red-700';
+                logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-1"></i> Logout';
+                logoutBtn.addEventListener('click', () => {
                     fetch('http://localhost:5055/api/public/logout', {
                         method: 'POST',
                         credentials: 'include'
-                    })
-                        .then(() => {
-                            window.location.href = "login.html";
-                        });
+                    }).then(() => {
+                        window.location.href = "login.html";
+                    });
                 });
-
-                if (userLink && userLink.parentNode) {
+                
+                const userLink = document.getElementById('user-link');
+                if (userLink) {
                     userLink.parentNode.appendChild(logoutBtn);
                 }
             }
         });
-
-        //reports functionality 
-        console.log('ModerateReportsApp initialized');
-class ModerateReportsApp {
-  constructor() {
-    this.initialize();
-  }
-
-  async initialize() {
-    this.checkAdminStatus();
-    await this.loadReports(); //line 357 
-    this.setupEventListeners();
-  }
-
-  checkAdminStatus() {
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-    if (!isAdmin) {
-      window.location.href = "login.html";
-      return;
-    }
-  }
-
-  async loadReports() {
-    const feed = document.getElementById('moderate-feed');
-    if (!feed) return;
-
-    try {
-    const res = await fetch('/api/moderate-reports');
-    console.log('Moderate reports fetch status:', res.status);
-    const reports = await res.json();
-    console.log('Fetched reports:', reports);
-
-    this.renderReports(reports); //line 379
-    } catch (error) {
-      console.error('Error loading reports:', error);
-      this.showErrorState(feed, error.message);
-    }
-  }
-
-  showLoadingState(feed) {
-    feed.innerHTML = `
-      <div class="text-center py-10">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
-        <p class="mt-2 text-gray-600">Loading reports for moderation...</p>
-      </div>`;
-  }
-
-  showErrorState(feed, message) {
-    feed.innerHTML = `
-      <div class="error-state text-center py-10 text-gray-500">
-        <i class="fas fa-exclamation-triangle text-2xl mb-2 text-red-500"></i>
-        <p class="mb-4">${message}</p>
-        <button onclick="moderateApp.loadReports()" 
-                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-          Try Again
-        </button>
-      </div>`;
-  }
-
-  renderReports(reports) {
-    const feed = document.getElementById('moderate-feed');
-    if (!feed) return;
-
-    if (!reports || reports.length === 0) {
-      feed.innerHTML = `
-        <div class="text-center py-10 text-gray-500">
-          <i class="fas fa-inbox text-2xl mb-2"></i>
-          <p>No reports need moderation at this time.</p>
-        </div>`;
-      return;
-    }
-
-    feed.innerHTML = '';
-    reports.forEach(report => {
-      const card = this.createReportCard(report);
-      feed.appendChild(card);
-    });
-  }
-
-  createReportCard(report) {
-    const card = document.createElement('div');
-    card.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow mb-4';
-    card.innerHTML = this.generateReportCardHTML(report);
-    return card;
-  }
-
-  generateReportCardHTML(report) {
-    const username = report.is_anonymous ? 'Anonymous' : report.user_name;
-    const userImage = report.is_anonymous || !report.user_image 
-                     ? '/API/public/uploads/image.png' 
-                     : report.user_image;
-    const categoryClass = this.getCategoryClass(report.category);
-    
-    // Calculate progress based on algorithm
-    const voteProgress = Math.min(50, (report.upvotes || 0) * 10);
-    const adminProgress = report.status === 'Resolved' ? 100 - voteProgress :
-                      report.status === 'inreview' ? 25 : 0;
-    const totalProgress = Math.min(100, voteProgress + adminProgress);
-
-
-    return `
-      <!-- Header with user info -->
-      <div class="flex items-start gap-4">
-        <!-- User Avatar -->
-        <div class="flex-shrink-0">
-          <img src="${userImage}" 
-               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
-               alt="User avatar"
-               onerror="this.src='/API/public/uploads/image.png'">
-        </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 min-w-0">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-semibold text-gray-900">${username}</p>
-              <p class="text-sm text-gray-500">
-                <i class="fas fa-map-marker-alt mr-1"></i> 
-                ${report.location} · ${this.timeAgo(report.created_at)}
-              </p>
-            </div>
-            
-            <!-- Category Badge -->
-            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${categoryClass}">
-              ${report.category}
-            </span>
-          </div>
-          
-          <!-- Report Content -->
-          <div class="mt-3">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">${report.title}</h3>
-            <p class="text-gray-700 mb-4">${report.description}</p>
-            
-            ${report.image ? `
-            <div class="report-image-container mb-4">
-              <img src="${report.image}" 
-                   class="report-image max-w-full h-auto rounded-lg" 
-                   alt="Report image"
-                   onerror="this.parentElement.remove()">
-            </div>` : ''}
-          </div>
-        </div>
-      </div>
-      
-      <!-- Progress Bar -->
-      <div class="mt-5">
-        <div class="flex justify-between text-sm text-gray-600 mb-1">
-          <span>Status: ${report.status}</span>
-          <span>${totalProgress}% (${report.upvotes || 0}↑ ${report.downvotes || 0}↓)</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div class="h-2.5 rounded-full bg-gradient-to-r from-green-500 to-blue-500" 
-               style="width: ${totalProgress}%"></div>
-        </div>
-        <div class="text-xs text-gray-500 mt-1">
-          <span>Community: ${voteProgress}%</span>
-          <span class="ml-2">Admin: ${adminProgress}%</span>
-        </div>
-      </div>
-
-      <!-- Admin Actions -->
-      <div class="mt-4 flex justify-end gap-2" data-report-id="${report.report_id}">
-        ${report.status === 'reported' ? `
-        <button class="admin-action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                data-action="verify">
-          Verify Report
-        </button>` : ''}
-        
-        ${report.status === 'inreview' ? `
-        <button class="admin-action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                data-action="resolve">
-          Resolve Report
-        </button>` : ''}
-        
-        ${report.status === 'Resolved' ? `
-        <button class="bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed"
-                disabled>
-          Resolved
-        </button>` : ''}
-      </div>
-
-      <!-- Comment Section -->
-      <div class="mt-6 pt-4 border-t border-gray-100">
-        <div class="space-y-3 mt-3" id="comments-${report.report_id}"></div>
-      </div>`;
-  }
-
-  setupEventListeners() {
-    document.addEventListener('click', async (e) => {
-      const actionBtn = e.target.closest('.admin-action-btn');
-      if (!actionBtn) return;
-
-      const reportId = actionBtn.closest('[data-report-id]').dataset.reportId;
-      const action = actionBtn.dataset.action;
-      
-      try {
-        const newStatus = action === 'verify' ? 'inreview' : 'Resolved';
-        const response = await fetch(`/api/reports/${reportId}/status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ status: newStatus })
-        });
-
-        if (!response.ok) throw new Error('Failed to update status');
-
-        // Show success message
-        this.showStatusUpdateToast(action);
-        
-        // Reload reports
-        await this.loadReports();
-
-      } catch (err) {
-        console.error('Status update error:', err);
-        alert('Failed to update report status');
-      }
-    });
-  }
-
-  showStatusUpdateToast(action) {
-    const message = action === 'verify' 
-      ? 'Report verified and moved to inreview' 
-      : 'Report marked as Resolved';
-    
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
-
-  // Utility functions
-  getCategoryClass(category) {
-    const categoryMap = {
-      'Pollution': 'bg-yellow-100 text-yellow-800',
-      'Wildlife': 'bg-green-100 text-green-800',
-      'Deforestation': 'bg-blue-100 text-blue-800',
-      'Waste': 'bg-purple-100 text-purple-800'
-    };
-    return categoryMap[category] || 'bg-gray-100 text-gray-800';
-  }
-
-  timeAgo(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const seconds = Math.floor((now - date) / 1000);
-    
-    const intervals = {
-      year: 31536000,
-      month: 2592000,
-      week: 604800,
-      day: 86400,
-      hour: 3600,
-      minute: 60
-    };
-    
-    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-      const interval = Math.floor(seconds / secondsInUnit);
-      if (interval >= 1) {
-        return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
-      }
-    }
-    
-    return 'Just now';
-  }
-}
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
-  window.moderateApp = new ModerateReportsApp();
-});
     </script>
 </body>
+</html>
