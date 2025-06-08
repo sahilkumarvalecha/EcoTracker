@@ -484,6 +484,7 @@
 
           // Get severity level (default to empty if not provided)
       const severity = (report.severity || '').toLowerCase();
+      const status = (report.report_status || '').toLowerCase();
 
        const severityColor = {
         high: 'bg-red-50 border-l-4 border-red-500',
@@ -494,12 +495,12 @@
 
           const reportCard = document.createElement('div');
           reportCard.className = `bg-white p-4 rounded-lg shadow-sm border border-gray-100 report-card flex justify-between items-center`;
-          reportCard.setAttribute('data-status', report.report_status);
+          reportCard.setAttribute('data-status', status);
           reportCard.innerHTML = `
           <div>
             <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg ${statusClass[report.report_status] || 'bg-gray-100 text-gray-600'}">
-                <i class="${iconClass[report.report_status] || 'fas fa-info-circle'}"></i>
+              <div class="p-2 rounded-lg ${statusClass[status] || 'bg-gray-100 text-gray-600'}">
+                <i class="${iconClass[status] || 'fas fa-info-circle'}"></i>
               </div>
               <div>
                 <p class="font-medium">${report.title}</p>
@@ -508,8 +509,8 @@
             </div>
           </div>
           <span class="px-3 py-1 rounded-full text-xs ${
-          statusClass[report.report_status] || 'bg-gray-100 text-gray-600'
-        } capitalize">${report.report_status || 'unknown'}</span>
+          statusClass[status] || 'bg-gray-100 text-gray-600'
+        } capitalize">${status || 'unknown'}</span>
         `;
 
           container.appendChild(reportCard);
