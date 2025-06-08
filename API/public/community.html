@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,35 +9,36 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
+
     :root {
       --primary: #10b981;
       --primary-dark: #059669;
       --primary-light: #d1fae5;
     }
-    
+
     body {
       font-family: 'Inter', sans-serif;
     }
-    .hidden{
+
+    .hidden {
       display: none;
     }
-    
+
     .sidebar-item {
       transition: all 0.2s ease;
       position: relative;
     }
-    
+
     .sidebar-item:hover {
       background-color: var(--primary-light);
     }
-    
+
     .sidebar-item.active {
       background-color: var(--primary-light);
       color: var(--primary-dark);
       font-weight: 500;
     }
-    
+
     .sidebar-item.active::after {
       content: '';
       position: absolute;
@@ -48,70 +50,80 @@
       border-radius: 2px;
     }
 
-  .area-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e5e7eb;
-    background-color: white;
-    padding: 1rem;
-    border-radius: 1rem;
-  }
+    .area-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid #e5e7eb;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+    }
 
-  .area-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 128, 0, 0.1);
-    border-color: #86efac;
-  }
+    .area-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 10px 20px rgba(0, 128, 0, 0.1);
+      border-color: #86efac;
+    }
 
-  .area-card.active {
-    background-color: #f0fdf4;
-    border-color: #22c55e;
-  }
+    .area-card.active {
+      background-color: #f0fdf4;
+      border-color: #22c55e;
+    }
 
     .help-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .help-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    
+
     .submit-btn {
       background-color: var(--primary);
       transition: background-color 0.2s ease;
     }
-    
+
     .submit-btn:hover {
       background-color: var(--primary-dark);
     }
+
     .tab-content {
-  display: none; /* Start hidden */
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.4s ease-in-out;
-}
-  .tab-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-  }
+      display: none;
+      /* Start hidden */
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.4s ease-in-out;
+    }
 
-  .tab-btn.active {
-    background-color: #22c55e;
-    color: white;
-  }
-  .tab-content.active {
-  display: block; /* Show when active */
-  opacity: 1;
-  transform: translateY(0);
-}
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-    
+    .tab-btn.active {
+      background-color: #22c55e;
+      color: white;
+    }
+
+    .tab-content.active {
+      display: block;
+      /* Show when active */
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -120,11 +132,11 @@
         transform: translateX(-100%);
         transition: transform 0.3s ease;
       }
-      
+
       .sidebar.open {
         transform: translateX(0);
       }
-      
+
       .sidebar-overlay {
         display: none;
         position: fixed;
@@ -132,160 +144,187 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         z-index: 40;
       }
-      
+
       .sidebar-overlay.open {
         display: block;
       }
-      
+
       .main-content {
         padding-left: 0;
       }
-      
+
       .page-header {
-        margin-left: 60px; /* Space for mobile menu button */
+        margin-left: 60px;
+        /* Space for mobile menu button */
       }
 
       @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
       }
+
       /* Category Colors */
-.category-polution {
-   background-color: #fef3c7; color: #92400e; 
-  }
-.category-wildlife { 
-  background-color: #d1fae5; color: #065f46; }
-.category-deforestation { background-color: #e0e7ff; color: #3730a3; 
-}
-.category-waste {
-   background-color: #fce7f3; color: #9d174d;
-   }
+      .category-polution {
+        background-color: #fef3c7;
+        color: #92400e;
+      }
 
-/* Vote Buttons */
-.vote-btn {
-  transition: all 0.2s;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
+      .category-wildlife {
+        background-color: #d1fae5;
+        color: #065f46;
+      }
 
-.upvote-btn:hover {
-  background-color: #f0fdf4;
-  color: #16a34a;
-}
+      .category-deforestation {
+        background-color: #e0e7ff;
+        color: #3730a3;
+      }
 
-.downvote-btn:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
-}
+      .category-waste {
+        background-color: #fce7f3;
+        color: #9d174d;
+      }
 
-.vote-active-up {
-  color: #16a34a !important;
-}
+      /* Vote Buttons */
+      .vote-btn {
+        transition: all 0.2s;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
 
-.vote-active-down {
-  color: #dc2626 !important;
-}
+      .upvote-btn:hover {
+        background-color: #f0fdf4;
+        color: #16a34a;
+      }
 
-/* Image Container */
-.report-image-container {
-  max-height: 400px;
-  overflow: hidden;
-  border-radius: 12px;
-  background-color: #f8fafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+      .downvote-btn:hover {
+        background-color: #fef2f2;
+        color: #dc2626;
+      }
 
-.report-image {
-  max-width: 100%;
-  max-height: 400px;
-  object-fit: contain;
-}
+      .vote-active-up {
+        color: #16a34a !important;
+      }
 
-/* Progress Bar */
-.progress-bar {
-  height: 6px;
-  border-radius: 3px;
-}
+      .vote-active-down {
+        color: #dc2626 !important;
+      }
 
-.progress-submitted {
-   background-color: #fca5a5; 
-  }
-.progress-review {
-   background-color: #93c5fd; 
-  }
-.progress-resolved {
-   background-color: #86efac;
-     }
-     #ecoalerts-feed {
-  min-height: 300px;
-  position: relative;
-}
+      /* Image Container */
+      .report-image-container {
+        max-height: 400px;
+        overflow: hidden;
+        border-radius: 12px;
+        background-color: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-.loading-spinner {
-  display: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+      .report-image {
+        max-width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+      }
 
-.error-state {
-  text-align: center;
-  padding: 2rem;
-  color: #ef4444;
-}
+      /* Progress Bar */
+      .progress-bar {
+        height: 6px;
+        border-radius: 3px;
+      }
 
-.error-state i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
+      .progress-submitted {
+        background-color: #fca5a5;
+      }
 
-.retry-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #3b82f6;
-  color: white;
-  border-radius: 0.25rem;
-}
-.animate-pulse {
-  animation: pulse 0.5s ease-in-out;
-}
+      .progress-review {
+        background-color: #93c5fd;
+      }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
+      .progress-resolved {
+        background-color: #86efac;
+      }
 
-.comment-section {
-  transition: all 0.3s ease;
-}
+      #ecoalerts-feed {
+        min-height: 300px;
+        position: relative;
+      }
 
-.comment-section.hidden {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border: none;
-}
+      .loading-spinner {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
 
-.comment-section:not(.hidden) {
-  max-height: 1000px;
-  opacity: 1;
-}
+      .error-state {
+        text-align: center;
+        padding: 2rem;
+        color: #ef4444;
+      }
+
+      .error-state i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .retry-btn {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 0.25rem;
+      }
+
+      .animate-pulse {
+        animation: pulse 0.5s ease-in-out;
+      }
+
+      @keyframes pulse {
+
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .comment-section {
+        transition: all 0.3s ease;
+      }
+
+      .comment-section.hidden {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        border: none;
+      }
+
+      .comment-section:not(.hidden) {
+        max-height: 1000px;
+        opacity: 1;
+      }
     }
-
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
   <div class="flex min-h-screen">
     <!-- Mobile menu button -->
@@ -297,7 +336,7 @@
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
     <!-- Sidebar -->
- <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -369,7 +408,8 @@
         </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
-        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+        <a href="/login.html" id="user-link"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
           <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
@@ -388,7 +428,7 @@
         </div>
 
         <!-- Tabs -->
-<div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
+        <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
           <button id="tab-members" onclick="switchTab('members')"
             class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">Members</button>
           <button id="tab-discussions" onclick="switchTab('discussions')"
@@ -407,7 +447,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 member-card">
                 <div class="text-center mb-4">
-                  <div class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
+                  <div
+                    class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
                     <i class="fas fa-crown"></i>
                   </div>
                   <h3 class="font-bold text-lg">Leader</h3>
@@ -420,10 +461,11 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 member-card">
                 <div class="text-center mb-4">
-                  <div class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
+                  <div
+                    class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
                     <i class="fas fa-star"></i>
                   </div>
                   <h3 class="font-bold text-lg">Organizer</h3>
@@ -432,14 +474,16 @@
                   <p class="font-semibold text-lg">Priya Singh</p>
                   <p class="text-gray-600">15 projects led</p>
                   <div class="mt-3">
-                    <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">Community Leader</span>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">Community
+                      Leader</span>
                   </div>
                 </div>
               </div>
-              
+
               <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 member-card">
                 <div class="text-center mb-4">
-                  <div class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
+                  <div
+                    class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center text-green-600 mb-3 text-3xl">
                     <i class="fas fa-heart"></i>
                   </div>
                   <h3 class="font-bold text-lg">Volunteer</h3>
@@ -448,7 +492,8 @@
                   <p class="font-semibold text-lg">Samira Chen</p>
                   <p class="text-gray-600">300 hours logged</p>
                   <div class="mt-3">
-                    <span class="inline-block bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">Dedicated</span>
+                    <span
+                      class="inline-block bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">Dedicated</span>
                   </div>
                 </div>
               </div>
@@ -463,11 +508,12 @@
                 View All <i class="fas fa-arrow-right ml-1"></i>
               </button>
             </div>
-            
+
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div class="p-4 border-b hover:bg-green-50 transition-colors duration-200">
                 <div class="flex items-center">
-                  <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+                  <div
+                    class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
                     <i class="fas fa-user"></i>
                   </div>
                   <div class="flex-1">
@@ -479,10 +525,11 @@
                   </button>
                 </div>
               </div>
-              
+
               <div class="p-4 border-b hover:bg-green-50 transition-colors duration-200">
                 <div class="flex items-center">
-                  <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+                  <div
+                    class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
                     <i class="fas fa-user"></i>
                   </div>
                   <div class="flex-1">
@@ -494,10 +541,11 @@
                   </button>
                 </div>
               </div>
-              
+
               <div class="p-4 hover:bg-green-50 transition-colors duration-200">
                 <div class="flex items-center">
-                  <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
+                  <div
+                    class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-green-600 mr-4 text-xl">
                     <i class="fas fa-user"></i>
                   </div>
                   <div class="flex-1">
@@ -516,96 +564,106 @@
         <!-- ====================== -->
         <!-- DISCUSSIONS TAB -->
         <!-- ====================== -->
-<div id="discussions" class="tab-content hidden">
-  <!-- Areas in Karachi -->
-  <section class="mb-8">
-    <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div onclick="selectArea('Clifton'), loadChats('Clifton')" class="area-box area-card cursor-pointer" data-area="Clifton">
-        <div class="icon-wrapper"><i class="fas fa-umbrella-beach"></i></div>
-        <p class="font-medium">Clifton</p>
-        <p class="text-xs text-gray-600">18 discussions</p>
-      </div>
-      <div onclick="selectArea('Gulshan'), loadChats('Gulshan')" class="area-box area-card cursor-pointer" data-area="Gulshan">
-        <div class="icon-wrapper"><i class="fas fa-building"></i></div>
-        <p class="font-medium">Gulshan</p>
-        <p class="text-xs text-gray-600">24 discussions</p>
-      </div>
-      <div onclick="selectArea('DHA'), loadChats('DHA')" class="area-box area-card cursor-pointer" data-area="DHA">
-        <div class="icon-wrapper"><i class="fas fa-home"></i></div>
-        <p class="font-medium">DHA</p>
-        <p class="text-xs text-gray-600">15 discussions</p>
-      </div>
-      <div onclick="selectArea('Korangi'), loadChats('Korangi')" class="area-box area-card cursor-pointer" data-area="Korangi">
-        <div class="icon-wrapper"><i class="fas fa-industry"></i></div>
-        <p class="font-medium">Korangi</p>
-        <p class="text-xs text-gray-600">32 discussions</p>
-      </div>
-    </div>
-  </section>
+        <div id="discussions" class="tab-content hidden">
+          <!-- Areas in Karachi -->
+          <section class="mb-8">
+            <h2 class="text-lg font-semibold mb-4">Areas in Karachi</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div onclick="selectArea('Clifton'), loadChats('Clifton')" class="area-box area-card cursor-pointer"
+                data-area="Clifton">
+                <div class="icon-wrapper"><i class="fas fa-umbrella-beach"></i></div>
+                <p class="font-medium">Clifton</p>
+                <p class="text-xs text-gray-600">18 discussions</p>
+              </div>
+              <div onclick="selectArea('Gulshan'), loadChats('Gulshan')" class="area-box area-card cursor-pointer"
+                data-area="Gulshan">
+                <div class="icon-wrapper"><i class="fas fa-building"></i></div>
+                <p class="font-medium">Gulshan</p>
+                <p class="text-xs text-gray-600">24 discussions</p>
+              </div>
+              <div onclick="selectArea('DHA'), loadChats('DHA')" class="area-box area-card cursor-pointer"
+                data-area="DHA">
+                <div class="icon-wrapper"><i class="fas fa-home"></i></div>
+                <p class="font-medium">DHA</p>
+                <p class="text-xs text-gray-600">15 discussions</p>
+              </div>
+              <div onclick="selectArea('Korangi'), loadChats('Korangi')" class="area-box area-card cursor-pointer"
+                data-area="Korangi">
+                <div class="icon-wrapper"><i class="fas fa-industry"></i></div>
+                <p class="font-medium">Korangi</p>
+                <p class="text-xs text-gray-600">32 discussions</p>
+              </div>
+            </div>
+          </section>
 
-  <!-- Live Chat Section -->
-  <section>
-    <h2 class="text-lg font-semibold mb-4">Community Chat <span id="selected-area" class="text-sm text-gray-500">– Clifton</span></h2>
-    <div id="chat-box" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 h-[400px] overflow-y-auto space-y-2">
-      <p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>
-    </div>
+          <!-- Live Chat Section -->
+          <section>
+            <h2 class="text-lg font-semibold mb-4">Community Chat <span id="selected-area"
+                class="text-sm text-gray-500">– Clifton</span></h2>
+            <div id="chat-box"
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 h-[400px] overflow-y-auto space-y-2">
+              <p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>
+            </div>
 
-    <!-- Message Input -->
-    <div class="flex">
-      <input id="message-input" type="text" placeholder="Type your message..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-      <button onclick="sendMessage()" class="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-lg transition-colors">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-  </section>
-</div>
+            <!-- Message Input -->
+            <div class="flex">
+              <input id="message-input" type="text" placeholder="Type your message..."
+                class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <button onclick="sendMessage()"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-lg transition-colors">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </section>
+        </div>
 
 
         <!-- ====================== -->
         <!-- ECOALERTS TAB -->
         <!-- ====================== -->
-        
+
         <div id="ecoalerts" class="tab-content hidden">
           <div class="max-w-md mx-auto py-10 px-4 flex justify-center">
             <!-- Create New Alert Button -->
             <a href="/report-incident.html"
-               class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all">
+              class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all">
               <i class="fas fa-plus-circle text-lg"></i>
-              <span >Report Incident</span>
+              <span>Report Incident</span>
             </a>
           </div>
-        
-            <!-- Alert Feed -->
-            <div id="ecoalerts-feed">
-              <div class="loading-spinner">
-                <i class="fas fa-circle-notch fa-spin text-3xl text-green-500"></i>
-              </div>
-            </div>
-              </div>
+
+          <!-- Alert Feed -->
+          <div id="ecoalerts-feed">
+            <div class="loading-spinner">
+              <i class="fas fa-circle-notch fa-spin text-3xl text-green-500"></i>
+
             </div>
           </div>
+          
         </div>
       </div>
-    </main>
+  </div>
+  </div>
+  </div>
+  </main>
   </div>
 
   <script>
     // Main Application Controller
     class CommunityApp {
-  constructor() {
-    this.selectedArea = "Clifton";
-    this.voteDebounce = {};
-    this.initialize(); // line 599
-  }
+      constructor() {
+        this.selectedArea = "Clifton";
+        this.voteDebounce = {};
+        this.initialize(); // line 599
+      }
 
-  async initialize() {
-    this.checkAuth();
-    this.setupUIComponents(); //line 604 
-    await this.loadInitialData();
-  }
+      async initialize() {
+        this.checkAuth();
+        this.setupUIComponents(); //line 604 
+        await this.loadInitialData();
+      }
 
-    
+
       // Authentication
       checkAuth() {
         const userName = localStorage.getItem("userName");
@@ -615,39 +673,39 @@
         }
         this.setupUserProfile();
       }
-    
+
       setupUserProfile() {
         const userName = localStorage.getItem("userName");
         const isAdmin = localStorage.getItem("isAdmin") === "true";
-        
+
         // Set basic user info
         const userNameSpan = document.getElementById("user-name-text");
         if (userNameSpan) userNameSpan.textContent = userName;
-        
+
         // Admin specific setup
         if (isAdmin) {
           this.setupAdminFeatures();
         }
-        
+
         this.addLogoutButton();
       }
-    
+
       setupAdminFeatures() {
         const sidebar = document.getElementById("sidebar");
         if (sidebar) {
           sidebar.classList.add("w-72", "shadow-lg");
         }
-        
+
         document.querySelectorAll(".admin-only").forEach(item => {
           item.style.display = "block";
         });
-        
+
         const adminBadge = document.createElement("span");
         adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
         adminBadge.textContent = "Admin";
         document.getElementById("user-name-text")?.parentNode.appendChild(adminBadge);
       }
-    
+
       addLogoutButton() {
         const logoutBtn = document.createElement("button");
         logoutBtn.textContent = "Logout";
@@ -655,12 +713,12 @@
         logoutBtn.addEventListener("click", this.handleLogout.bind(this));
         document.getElementById("user-link")?.parentNode.appendChild(logoutBtn);
       }
-    
+
       async handleLogout() {
         localStorage.removeItem("userName");
         localStorage.removeItem("userEmail");
         localStorage.removeItem("isAdmin");
-        
+
         try {
           await fetch('http://localhost:5055/api/public/logout', {
             method: 'POST',
@@ -672,14 +730,14 @@
         }
       }
       setupVoting() {
-      const feed = document.getElementById('ecoalerts-feed');
-       if (!feed) return;
-       feed.addEventListener('click', e => {
-       if (e.target.closest('.vote-btn')) {
-      this.handleVote(e);
-     }
-   });
-  }
+        const feed = document.getElementById('ecoalerts-feed');
+        if (!feed) return;
+        feed.addEventListener('click', e => {
+          if (e.target.closest('.vote-btn')) {
+            this.handleVote(e);
+          }
+        });
+      }
 
       // UI Components
       setupUIComponents() {
@@ -688,23 +746,23 @@
         this.setupVoting(); //line 679
         this.setupChat();
       }
-    
+
       setupTabs() {
         const tabs = {
           members: document.getElementById('tab-members'),
           discussions: document.getElementById('tab-discussions'),
           alerts: document.getElementById('tab-alerts')
         };
-        
+
         const contents = {
           members: document.getElementById('members'),
           discussions: document.getElementById('discussions'),
           alerts: document.getElementById('ecoalerts')
         };
-        
+
         const lastTab = localStorage.getItem('lastActiveTab') || 'members';
         this.switchTab(lastTab, tabs, contents);
-        
+
         // Add event listeners to tab buttons
         Object.entries(tabs).forEach(([tabName, tabElement]) => {
           tabElement?.addEventListener('click', () => {
@@ -712,105 +770,105 @@
           });
         });
       }
-    
+
       switchTab(tab, tabs, contents) {
         if (!tabs[tab] || !contents[tab]) return;
-    
+
         // Update tabs UI
         Object.values(tabs).forEach(t => {
           t?.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
           t?.classList.add('text-gray-500');
         });
-    
+
         tabs[tab].classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
         tabs[tab].classList.remove('text-gray-500');
-    
+
         // Toggle tab contents
         Object.values(contents).forEach(c => {
           c?.classList.add('hidden');
           c?.classList.remove('active');
         });
-        
+
         contents[tab].classList.remove('hidden');
         contents[tab].classList.add('active');
-    
+
         localStorage.setItem('lastActiveTab', tab);
       }
-    
+
       setupSidebar() {
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const closeSidebarButton = document.getElementById('close-sidebar');
         const sidebar = document.querySelector('.sidebar');
-        
+
         const toggleSidebar = () => {
           sidebar?.classList.toggle('open');
           sidebarOverlay?.classList.toggle('open');
         };
-        
+
         mobileMenuButton?.addEventListener('click', toggleSidebar);
         sidebarOverlay?.addEventListener('click', toggleSidebar);
         closeSidebarButton?.addEventListener('click', toggleSidebar);
       }
-    
+
       // Feed Management
       async loadInitialData() {
         await this.loadReports();
         this.loadChats(this.selectedArea);
       }
-    
+
       async loadReports() {
-    const feed = document.getElementById('ecoalerts-feed');
-    if (!feed) {
-      console.error('Feed container not found');
-      return;
-    }
+        const feed = document.getElementById('ecoalerts-feed');
+        if (!feed) {
+          console.error('Feed container not found');
+          return;
+        }
 
-    try {
-      this.showLoadingState(feed);
-      
-      const response = await fetch('http://localhost:5055/api/reports-feed', {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Debug: Check what's being received
-      console.log('API response:', data);
-      
-      if (!Array.isArray(data)) {
-        throw new Error('Invalid data format - expected array');
-      }
-      
-      this.renderReports(data);
-      
-    } catch (error) {
-      console.error('Error loading reports:', error);
-      this.showErrorState(feed, error.message || 'Failed to load reports');
-    } finally {
-      this.hideLoadingState(feed);
-    }
-  }
+        try {
+          this.showLoadingState(feed);
 
-  showLoadingState(feed) {
-    // Clear any existing content
-    feed.innerHTML = '';
-    
-    const spinner = document.createElement('div');
-    spinner.className = 'text-center py-10';
-    spinner.innerHTML = `
+          const response = await fetch('http://localhost:5055/api/reports-feed', {
+            credentials: 'include'
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          // Debug: Check what's being received
+          console.log('API response:', data);
+
+          if (!Array.isArray(data)) {
+            throw new Error('Invalid data format - expected array');
+          }
+
+          this.renderReports(data);
+
+        } catch (error) {
+          console.error('Error loading reports:', error);
+          this.showErrorState(feed, error.message || 'Failed to load reports');
+        } finally {
+          this.hideLoadingState(feed);
+        }
+      }
+
+      showLoadingState(feed) {
+        // Clear any existing content
+        feed.innerHTML = '';
+
+        const spinner = document.createElement('div');
+        spinner.className = 'text-center py-10';
+        spinner.innerHTML = `
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
       <p class="mt-2 text-gray-600">Loading reports...</p>
     `;
-    feed.appendChild(spinner);
-  }
+        feed.appendChild(spinner);
+      }
 
-  showErrorState(feed, message) {
-    feed.innerHTML = `
+      showErrorState(feed, message) {
+        feed.innerHTML = `
       <div class="error-state text-center py-10 text-gray-500">
         <i class="fas fa-exclamation-triangle text-2xl mb-2 text-red-500"></i>
         <p class="mb-4">${message}</p>
@@ -819,54 +877,54 @@
           Try Again
         </button>
       </div>`;
-  }
+      }
 
-  hideLoadingState(feed) {
-    // The loading state is replaced by content, so no need to hide anything here
-  }
+      hideLoadingState(feed) {
+        // The loading state is replaced by content, so no need to hide anything here
+      }
 
-  renderReports(reports) {
-    const feed = document.getElementById('ecoalerts-feed');
-    if (!feed) return;
+      renderReports(reports) {
+        const feed = document.getElementById('ecoalerts-feed');
+        if (!feed) return;
 
-    if (!reports || reports.length === 0) {
-      feed.innerHTML = `
+        if (!reports || reports.length === 0) {
+          feed.innerHTML = `
         <div class="text-center py-10 text-gray-500">
           <i class="fas fa-inbox text-2xl mb-2"></i>
           <p>No reports yet. Be the first to report an incident!</p>
         </div>`;
-      return;
-    }
+          return;
+        }
 
-    // Clear the feed first
-    feed.innerHTML = '';
-    
-    // Add each report card
-    reports.forEach(report => {
-      const card = this.createReportCard(report);
-      feed.appendChild(card);
-    });
+        // Clear the feed first
+        feed.innerHTML = '';
 
-    // Setup voting handlers
-    this.setupVoting();
-  }
+        // Add each report card
+        reports.forEach(report => {
+          const card = this.createReportCard(report);
+          feed.appendChild(card);
+        });
 
-  createReportCard(report) {
-    const card = document.createElement('div');
-    card.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow mb-4';
-    card.innerHTML = this.generateReportCardHTML(report);
-    return card;
-  }
+        // Setup voting handlers
+        this.setupVoting();
+      }
 
-  generateReportCardHTML(report) {
-    const username = report.is_anonymous ? 'Anonymous' : report.user_name;
-    const userImage = report.is_anonymous || !report.user_image 
-                     ? '/default-avatar.png' 
-                     : report.user_image;
-    const progressColor = `progress-${report.status.toLowerCase().replace(' ', '-')}`;
-    const categoryClass = this.getCategoryClass(report.category);
+      createReportCard(report) {
+        const card = document.createElement('div');
+        card.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow mb-4';
+        card.innerHTML = this.generateReportCardHTML(report);
+        return card;
+      }
 
-    return `
+      generateReportCardHTML(report) {
+        const username = report.is_anonymous ? 'Anonymous' : report.user_name;
+        const userImage = report.is_anonymous || !report.user_image
+          ? '/default-avatar.png'
+          : report.user_image;
+        const progressColor = `progress-${report.status.toLowerCase().replace(' ', '-')}`;
+        const categoryClass = this.getCategoryClass(report.category);
+
+        return `
       <!-- Header with user info -->
       <div class="flex items-start gap-4">
         <!-- User Avatar -->
@@ -950,10 +1008,10 @@
         ${this.renderCommentInput(report.report_id)}
         <div class="space-y-3 mt-3 comments-list" id="comments-${report.report_id}"></div>
       </div>`;
-  }
+      }
 
-  renderCommentInput(reportId) {
-    return `
+      renderCommentInput(reportId) {
+        return `
       <div class="flex items-center mb-3">
         <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
           <i class="fas fa-user"></i>
@@ -967,62 +1025,62 @@
           </button>
         </div>
       </div>`;
-  }
+      }
 
-  // Improved Voting System
-  async handleVote(e) {
-    const voteBtn = e.target.closest('.vote-btn');
-    if (!voteBtn) return;
+      // Improved Voting System
+      async handleVote(e) {
+        const voteBtn = e.target.closest('.vote-btn');
+        if (!voteBtn) return;
 
-    // Debounce to prevent rapid clicks
-    const reportId = voteBtn.closest('[data-report-id]').dataset.reportId;
-    if (this.voteDebounce[reportId]) {
-      clearTimeout(this.voteDebounce[reportId]);
-    }
-
-    // Immediate UI feedback
-    const voteType = voteBtn.dataset.voteType;
-    const isUpvote = voteType === 'up';
-    voteBtn.classList.add('animate-pulse');
-
-    this.voteDebounce[reportId] = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/reports/${reportId}/vote`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ vote: isUpvote ? 1 : -1 })
-        });
-
-        if (!res.ok) throw new Error('Failed to vote');
-
-        const result = await res.json();
-        
-        // Update counts
-        const voteContainer = voteBtn.closest('[data-report-id]');
-        if (voteContainer) {
-          voteContainer.querySelector('.upvote-count').textContent = result.upvotes || 0;
-          voteContainer.querySelector('.downvote-count').textContent = result.downvotes || 0;
+        // Debounce to prevent rapid clicks
+        const reportId = voteBtn.closest('[data-report-id]').dataset.reportId;
+        if (this.voteDebounce[reportId]) {
+          clearTimeout(this.voteDebounce[reportId]);
         }
 
-        // Visual feedback
-        voteBtn.classList.remove('animate-pulse');
-        voteBtn.classList.toggle('text-gray-500');
-        voteBtn.classList.toggle(isUpvote ? 'text-green-500' : 'text-red-500');
+        // Immediate UI feedback
+        const voteType = voteBtn.dataset.voteType;
+        const isUpvote = voteType === 'up';
+        voteBtn.classList.add('animate-pulse');
 
-      } catch (err) {
-        console.error('Voting error:', err);
-        voteBtn.classList.remove('animate-pulse');
+        this.voteDebounce[reportId] = setTimeout(async () => {
+          try {
+            const res = await fetch(`/api/reports/${reportId}/vote`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ vote: isUpvote ? 1 : -1 })
+            });
+
+            if (!res.ok) throw new Error('Failed to vote');
+
+            const result = await res.json();
+
+            // Update counts
+            const voteContainer = voteBtn.closest('[data-report-id]');
+            if (voteContainer) {
+              voteContainer.querySelector('.upvote-count').textContent = result.upvotes || 0;
+              voteContainer.querySelector('.downvote-count').textContent = result.downvotes || 0;
+            }
+
+            // Visual feedback
+            voteBtn.classList.remove('animate-pulse');
+            voteBtn.classList.toggle('text-gray-500');
+            voteBtn.classList.toggle(isUpvote ? 'text-green-500' : 'text-red-500');
+
+          } catch (err) {
+            console.error('Voting error:', err);
+            voteBtn.classList.remove('animate-pulse');
+          }
+        }, 300); // 300ms debounce
       }
-    }, 300); // 300ms debounce
-  }
-    
+
       // Chat System
       setupChat() {
         document.getElementById("message-input")?.addEventListener("keypress", (e) => {
           if (e.key === "Enter") this.sendMessage();
         });
-        
+
         document.querySelectorAll('.area-card').forEach(card => {
           card.addEventListener('click', () => {
             const area = card.dataset.area;
@@ -1030,29 +1088,29 @@
           });
         });
       }
-    
+
       selectArea(area) {
         this.selectedArea = area;
         document.getElementById("selected-area").textContent = `– ${area}`;
-    
+
         document.querySelectorAll('.area-card').forEach(card => {
           card.classList.remove('active');
         });
-    
+
         const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
         if (activeCard) activeCard.classList.add('active');
-        
+
         this.loadChats(area);
       }
-    
+
       loadChats(area) {
         fetch(`/api/chats?area=${area}`)
           .then(res => res.json())
           .then(data => {
             const chatBox = document.getElementById("chat-box");
             if (!chatBox) return;
-            
-            chatBox.innerHTML = data.length === 0 ? 
+
+            chatBox.innerHTML = data.length === 0 ?
               `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>` :
               data.map(msg => `
                 <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
@@ -1060,17 +1118,17 @@
                   <p>${msg.message}</p>
                 </div>
               `).join('');
-    
+
             chatBox.scrollTop = chatBox.scrollHeight;
           })
           .catch(err => console.error("Failed to load chats:", err));
       }
-    
+
       sendMessage() {
         const input = document.getElementById("message-input");
         const message = input?.value.trim();
         if (!message) return;
-    
+
         fetch('/api/chats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1086,13 +1144,13 @@
           })
           .catch(err => console.error("Failed to send message:", err));
       }
-    
+
       // Utility Functions
       timeAgo(dateString) {
         const date = new Date(dateString);
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
-        
+
         const intervals = {
           year: 31536000,
           month: 2592000,
@@ -1101,17 +1159,17 @@
           hour: 3600,
           minute: 60
         };
-        
+
         for (const [unit, secondsInUnit] of Object.entries(intervals)) {
           const interval = Math.floor(seconds / secondsInUnit);
           if (interval >= 1) {
-            return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`; 
+            return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
           }
         }
-        
+
         return 'Just now';
       }
-    
+
       getCategoryClass(category) {
         const categoryMap = {
           'Pollution': 'bg-yellow-100 text-yellow-800',
@@ -1122,11 +1180,12 @@
         return categoryMap[category] || 'bg-gray-100 text-gray-800';
       }
     }
-    
+
     // Initialize the application when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       window.communityApp = new CommunityApp(); //line 1119
     });
-    </script>
+  </script>
 </body>
+
 </html>

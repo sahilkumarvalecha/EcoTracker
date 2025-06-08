@@ -58,7 +58,9 @@ app.use((req, res, next) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, "../public/uploads");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+   if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true }); // ✅ fixes the error
+    }
     cb(null, dir);
   },
   filename: (req, file, cb) => {
@@ -293,6 +295,9 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
   const image_url = req.file ? `/uploads/${req.file.filename}` : null;
   const created_at = new Date();
 
+  if (!image_url) {
+  console.warn("⚠️ No image uploaded. req.file is:", req.file);
+}
   try {
     await pool.query(
       `INSERT INTO reports (
