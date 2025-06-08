@@ -73,7 +73,7 @@ app.use('/uploads', express.static(path.join(__dirname, "../public/uploads")));
 
 // HTML routes
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'signup.html'));
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
 app.get('/login', (req, res) => {
@@ -137,7 +137,7 @@ app.post('/signup', async (req, res) => {
     }
 
     await pool.query(
-      'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)',
+      'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) returning *',
       [name, email, password]
     );
 
@@ -889,6 +889,38 @@ function requireAdmin(req, res, next) {
   console.log('Admin access granted');
   next();
 }
+
+
+
+// analytics charts
+
+app.get('/api/analytics-data', async (req, res) => {
+  try {
+    const query = `
+      SELECT
+        r.report_id,
+        r.title,
+        r.severity_level AS severity,
+        c.name AS category,
+        l.neighborhood AS area,
+        r.created_at
+      FROM reports r
+      JOIN categories c ON r.category_id = c.category_id
+      JOIN locations l ON r.location_id = l.location_id
+      WHERE r.report_status != 'deleted'
+      ORDER BY r.created_at DESC
+    `;
+
+    const { rows } = await pool.query(query);
+
+    // Format data if needed, then send
+    res.json(rows);
+
+  } catch (error) {
+    console.error('Error fetching analytics data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));

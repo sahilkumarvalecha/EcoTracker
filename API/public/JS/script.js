@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       loginpassissue.textContent = "";
 
       try {
-        const response = await fetch("http://localhost:5055/login", {
+        const response = await fetch("http://127.0.0.1:5500/API/public/login.html", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5055/signup", {
+        const response = await fetch("/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

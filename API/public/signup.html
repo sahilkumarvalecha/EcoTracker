@@ -148,16 +148,11 @@
           <p class="confirm-passwordissue text-xs text-red-500 mt-1 error-message"></p>
         </div>
 
-        <div class="flex items-center">
-          <input type="checkbox" id="anonymous" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-          <label for="anonymous" class="ml-2 text-sm text-gray-600">Access anonymously</label>
-        </div>
-
         <div class="space-y-3">
           <button type="button" class="btn-primary w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 signup-btn">
             Create Account
           </button>
-          <button type="button" class="btn-outline w-full border border-green-600 text-green-600 py-3 px-4 rounded-lg font-medium hover:border-green-700 hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 Login-btn">
+          <button type="button" class="btn-outline w-full border border-green-600 text-green-600 py-3 px-4 rounded-lg font-medium hover:border-green-700 hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 Loginbtn">
             Already have an account? Log In
           </button>
         </div>
@@ -180,11 +175,8 @@
   </div>
 
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const user = localStorage.getItem("userName");
-      if (user) {
-        window.location.href = "/index.html";
-      }
+    const alreadyacc = document.querySelector(".Loginbtn");
+   
       
       // Toggle password visibility for both fields
       document.querySelectorAll('.password-toggle').forEach(toggle => {
@@ -195,8 +187,11 @@
           toggle.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
         });
       });
-    });
+ 
+    alreadyacc.addEventListener("click", () => {
+      window.location.href = "/login.html";
+    })
   </script>
-  <script src="/JS/script.js"></script>
+  <script src="/API/public/JS/script.js"></script>
 </body>
 </html>

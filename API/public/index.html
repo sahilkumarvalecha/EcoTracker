@@ -377,18 +377,6 @@
             <!-- Reports will be loaded here -->
           </div>
         </div>
-        <!-- Analytics Chart -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h2 class="text-lg font-semibold mb-4">Reports by Location</h2>
-            <canvas id="locationBarChart" height="250"></canvas>
-          </div>
-
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h2 class="text-lg font-semibold mb-4">Pollution Types Ratio</h2>
-            <canvas id="categoryPieChart" height="250"></canvas>
-          </div>
-        </div>
       </div>
     </main>
   </div>
@@ -410,55 +398,6 @@
   </script>
 
   <script>
-
-    const locationReportData = {
-      labels: ["Clifton", "Gulshan", "DHA", "Korangi"],
-      datasets: [{
-        label: "Reports",
-        backgroundColor: "#10b981",
-        borderColor: "#059669",
-        borderWidth: 1,
-        data: [10, 7, 5, 8] // Example data
-      }]
-    };
-
-    const pollutionCategoryData = {
-      labels: ["Waste Dumping", "Water Pollution", "Air Quality", "Noise Pollution"],
-      datasets: [{
-        label: "Pollution Type",
-        data: [12, 9, 5, 6],
-        backgroundColor: ["#ef4444", "#3b82f6", "#10b981", "#facc15"]
-      }]
-    };
-
-    new Chart(document.getElementById('locationBarChart').getContext('2d'), {
-      type: 'bar',
-      data: locationReportData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('categoryPieChart').getContext('2d'), {
-      type: 'pie',
-      data: pollutionCategoryData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
 
     window.addEventListener("DOMContentLoaded", () => {
       const userName = localStorage.getItem("userName");
