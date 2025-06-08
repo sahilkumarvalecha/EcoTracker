@@ -371,7 +371,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 card">
           <div class="flex justify-between items-center mb-6">
             <h2 class="font-semibold text-xl text-gray-800">Recent Activity</h2>
-            <a href="/WEB/Reports.html" class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View All</a>
+            <a href="/Reports.html" class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View All</a>
           </div>
           <div id="event-list" class="flex flex-wrap gap-3">
             <!-- Reports will be loaded here -->
@@ -558,7 +558,7 @@
     });
 
   } catch (err) {
-    console.error('Error loading reports:', err);
+    // console.error('Error loading reports:', err);
     container.innerHTML = `
       <div class="bg-red-50 text-red-700 px-4 py-2 rounded-full text-sm">
         <i class="fas fa-exclamation-circle mr-2"></i>

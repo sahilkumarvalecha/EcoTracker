@@ -50,6 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
     signupbtn.addEventListener("click", async (e) => {
       e.preventDefault();
 
+      console.log("signup clicked");
+
       const signupname = document.querySelector("#signup-name");
       const signupemail = document.querySelector("#signup-email");
       const signuppassword = document.querySelector("#signup-password");
@@ -71,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({
             name: signupname.value.trim(),
             email: signupemail.value.trim(),
-            password_hash: signuppassword.value.trim(),
+            password: signuppassword.value.trim(),
           }),
         });
 
