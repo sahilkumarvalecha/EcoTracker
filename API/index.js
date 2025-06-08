@@ -636,14 +636,14 @@ app.get('/api/reports-feed', async (req, res) => {
         r.created_at,
         r.is_anonymous,
         u.name AS user_name,
-        COALESCE(u.avatar, '/default-avatar.png') AS user_image,
+        COALESCE(u.avatar, '/API/public/uploads/image.png') AS user_image,
         l.neighborhood AS location,
         c.name AS category,
         SUM(rv.vote_type) AS likes,
         r.report_status AS status,
         CASE 
-          WHEN r.report_status = 'Submitted' THEN 25
-          WHEN r.report_status = 'Under Review' THEN 50
+          WHEN r.report_status = 'reported' THEN 25
+          WHEN r.report_status = 'inreview' THEN 50
           WHEN r.report_status = 'Resolved' THEN 100
           ELSE 0 END AS progress
       FROM reports r
@@ -821,6 +821,74 @@ app.get('/api/messages', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+//moderate-reports
+app.get('/api/moderate-reports', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        r.report_id,
+        r.title,
+        r.description,
+        r.image_url AS image,
+        r.created_at,
+        r.is_anonymous,
+        u.name AS user_name,
+        COALESCE(u.avatar, '/API/public/uploads/image.png') AS user_image,
+        l.neighborhood AS location,
+        c.name AS category,
+        (SELECT COUNT(*) FROM report_votes WHERE report_id = r.report_id AND vote_type = 1) AS upvotes,
+        (SELECT COUNT(*) FROM report_votes WHERE report_id = r.report_id AND vote_type = -1) AS downvotes,
+        r.report_status AS status,
+        (SELECT COUNT(*) FROM comments WHERE report_id = r.report_id) AS comment_count
+      FROM reports r
+      LEFT JOIN users u ON r.user_id = u.user_id
+      LEFT JOIN locations l ON r.location_id = l.location_id
+      LEFT JOIN categories c ON r.category_id = c.category_id
+      WHERE r.report_status IN ('reported', 'inreview')
+      ORDER BY r.created_at DESC;
+    `);
+    
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Moderation reports error:', err);
+    res.status(500).json({ error: "Failed to fetch reports for moderation" });
+  }
+});
+
+// Update report status (admin only)
+app.post('/api/reports/:id/status', requireAdmin, async (req, res) => {
+  const reportId = req.params.id;
+  const { status } = req.body;
+
+  if (!['inreview', 'Resolved'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+
+  try {
+    await pool.query(
+      'UPDATE reports SET report_status = $1 WHERE report_id = $2',
+      [status, reportId]
+    );
+
+    res.json({ success: true, newStatus: status });
+  } catch (err) {
+    console.error('Status update error:', err);
+    res.status(500).json({ error: 'Failed to update report status' });
+  }
+});
+
+// Middleware to check admin status
+function requireAdmin(req, res, next) {
+  console.log('requireAdmin called');
+  console.log('req.session:', req.session);
+  if (!req.session || !req.session.isAdmin) {
+    console.log('Admin access denied');
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  console.log('Admin access granted');
+  next();
+}
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
