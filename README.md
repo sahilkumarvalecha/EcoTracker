@@ -26,7 +26,7 @@ A community-powered platform for reporting environmental and social issues. Buil
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/your-username/eco-tracker.git
+   git clone https://github.com/sahilkumarvalecha/eco-tracker.git
    cd eco-tracker
 ````
 
