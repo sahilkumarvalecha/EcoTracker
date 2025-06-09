@@ -633,6 +633,8 @@ app.get("/api/events-count", async (req, res) => {
 
 app.get('/api/reports-feed', async (req, res) => {
   try {
+    const userId = req.session.user_id; // Get current user ID
+    
     const result = await pool.query(`
       SELECT 
         r.report_id,
@@ -645,13 +647,10 @@ app.get('/api/reports-feed', async (req, res) => {
         COALESCE(u.avatar, '/API/public/uploads/image.png') AS user_image,
         l.neighborhood AS location,
         c.name AS category,
-        SUM(rv.vote_type) AS likes,
         r.report_status AS status,
-        CASE 
-          WHEN r.report_status = 'reported' THEN 25
-          WHEN r.report_status = 'inreview' THEN 50
-          WHEN r.report_status = 'Resolved' THEN 100
-          ELSE 0 END AS progress
+        COUNT(CASE WHEN rv.vote_type = 1 THEN 1 END) AS upvotes,
+        COUNT(CASE WHEN rv.vote_type = -1 THEN 1 END) AS downvotes,
+        (SELECT vote_type FROM report_votes WHERE user_id = $1 AND report_id = r.report_id) AS user_vote
       FROM reports r
       LEFT JOIN users u ON r.user_id = u.user_id
       LEFT JOIN locations l ON r.location_id = l.location_id
@@ -659,7 +658,8 @@ app.get('/api/reports-feed', async (req, res) => {
       LEFT JOIN report_votes rv ON r.report_id = rv.report_id
       GROUP BY r.report_id, u.name, u.avatar, l.neighborhood, c.name, r.image_url, r.created_at, r.is_anonymous, r.report_status
       ORDER BY r.created_at DESC;
-    `);
+    `, [userId]);
+    
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -683,13 +683,15 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
       VALUES ($1, $2, $3)
       ON CONFLICT (user_id, report_id)
       DO UPDATE SET vote_type = EXCLUDED.vote_type
+      WHERE report_votes.vote_type != EXCLUDED.vote_type
     `, [userId, reportId, vote]);
 
-    // Get updated counts
+    // Get updated counts and status
     const { rows } = await pool.query(`
       SELECT 
-        SUM(CASE WHEN vote_type = 1 THEN 1 ELSE 0 END) as upvotes,
-        SUM(CASE WHEN vote_type = -1 THEN 1 ELSE 0 END) as downvotes
+        COUNT(CASE WHEN vote_type = 1 THEN 1 END) as upvotes,
+        COUNT(CASE WHEN vote_type = -1 THEN 1 END) as downvotes,
+        (SELECT report_status FROM reports WHERE report_id = $1) as status
       FROM report_votes 
       WHERE report_id = $1
     `, [reportId]);
@@ -699,7 +701,8 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
     res.json({ 
       success: true,
       upvotes: rows[0].upvotes || 0,
-      downvotes: rows[0].downvotes || 0
+      downvotes: rows[0].downvotes || 0,
+      status: rows[0].status
     });
   } catch (err) {
     await pool.query('ROLLBACK');

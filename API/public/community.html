@@ -113,7 +113,55 @@
       opacity: 1;
       transform: translateY(0);
     }
+    /* Add these to your existing styles */
+.resolved-report {
+  background-color: #f0fdf4; /* Very light green */
+  border-left: 4px solid #10b981; /* Green accent border */
+  position: relative;
+}
 
+.resolved-report::after {
+  content: 'Resolved';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #10b981;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Status badges */
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-reported {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.status-inreview {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-verified {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.status-resolved {
+  background-color: #dcfce7;
+  color: #166534;
+}
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -895,29 +943,66 @@
       }
 
       generateReportCardHTML(report) {
-        const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-        const username = report.is_anonymous ? 'Anonymous' : report.user_name;
+  const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  const username = report.is_anonymous ? 'Anonymous' : report.user_name;
 
-        const userImage = report.is_anonymous || !report.user_image ||
-          report.user_image === 'null' ||
-          report.user_image === 'undefined' ||
-          report.user_image.trim() === ''
-          ? defaultAvatar
-          : report.user_image;
-        const progressColor = `progress-${report.status.toLowerCase().replace(' ', '-')}`;
-        const categoryClass = this.getCategoryClass(report.category);
+  const userImage = report.is_anonymous || !report.user_image ||
+    report.user_image === 'null' ||
+    report.user_image === 'undefined' ||
+    report.user_image.trim() === ''
+    ? defaultAvatar
+    : report.user_image;
+  
+  const categoryClass = this.getCategoryClass(report.category);
 
-        return `
-  <!-- Header with user info -->
-  <div class="flex items-start gap-4">
-    <!-- User Avatar -->
-    <div class="flex-shrink-0">
-      <img src="${userImage}" 
-           class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
-           alt="User avatar"
-           onerror="this.onerror=null; this.src='${defaultAvatar}'">
-    </div>
+  // Calculate progress
+  const voteProgress = Math.min(50, (report.upvotes || 0) * 10);
+  const adminProgress = report.status === 'Resolved' ? 100 - voteProgress :
+                       report.status === 'inreview' ? 25 : 0;
+  const totalProgress = Math.min(100, voteProgress + adminProgress);
+  const userVote = report.user_vote || 0;
+  const upvoteClass = userVote === 1 ? 'text-green-500' : 'text-gray-500';
+  const downvoteClass = userVote === -1 ? 'text-red-500' : 'text-gray-500';
 
+  // Status display configuration
+  const statusConfig = {
+    'reported': { class: 'bg-gray-100 text-gray-800', icon: 'fas fa-flag', label: 'Reported' },
+    'inreview': { class: 'bg-blue-100 text-blue-800', icon: 'fas fa-search', label: 'In Review' },
+    'verified': { class: 'bg-purple-100 text-purple-800', icon: 'fas fa-check-circle', label: 'Verified' },
+    'Resolved': { class: 'bg-green-100 text-green-800', icon: 'fas fa-check-double', label: 'Resolved' }
+  };
+  
+  const statusInfo = statusConfig[report.status] || statusConfig['reported'];
+  
+  // Determine if this is a resolved report for special styling
+  const isResolved = report.status === 'Resolved';
+  const resolvedCardClass = isResolved ? 
+    'bg-green-50 border-green-200 hover:shadow-green-100' : 
+    'bg-white border-gray-100';
+
+  return `
+    <!-- Main Card - added resolved styling conditionally -->
+    <div class="p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow mb-4 ${resolvedCardClass}">
+      <!-- Status Badge - added near the top -->
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${statusInfo.class}">
+          <i class="${statusInfo.icon} mr-1"></i>${statusInfo.label}
+        </span>
+        <!-- Category Badge - moved here -->
+        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${categoryClass}">
+          ${report.category}
+        </span>
+      </div>
+      
+      <!-- Header with user info -->
+      <div class="flex items-start gap-4">
+        <!-- User Avatar -->
+        <div class="flex-shrink-0">
+          <img src="${userImage}" 
+               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
+               alt="User avatar"
+               onerror="this.onerror=null; this.src='${defaultAvatar}'">
+        </div>
         
         <!-- Main Content -->
         <div class="flex-1 min-w-0">
@@ -929,11 +1014,6 @@
                 ${report.location} · ${this.timeAgo(report.created_at)}
               </p>
             </div>
-            
-            <!-- Category Badge -->
-            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${categoryClass}">
-              ${report.category}
-            </span>
           </div>
           
           <!-- Report Content -->
@@ -942,12 +1022,12 @@
             <p class="text-gray-700 mb-4">${report.description}</p>
             
             ${report.image ? `
-            <div class="report-image-container mb-4">
-              <img src="${report.image}" 
-                   class="report-image max-w-full h-auto rounded-lg" 
-                   alt="Report image"
-                   onerror="this.parentElement.remove()">
-            </div>` : ''}
+              <div class="report-image-container mb-4">
+                <img src="${report.image}" 
+                     class="report-image max-w-full h-auto rounded-lg" 
+                     alt="Report image"
+                     onerror="this.parentElement.remove()">
+              </div>` : ''}
           </div>
         </div>
       </div>
@@ -955,17 +1035,22 @@
       <!-- Progress Bar -->
       <div class="mt-5">
         <div class="flex justify-between text-sm text-gray-600 mb-1">
-          <span>Status: ${report.status}</span>
-          <span>${report.progress}%</span>
+          <span>Progress</span>
+          <span>${totalProgress}% (${report.upvotes || 0}↑ ${report.downvotes || 0}↓)</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div class="h-2.5 rounded-full ${progressColor}" style="width: ${report.progress}%"></div>
+          <div class="h-2.5 rounded-full bg-gradient-to-r from-green-500 to-blue-500" 
+               style="width: ${totalProgress}%"></div>
+        </div>
+        <div class="text-xs text-gray-500 mt-1">
+          <span>Community: ${voteProgress}%</span>
+          <span class="ml-2">Admin: ${adminProgress}%</span>
         </div>
       </div>
 
-      <!-- Reddit-style Voting at Bottom -->
+      <!-- Voting and Comments -->
       <div class="mt-4 flex items-center gap-2 text-sm" data-report-id="${report.report_id}">
-        <button class="vote-btn upvote-btn flex items-center gap-1 text-gray-500 hover:text-green-500"
+        <button class="vote-btn upvote-btn flex items-center gap-1 ${upvoteClass} hover:text-green-500"
                 data-vote-type="up">
           <i class="fas fa-arrow-up"></i>
           <span class="upvote-count font-medium">${report.upvotes || 0}</span>
@@ -973,7 +1058,7 @@
         
         <span class="text-gray-400 mx-1">|</span>
         
-        <button class="vote-btn downvote-btn flex items-center gap-1 text-gray-500 hover:text-red-500"
+        <button class="vote-btn downvote-btn flex items-center gap-1 ${downvoteClass} hover:text-red-500"
                 data-vote-type="down">
           <i class="fas fa-arrow-down"></i>
           <span class="downvote-count font-medium">${report.downvotes || 0}</span>
@@ -987,188 +1072,218 @@
         </button>
       </div>
 
-      <!-- Comment Section (Initially Hidden) -->
+      <!-- Comment Section -->
       <div class="comment-section mt-4 pt-4 border-t border-gray-100 hidden">
         ${this.renderCommentInput(report.report_id)}
         <div class="space-y-3 mt-3 comments-list" id="comments-${report.report_id}"></div>
-      </div>`;
-      }
+      </div>
+    </div>`;
+}
 
-      renderCommentInput(reportId) {
-        return `
-      <div class="flex items-center mb-3">
-        <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
-          <i class="fas fa-user"></i>
-        </div>
-        <div class="flex-1 relative">
-          <input type="text" placeholder="Add a comment..." 
-                class="w-full p-3 border border-gray-300 rounded-lg pr-10 comment-input" 
-                data-report-id="${reportId}">
-          <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-800 comment-submit">
-            <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
-      </div>`;
-      }
+renderCommentInput(reportId) {
+  return `
+    <div class="flex items-center mb-3">
+      <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="flex-1 relative">
+        <input type="text" placeholder="Add a comment..." 
+              class="w-full p-3 border border-gray-300 rounded-lg pr-10 comment-input" 
+              data-report-id="${reportId}">
+        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-800 comment-submit">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>`;
+}
 
-      // Improved Voting System
-      async handleVote(e) {
-        const voteBtn = e.target.closest('.vote-btn');
-        if (!voteBtn) return;
+getStatusClass(status) {
+  const statusMap = {
+    'reported': 'bg-gray-100 text-gray-800',
+    'inreview': 'bg-blue-100 text-blue-800',
+    'Resolved': 'bg-green-100 text-green-800'
+  };
+  return statusMap[status] || 'bg-gray-100 text-gray-800';
+}
 
-        // Debounce to prevent rapid clicks
-        const reportId = voteBtn.closest('[data-report-id]').dataset.reportId;
-        if (this.voteDebounce[reportId]) {
-          clearTimeout(this.voteDebounce[reportId]);
-        }
+// Improved Voting System
+async handleVote(e) {
+  const voteBtn = e.target.closest('.vote-btn');
+  if (!voteBtn) return;
 
-        // Immediate UI feedback
-        const voteType = voteBtn.dataset.voteType;
-        const isUpvote = voteType === 'up';
-        voteBtn.classList.add('animate-pulse');
+  const reportContainer = voteBtn.closest('[data-report-id]');
+  const reportId = reportContainer.dataset.reportId;
+  const voteType = voteBtn.dataset.voteType;
+  const isUpvote = voteType === 'up';
 
-        this.voteDebounce[reportId] = setTimeout(async () => {
-          try {
-            const res = await fetch(`/api/reports/${reportId}/vote`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ vote: isUpvote ? 1 : -1 })
-            });
+  // Prevent rapid clicking
+  if (this.voteDebounce[reportId]) return;
+  this.voteDebounce[reportId] = true;
 
-            if (!res.ok) throw new Error('Failed to vote');
+  try {
+    const res = await fetch(`/api/reports/${reportId}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vote: isUpvote ? 1 : -1 })
+    });
 
-            const result = await res.json();
+    if (!res.ok) throw new Error('Failed to vote');
 
-            // Update counts
-            const voteContainer = voteBtn.closest('[data-report-id]');
-            if (voteContainer) {
-              voteContainer.querySelector('.upvote-count').textContent = result.upvotes || 0;
-              voteContainer.querySelector('.downvote-count').textContent = result.downvotes || 0;
-            }
+    const result = await res.json();
 
-            // Visual feedback
-            voteBtn.classList.remove('animate-pulse');
-            voteBtn.classList.toggle('text-gray-500');
-            voteBtn.classList.toggle(isUpvote ? 'text-green-500' : 'text-red-500');
-
-          } catch (err) {
-            console.error('Voting error:', err);
-            voteBtn.classList.remove('animate-pulse');
-          }
-        }, 300); // 300ms debounce
-      }
-
-      // Chat System
-      setupChat() {
-        document.getElementById("message-input")?.addEventListener("keypress", (e) => {
-          if (e.key === "Enter") this.sendMessage();
-        });
-
-        document.querySelectorAll('.area-card').forEach(card => {
-          card.addEventListener('click', () => {
-            const area = card.dataset.area;
-            this.selectArea(area);
-          });
-        });
-      }
-
-      selectArea(area) {
-        this.selectedArea = area;
-        document.getElementById("selected-area").textContent = `– ${area}`;
-
-        document.querySelectorAll('.area-card').forEach(card => {
-          card.classList.remove('active');
-        });
-
-        const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
-        if (activeCard) activeCard.classList.add('active');
-
-        this.loadChats(area);
-      }
-
-      loadChats(area) {
-        fetch(`/api/chats?area=${area}`)
-          .then(res => res.json())
-          .then(data => {
-            const chatBox = document.getElementById("chat-box");
-            if (!chatBox) return;
-
-            chatBox.innerHTML = data.length === 0 ?
-              `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>` :
-              data.map(msg => `
-                <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
-                  <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
-                  <p>${msg.message}</p>
-                </div>
-              `).join('');
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-          })
-          .catch(err => console.error("Failed to load chats:", err));
-      }
-
-      sendMessage() {
-        const input = document.getElementById("message-input");
-        const message = input?.value.trim();
-        if (!message) return;
-
-        fetch('/api/chats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            area: this.selectedArea,
-            message: message,
-            is_user: true
-          })
-        })
-          .then(() => {
-            if (input) input.value = "";
-            this.loadChats(this.selectedArea);
-          })
-          .catch(err => console.error("Failed to send message:", err));
-      }
-
-      // Utility Functions
-      timeAgo(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const seconds = Math.floor((now - date) / 1000);
-
-        const intervals = {
-          year: 31536000,
-          month: 2592000,
-          week: 604800,
-          day: 86400,
-          hour: 3600,
-          minute: 60
-        };
-
-        for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-          const interval = Math.floor(seconds / secondsInUnit);
-          if (interval >= 1) {
-            return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
-          }
-        }
-
-        return 'Just now';
-      }
-
-      getCategoryClass(category) {
-        const categoryMap = {
-          'Pollution': 'bg-yellow-100 text-yellow-800',
-          'Wildlife': 'bg-green-100 text-green-800',
-          'Deforestation': 'bg-blue-100 text-blue-800',
-          'Waste': 'bg-purple-100 text-purple-800'
-        };
-        return categoryMap[category] || 'bg-gray-100 text-gray-800';
-      }
+    // Update UI
+    const upvoteBtn = reportContainer.querySelector('.upvote-btn');
+    const downvoteBtn = reportContainer.querySelector('.downvote-btn');
+    
+    // Update counts
+    reportContainer.querySelector('.upvote-count').textContent = result.upvotes;
+    reportContainer.querySelector('.downvote-count').textContent = result.downvotes;
+    
+    // Update button states
+    if (isUpvote) {
+      upvoteBtn.classList.toggle('text-green-500', !upvoteBtn.classList.contains('text-green-500'));
+      downvoteBtn.classList.remove('text-red-500');
+    } else {
+      downvoteBtn.classList.toggle('text-red-500', !downvoteBtn.classList.contains('text-red-500'));
+      upvoteBtn.classList.remove('text-green-500');
     }
 
-    // Initialize the application when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      window.communityApp = new CommunityApp(); //line 1119
+    // Update progress bar
+    const voteProgress = Math.min(50, result.upvotes * 10);
+    const adminProgress = result.status === 'Resolved' ? 50 : 
+                        result.status === 'Under Review' ? 25 : 0;
+    const totalProgress = voteProgress + adminProgress;
+    
+    const progressBar = reportContainer.querySelector('.progress-fill');
+    if (progressBar) {
+      progressBar.style.width = `${totalProgress}%`;
+    }
+    
+    const progressText = reportContainer.querySelector('.progress-percent');
+    if (progressText) {
+      progressText.textContent = `${totalProgress}%`;
+    }
+
+  } catch (err) {
+    console.error('Voting error:', err);
+  } finally {
+    setTimeout(() => {
+      this.voteDebounce[reportId] = false;
+    }, 1000);
+  }
+}
+
+// Chat System
+setupChat() {
+  document.getElementById("message-input")?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") this.sendMessage();
+  });
+
+  document.querySelectorAll('.area-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const area = card.dataset.area;
+      this.selectArea(area);
     });
+  });
+}
+
+selectArea(area) {
+  this.selectedArea = area;
+  document.getElementById("selected-area").textContent = `– ${area}`;
+
+  document.querySelectorAll('.area-card').forEach(card => {
+    card.classList.remove('active');
+  });
+
+  const activeCard = document.querySelector(`.area-card[data-area="${area}"]`);
+  if (activeCard) activeCard.classList.add('active');
+
+  this.loadChats(area);
+}
+
+loadChats(area) {
+  fetch(`/api/chats?area=${area}`)
+    .then(res => res.json())
+    .then(data => {
+      const chatBox = document.getElementById("chat-box");
+      if (!chatBox) return;
+
+      chatBox.innerHTML = data.length === 0 ?
+        `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>` :
+        data.map(msg => `
+          <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
+            <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
+            <p>${msg.message}</p>
+          </div>
+        `).join('');
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(err => console.error("Failed to load chats:", err));
+}
+
+sendMessage() {
+  const input = document.getElementById("message-input");
+  const message = input?.value.trim();
+  if (!message) return;
+
+  fetch('/api/chats', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      area: this.selectedArea,
+      message: message,
+      is_user: true
+    })
+  })
+    .then(() => {
+      if (input) input.value = "";
+      this.loadChats(this.selectedArea);
+    })
+    .catch(err => console.error("Failed to send message:", err));
+}
+
+// Utility Functions
+timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  const intervals = {
+    year: 31536000,
+    month: 2592000,
+    week: 604800,
+    day: 86400,
+    hour: 3600,
+    minute: 60
+  };
+
+  for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+    const interval = Math.floor(seconds / secondsInUnit);
+    if (interval >= 1) {
+      return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
+    }
+  }
+
+  return 'Just now';
+}
+
+getCategoryClass(category) {
+  const categoryMap = {
+    'Pollution': 'bg-yellow-100 text-yellow-800',
+    'Wildlife': 'bg-green-100 text-green-800',
+    'Deforestation': 'bg-blue-100 text-blue-800',
+    'Waste': 'bg-purple-100 text-purple-800'
+  };
+  return categoryMap[category] || 'bg-gray-100 text-gray-800';
+}
+    }
+
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  window.communityApp = new CommunityApp();
+});
   </script>
 </body>
 
