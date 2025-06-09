@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTracker Dashboard</title>
-  <link rel="icon" href="/API/public/uploads/image.png"" type="image/image.png">
+  <link rel="icon" href="/API/public/uploads/image.png"" type=" image/image.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/JS/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -203,88 +203,90 @@
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
     <!-- Sidebar -->
-<aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
-  <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
-    <div class="flex items-center space-x-2">
-      <i class="fas fa-leaf text-green-500"></i>
-      <span>EcoTracker</span>
-    </div>
-    <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-  <nav class="flex-1 p-2 space-y-1">
-    <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
-      <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
-      <span>Dashboard</span>
-    </a>
-    <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-      <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
-      <span>Map</span>
-    </a>
-    <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
-      <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
-      <span>Reports</span>
-    </a>
-    <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-      <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
-      <span>Events</span>
-    </a>
-    <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-      <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
-      <span>Analytics</span>
-    </a>
-    <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-      <i class="fas fa-users w-5 text-center text-green-500"></i>
-      <span>Community</span>
-    </a>
-    <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-      <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
-      <span>Help</span>
-    </a>
+    <aside
+      class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
+      <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-leaf text-green-500"></i>
+          <span>EcoTracker</span>
+        </div>
+        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="flex-1 p-2 space-y-1">
+        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+          <span>Map</span>
+        </a>
+        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+          <span>Reports</span>
+        </a>
+        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+          <span>Events</span>
+        </a>
+        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+          <span>Analytics</span>
+        </a>
+        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-users w-5 text-center text-green-500"></i>
+          <span>Community</span>
+        </a>
+        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+          <span>Help</span>
+        </a>
 
-    <!-- Admin Only Items -->
-    <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
-      <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+        <!-- Admin Only Items -->
+        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
 
-      <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
-      </a>
-      <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
-      </a>
-      <a href="/admin/environment-monitor.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
-      </a>
-      <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
-      </a>
-      <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
-      </a>
-      <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
-      </a>
-      <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
-      </a>
-      <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-        <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
-      </a>
-    </div>
-  </nav>
-  <div class="p-4 border-t border-green-100">
-    <a href="/login.html" id="user-link"
-      class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
-      <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-      <span id="user-name-text" class="flex-1">Signup/Signin</span>
-      <i class="fas fa-chevron-right text-xs text-gray-400"></i>
-    </a>
-  </div>
-</aside>
+          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+          </a>
+          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+          </a>
+          <a href="/admin/environment-monitor.html"
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+          </a>
+          <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+          </a>
+          <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+          </a>
+          <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+          </a>
+          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+          </a>
+          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+          </a>
+        </div>
+      </nav>
+      <div class="p-4 border-t border-green-100">
+        <a href="/login.html" id="user-link"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+          <span id="user-name-text" class="flex-1">Signup/Signin</span>
+          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+        </a>
+      </div>
+    </aside>
 
     <!-- Main Content -->
-    <main class="w-full pl-64 p-6 md:p-6 overflow-x-hidden">  
+    <main class="w-full pl-64 p-6 md:p-6 overflow-x-hidden">
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
           <div class="page-title">
@@ -370,7 +372,8 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 card">
           <div class="flex justify-between items-center mb-6">
             <h2 class="font-semibold text-xl text-gray-800">Recent Activity</h2>
-            <a href="/Reports.html" class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View All</a>
+            <a href="/Reports.html"
+              class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View All</a>
           </div>
           <div id="event-list" class="flex flex-wrap gap-3">
             <!-- Reports will be loaded here -->
@@ -381,7 +384,7 @@
   </div>
 
   <script>
-    
+
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const closeSidebarButton = document.getElementById('close-sidebar');
@@ -485,67 +488,71 @@
           }
         });
 
-        // fetch and display high severity reports count
-        fetch('/api/high-severity-count')
-  .then(res => res.json())
-  .then(data => {
-    console.log('High Severity Reports:', data.highSeverityCount);
-    document.getElementById("critical-incident").innerText = data.highSeverityCount;
-  })
-  .catch(err => console.error('Error:', err));
+      // fetch and display high severity reports count
+      fetch('/api/high-severity-count')
+        .then(res => res.json())
+        .then(data => {
+          console.log('High Severity Reports:', data.highSeverityCount);
+          document.getElementById("critical-incident").innerText = data.highSeverityCount;
+        })
+        .catch(err => console.error('Error:', err));
 
     });
+
+    // Reports load
     async function loadReports() {
-  try {
-    const res = await fetch('/api/reportsPage');
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data = await res.json();
-    const container = document.getElementById('event-list');
-    container.innerHTML = '';
+      try {
+        const res = await fetch('/api/reportsPage');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const container = document.getElementById('event-list');
+        container.innerHTML = '';
 
-    if (!data || data.length === 0) {
-      container.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found</p>';
-      return;
-    }
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found</p>';
+          return;
+        }
 
-    // Enhanced category mapping
-    const getCategoryInfo = (title) => {
-      title = title.toLowerCase();
-      if (title.includes('garbage') || title.includes('dumping') || title.includes('trash')) {
-        return { icon: 'fa-dumpster', color: 'red', name: 'Waste' };
-      }
-      if (title.includes('water') || title.includes('sewage') || title.includes('pipe')) {
-        return { icon: 'fa-water', color: 'blue', name: 'Water' };
-      }
-      if (title.includes('smoke') || title.includes('smog') || title.includes('air')) {
-        return { icon: 'fa-smog', color: 'purple', name: 'Air' };
-      }
-      if (title.includes('noise') || title.includes('loud') || title.includes('horn')) {
-        return { icon: 'fa-volume-up', color: 'orange', name: 'Noise' };
-      }
-      return { icon: 'fa-exclamation-circle', color: 'gray', name: 'Other' };
-    };
+        // Enhanced category mapping
+        const getCategoryInfo = (title) => {
+          title = title.toLowerCase();
+          if (title.includes('garbage') || title.includes('dumping') || title.includes('trash')) {
+            return { icon: 'fa-dumpster', color: 'red', name: 'Waste' };
+          }
+          if (title.includes('water') || title.includes('sewage') || title.includes('pipe')) {
+            return { icon: 'fa-water', color: 'blue', name: 'Water' };
+          }
+          if (title.includes('smoke') || title.includes('smog') || title.includes('air')) {
+            return { icon: 'fa-smog', color: 'purple', name: 'Air' };
+          }
+          if (title.includes('noise') || title.includes('loud') || title.includes('horn')) {
+            return { icon: 'fa-volume-up', color: 'orange', name: 'Noise' };
+          }
+          return { icon: 'fa-exclamation-circle', color: 'gray', name: 'Other' };
+        };
 
-    // Severity styles
-    const severityStyles = {
-      'high': { bg: 'red-100', text: 'red-800' },
-      'medium': { bg: 'yellow-100', text: 'yellow-800' },
-      'low': { bg: 'green-100', text: 'green-800' }
-    };
+        // Severity styles
+        const severityStyles = {
+          'high': { bg: 'red-100', text: 'red-800' },
+          'medium': { bg: 'yellow-100', text: 'yellow-800' },
+          'low': { bg: 'green-100', text: 'green-800' }
+        };
 
-    data.forEach(report => {
-      const category = getCategoryInfo(report.title);
-      const severity = report.severity?.toLowerCase() || 'medium';
-      const severityStyle = severityStyles[severity] || severityStyles.medium;
-      
-      const reportDate = report.created_at 
-        ? new Date(report.created_at).toLocaleDateString() 
-        : 'Just now';
-      
-      const tag = document.createElement('div');
-      tag.className = `activity-tag bg-${category.color}-50 text-${category.color}-700 px-4 py-2 rounded-full text-sm flex items-center space-x-2`;
-      
-      tag.innerHTML = `
+        data.forEach(report => {
+          const category = getCategoryInfo(report.title);
+          const rawSeverity = report.severity?.trim().toLowerCase();
+          const severity = ['high', 'medium', 'low'].includes(rawSeverity) ? rawSeverity : 'medium';
+          const severityStyle = severityStyles[severity] || severityStyles.medium;
+
+          
+          const reportDate = report.created_at
+            ? new Date(report.created_at).toLocaleDateString()
+            : 'Just now';
+
+          const tag = document.createElement('div');
+          tag.className = `activity-tag bg-${category.color}-50 text-${category.color}-700 px-4 py-2 rounded-full text-sm flex items-center space-x-2`;
+
+          tag.innerHTML = `
         <i class="fas ${category.icon}"></i>
         <span>${report.title}</span>
         <span class="bg-${severityStyle.bg} text-${severityStyle.text} px-2 py-1 rounded-full text-xs">
@@ -553,27 +560,27 @@
         </span>
         <span class="text-gray-500">${reportDate}</span>
       `;
-      
-      container.appendChild(tag);
-    });
 
-  } catch (err) {
-    // console.error('Error loading reports:', err);
-    container.innerHTML = `
+          container.appendChild(tag);
+        });
+
+      } catch (err) {
+        // console.error('Error loading reports:', err);
+        container.innerHTML = `
       <div class="bg-red-50 text-red-700 px-4 py-2 rounded-full text-sm">
         <i class="fas fa-exclamation-circle mr-2"></i>
         Error loading activity
       </div>
     `;
-  }
-}
+      }
+    }
 
-// Load when ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadReports);
-} else {
-  loadReports();
-}
+    // Load when ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadReports);
+    } else {
+      loadReports();
+    }
 
 
     // report search javascript

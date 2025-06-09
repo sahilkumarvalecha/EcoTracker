@@ -357,7 +357,7 @@ app.get("/api/report-count", async (req, res) => {
 app.get('/api/high-severity-count', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT COUNT(*) FROM reports WHERE severity_level = 'High'`
+      `SELECT COUNT(*) FROM reports WHERE LOWER(TRIM(severity_level)) = 'high'`
     );
     const count = parseInt(result.rows[0].count);
     res.json({ highSeverityCount: count });
@@ -370,7 +370,7 @@ app.get('/api/high-severity-count', async (req, res) => {
 // reports from database
 app.get('/api/reportsPage', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM reports ORDER BY created_at DESC');
+    const result = await pool.query('SELECT *, severity_level AS severity  FROM reports ORDER BY created_at DESC');
     res.json(result.rows); 
   } catch (error) {
     console.error('Error fetching reports:', error.message);
