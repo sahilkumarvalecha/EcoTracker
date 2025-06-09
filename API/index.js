@@ -773,27 +773,31 @@ app.get('/api/user/:id', async (req, res) => {
 });
 
 // delete user
-app.post('/api/deleteUser', async (req, res) => {
-  const { user_id } = req.body;
+// DELETE a user by ID
+app.delete('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+
+  // Optional: Check if user_id is a valid number (if your DB expects an integer)
   if (!user_id) {
     return res.status(400).json({ message: 'User ID is required' });
   }
 
   try {
-    // Execute the delete query
+    // Delete user from the database
     const result = await pool.query('DELETE FROM users WHERE user_id = $1', [user_id]);
 
     if (result.rowCount === 0) {
-      // No user found to delete
+      // No matching user found
       return res.status(404).json({ message: 'User not found' });
     }
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error('Error deleting user:', error);
+    console.error(`Error deleting user with ID ${user_id}:`, error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 // contact form send message
 app.post('/api/contact', async (req, res) => {

@@ -192,7 +192,7 @@
   </style>
 </head>
 
-<body class="flex min-h-screen bg-gray-100">
+<body class="min-h-screen flex bg-gray-100">
   <div class="flex min-h-screen">
     <!-- Mobile menu button -->
     <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
@@ -203,86 +203,85 @@
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
-      <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i class="fas fa-leaf text-green-500"></i>
-          <span>EcoTracker</span>
-        </div>
-        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <nav class="flex-1 p-2 space-y-1">
-        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
-          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
-          <span>Map</span>
-        </a>
-        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
-          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
-          <span>Reports</span>
-        </a>
-        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
-          <span>Events</span>
-        </a>
-        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
-          <span>Analytics</span>
-        </a>
-        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-users w-5 text-center text-green-500"></i>
-          <span>Community</span>
-        </a>
-        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
-          <span>Help</span>
-        </a>
+<aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
+  <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <i class="fas fa-leaf text-green-500"></i>
+      <span>EcoTracker</span>
+    </div>
+    <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <nav class="flex-1 p-2 space-y-1">
+    <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+      <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+      <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+      <span>Map</span>
+    </a>
+    <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+      <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+      <span>Reports</span>
+    </a>
+    <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+      <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+      <span>Events</span>
+    </a>
+    <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+      <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+      <span>Analytics</span>
+    </a>
+    <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+      <i class="fas fa-users w-5 text-center text-green-500"></i>
+      <span>Community</span>
+    </a>
+    <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+      <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+      <span>Help</span>
+    </a>
 
-        <!-- Admin Only Items -->
-        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
-          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+    <!-- Admin Only Items -->
+    <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+      <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
 
-          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
-          </a>
-          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
-          </a>
-          <a href="/admin/environment-monitor.html"
-            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
-          </a>
-          <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
-          </a>
-          <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
-          </a>
-          <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
-          </a>
-          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
-          </a>
-          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
-            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
-          </a>
-        </div>
-      </nav>
-      <div class="p-4 border-t border-green-100">
-        <a href="/login.html" id="user-link"
-          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
-          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-          <span id="user-name-text" class="flex-1">Signup/Signin</span>
-          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
-        </a>
-      </div>
-    </aside>
+      <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+      </a>
+      <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+      </a>
+      <a href="/admin/environment-monitor.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-chart-line w-5 text-center text-green-500"></i><span>Environment Monitor</span>
+      </a>
+      <a href="/admin/area-comparison.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-map-marked w-5 text-center text-green-500"></i><span>Area Comparison</span>
+      </a>
+      <a href="/admin/goals-progress.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-bullseye w-5 text-center text-green-500"></i><span>Goals & Progress</span>
+      </a>
+      <a href="/admin/admin-analytics.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-chart-pie w-5 text-center text-green-500"></i><span>Admin Analytics</span>
+      </a>
+      <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+      </a>
+      <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
+        <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+      </a>
+    </div>
+  </nav>
+  <div class="p-4 border-t border-green-100">
+    <a href="/login.html" id="user-link"
+      class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+      <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+      <span id="user-name-text" class="flex-1">Signup/Signin</span>
+      <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+    </a>
+  </div>
+</aside>
 
     <!-- Main Content -->
     <main class="w-full pl-64 p-6 md:p-6 overflow-x-hidden">  
@@ -382,6 +381,7 @@
   </div>
 
   <script>
+    
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const closeSidebarButton = document.getElementById('close-sidebar');

@@ -524,8 +524,8 @@ async function handleDelete(e) {
   }
   if (confirm('Are you sure you want to delete this user?')) {
     try {
-      const deleteRes = await fetch(`/api/deleteUser`, {
-        method: 'POST',
+      const deleteRes = await fetch(`/api/users/${user_id}`, {
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
