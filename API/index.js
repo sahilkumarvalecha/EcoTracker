@@ -72,6 +72,8 @@ const upload = multer({ storage });
 
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, "../public/uploads")));
+app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
+
 
 // HTML routes
 app.get('/signup', (req, res) => {
@@ -898,10 +900,7 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-
-
 // analytics charts
-
 app.get('/api/analytics-data', async (req, res) => {
   try {
     const query = `
@@ -929,6 +928,52 @@ app.get('/api/analytics-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Filter reports by user ID
+app.get('/api/reportsSubmit', async (req, res) => {
+  try {
+    const userId = req.query.userId;
+
+    if (!userId || isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid or missing userId' });
+    }
+
+    const queryText = 'SELECT * FROM reports WHERE user_id = $1';
+    const { rows } = await pool.query(queryText, [parseInt(userId)]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// 🌟 Profile picture upload route
+app.post('/api/upload-profile-picture', upload.single('profile'), async (req, res) => {
+  try {
+    const userId = req.body.userId;  // now expecting userId
+    const file = req.file;
+
+    if (!userId || !file) {
+      return res.status(400).json({ success: false, message: "Missing userId or file" });
+    }
+
+    const filePath = `http://localhost:5055/uploads/${file.filename}`;
+
+    // Update user's avatar in database by userId
+    await pool.query(
+      `UPDATE users SET avatar = $1 WHERE user_id = $2`,
+      [filePath, userId]
+    );
+
+    res.json({ success: true, path: filePath });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
