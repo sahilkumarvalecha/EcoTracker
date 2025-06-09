@@ -364,6 +364,9 @@
         logoutBtn.textContent = "Logout";
         logoutBtn.className = "ml-4 text-sm text-red-500 underline hover:text-red-700";
         logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("isAdmin");
           // Send logout request to server
           fetch('http://localhost:5055/api/public/logout', {
             method: 'POST',

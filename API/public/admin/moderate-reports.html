@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Moderate Reports</title> 
+    <title>Moderate Reports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" href="/API/public/uploads/image.png" type="image/x-icon">
@@ -141,74 +141,78 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-          <aside
-      class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
-      <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i class="fas fa-leaf text-green-500"></i>
-          <span>EcoTracker</span>
-        </div>
-        <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <nav class="flex-1 p-2 space-y-1">
-        <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
-          <span>Map</span>
-        </a>
-        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
-          <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
-          <span>Reports</span>
-        </a>
-        <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
-          <span>Events</span>
-        </a>
-        <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
-          <span>Analytics</span>
-        </a>
-        <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-users w-5 text-center text-green-500"></i>
-          <span>Community</span>
-        </a>
-        <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-          <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
-          <span>Help</span>
-        </a>
+        <aside
+            class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
+            <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-leaf text-green-500"></i>
+                    <span>EcoTracker</span>
+                </div>
+                <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="flex-1 p-2 space-y-1">
+                <a href="/index.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-tachometer-alt w-5 text-center text-green-500"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/maps.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
+                    <span>Map</span>
+                </a>
+                <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+                    <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="/events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-calendar-alt w-5 text-center text-green-500"></i>
+                    <span>Events</span>
+                </a>
+                <a href="/analytics.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-chart-bar w-5 text-center text-green-500"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="/community.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-users w-5 text-center text-green-500"></i>
+                    <span>Community</span>
+                </a>
+                <a href="/help.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                    <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
+                    <span>Help</span>
+                </a>
 
-        <!-- Admin Only Items -->
-        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
-          <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
+                <!-- Admin Only Items -->
+                <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+                    <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
 
-          <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
-            <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
-          </a>
-          <a href="/admin/manage-events.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
-            <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
-          </a>
-          <a href="/admin/inbox-messages.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-            <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
-          </a>
-          <a href="/admin/user-management.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
-            <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
-          </a>
-        </div>
-      </nav>
-      <div class="p-4 border-t border-green-100">
-        <a href="/login.html" id="user-link"
-          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
-          <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-          <span id="user-name-text" class="flex-1">Signup/Signin</span>
-          <i class="fas fa-chevron-right text-xs text-gray-400"></i>
-        </a>
-      </div>
-    </aside>
+                    <a href="/admin/moderate-reports.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item active">
+                        <i class="fas fa-check-double w-5 text-center text-green-500"></i><span>Moderate Reports</span>
+                    </a>
+                    <a href="/admin/manage-events.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+                        <i class="fas fa-calendar-check w-5 text-center text-green-500"></i><span>Manage Events</span>
+                    </a>
+                    <a href="/admin/inbox-messages.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                        <i class="fas fa-inbox w-5 text-center text-green-500"></i><span>Inbox Messages</span>
+                    </a>
+                    <a href="/admin/user-management.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
+                        <i class="fas fa-user-cog w-5 text-center text-green-500"></i><span>User Management</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-green-100">
+                <a href="/login.html" id="user-link"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+                    <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
+                    <span id="user-name-text" class="flex-1">Signup/Signin</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+            </div>
+        </aside>
 
         <!-- Main Content -->
         <main class="flex-1 overflow-auto">
@@ -218,11 +222,12 @@
                     <h1 class="text-2xl font-bold text-gray-800">Moderate Reports</h1>
                     <div class="flex items-center space-x-4">
                         <div class="relative">
-                            <input type="text" placeholder="Search reports..." 
-                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="text" placeholder="Search reports..."
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                         </div>
-                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        <button
+                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
                             <i class="fas fa-filter mr-2"></i> Filter
                         </button>
                     </div>
@@ -268,7 +273,9 @@
                 <!-- Reports Feed -->
                 <div id="moderate-feed" class="space-y-4">
                     <div class="text-center py-10">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
+                        <div
+                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500">
+                        </div>
                         <p class="mt-2 text-gray-600">Loading reports for moderation...</p>
                     </div>
                 </div>
@@ -295,12 +302,12 @@
                     window.location.href = "../login.html";
                     return;
                 }
-                
+
                 // Show admin items
                 document.querySelectorAll('.admin-only').forEach(el => {
                     el.style.display = 'block';
                 });
-                
+
             }
 
             async loadReports() {
@@ -309,13 +316,13 @@
 
                 try {
                     this.showLoadingState(feed);
-                    
+
                     const res = await fetch('/api/moderate-reports');
                     if (!res.ok) throw new Error('Failed to fetch reports');
-                    
+
                     const reports = await res.json();
                     console.log('Fetched reports:', reports);
-                    
+
                     this.renderReports(reports);
                     this.updateStats(reports);
                 } catch (error) {
@@ -372,28 +379,34 @@
             }
 
             generateReportCardHTML(report) {
-                const username = report.is_anonymous ? 'Anonymous' : report.user_name;
-                const userImage = report.is_anonymous || !report.user_image 
-                    ? '/API/public/uploads/image.png' 
-                    : `/API/public/uploads/${report.user_image}`;
+               const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  const username = report.is_anonymous ? 'Anonymous' : report.user_name;
 
-                const categoryClass = this.getCategoryClass(report.category);
+  const userImage = report.is_anonymous || !report.user_image ||
+    report.user_image === 'null' ||
+    report.user_image === 'undefined' ||
+    report.user_image.trim() === ''
+    ? defaultAvatar
+    : report.user_image;
+  
+  const categoryClass = this.getCategoryClass(report.category);
                 const statusClass = this.getStatusClass(report.status);
-                
+
                 // Calculate progress based on algorithm
                 const voteProgress = Math.min(50, (report.upvotes || 0) * 10);
                 const adminProgress = report.status === 'Resolved' ? 100 - voteProgress :
-                                  report.status === 'inreview' ? 25 : 0;
+                    report.status === 'inreview' ? 25 : 0;
                 const totalProgress = Math.min(100, voteProgress + adminProgress);
 
                 return `
                     <!-- Header with user info -->
-                    <div class="flex items-start gap-4">
-                        <!-- User Avatar -->
-                        <div class="flex-shrink-0">
-                            <img src="${userImage}"
-                               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
-                               alt="User avatar">
+                   <div class="flex items-start gap-4">
+        <!-- User Avatar -->
+        <div class="flex-shrink-0">
+          <img src="${userImage}" 
+               class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
+               alt="User avatar"
+               onerror="this.onerror=null; this.src='${defaultAvatar}'">
                         </div>
                         
                         <!-- Main Content -->
@@ -423,12 +436,12 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">${report.title}</h3>
                                 <p class="text-gray-700 mb-4">${report.description}</p>
                                 
-                                ${report.image ? `
-                                <div class="report-image-container mb-4">
-                                    <img src="${report.image}" 
-                                         class="report-image max-w-full h-auto rounded-lg" 
-                                         alt="Report image"
-                                         onerror="this.parentElement.remove()">
+                               ${report.image ? `
+              <div class="report-image-container mb-4">
+                <img src="${report.image}" 
+                     class="report-image max-w-full h-auto rounded-lg" 
+                     alt="Report image"
+                     onerror="this.parentElement.remove()">
                                 </div>` : ''}
                             </div>
                         </div>
@@ -504,7 +517,7 @@
 
                     const reportId = actionBtn.closest('[data-report-id]').dataset.reportId;
                     const action = actionBtn.dataset.action;
-                    
+
                     try {
                         const newStatus = action === 'verify' ? 'inreview' : 'Resolved';
                         const response = await fetch(`/api/reports/${reportId}/status`, {
@@ -527,17 +540,17 @@
             }
 
             showStatusUpdateToast(action) {
-                const message = action === 'verify' 
-                    ? 'Report verified and moved to in review' 
+                const message = action === 'verify'
+                    ? 'Report verified and moved to in review'
                     : 'Report marked as resolved';
-                
+
                 const toast = document.createElement('div');
                 toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center';
                 toast.innerHTML = `
                     <i class="fas fa-check-circle mr-2"></i>
                     <span>${message}</span>`;
                 document.body.appendChild(toast);
-                
+
                 setTimeout(() => {
                     toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
                     setTimeout(() => toast.remove(), 300);
@@ -568,7 +581,7 @@
                 const date = new Date(dateString);
                 const now = new Date();
                 const seconds = Math.floor((now - date) / 1000);
-                
+
                 const intervals = {
                     year: 31536000,
                     month: 2592000,
@@ -577,23 +590,23 @@
                     hour: 3600,
                     minute: 60
                 };
-                
+
                 for (const [unit, secondsInUnit] of Object.entries(intervals)) {
                     const interval = Math.floor(seconds / secondsInUnit);
                     if (interval >= 1) {
                         return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
                     }
                 }
-                
+
                 return 'Just now';
             }
         }
-       
+
 
         // Initialize the app when DOM is loaded
         window.addEventListener("DOMContentLoaded", () => {
 
-             window.moderateApp = new ModerateReportsApp();
+            window.moderateApp = new ModerateReportsApp();
             const isAdmin = localStorage.getItem("isAdmin") === "true";
             const userName = localStorage.getItem("userName");
             const userNameSpan = document.getElementById("user-name-text");
@@ -635,6 +648,9 @@
                 logoutBtn.textContent = "Logout";
                 logoutBtn.className = "ml-4 text-sm text-red-500 underline hover:text-red-700";
                 logoutBtn.addEventListener("click", () => {
+                    localStorage.removeItem("userName");
+                    localStorage.removeItem("userEmail");
+                    localStorage.removeItem("isAdmin");
                     // Send logout request to server
                     fetch('http://localhost:5055/api/public/logout', {
                         method: 'POST',
@@ -652,4 +668,5 @@
         });
     </script>
 </body>
+
 </html>
