@@ -980,67 +980,60 @@ app.post('/api/upload-profile-picture', upload.single('profile'), async (req, re
 
 router.get('/:reportId/comments', async (req, res) => {
   try {
-      const { reportId } = req.params;
-      
-      const result = await pool.query(`
-          SELECT 
-              c.comment_id,
-              c.report_id,
-              c.content,
-              c.created_at,
-              u.user_id,
-              u.name AS user_name,
-              u.avatar AS user_image
-          FROM comments c
-          JOIN users u ON c.user_id = u.user_id
-          WHERE c.report_id = $1
-          ORDER BY c.created_at DESC
-      `, [reportId]);
-      
-      res.json(result.rows);
+    const { reportId } = req.params;
+    
+    const result = await pool.query(`
+      SELECT 
+        c.comment_id,
+        c.report_id,
+        c.content,
+        c.created_at,
+        u.user_id,
+        u.name AS user_name,
+        COALESCE(u.avatar, '/default-avatar.png') AS user_image
+      FROM comments c
+      JOIN users u ON c.user_id = u.user_id
+      WHERE c.report_id = $1
+      ORDER BY c.created_at DESC
+    `, [reportId]);
+    
+    res.json(result.rows);
   } catch (err) {
-      console.error('Error fetching comments:', err);
-      res.status(500).json({ error: 'Failed to fetch comments' });
+    console.error('Error fetching comments:', err);
+    res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
 
 // Create a new comment
 router.post('/:reportId/comments', checkAuth, async (req, res) => {
   try {
-      const { reportId } = req.params;
-      const { content } = req.body;
-      const userId = req.session.userId; // Or your auth method
-      
-      if (!content || content.trim() === '') {
-          return res.status(400).json({ error: 'Comment content is required' });
-      }
-      
-      const result = await pool.query(`
-          INSERT INTO comments (report_id, user_id, content)
-          VALUES ($1, $2, $3)
-          RETURNING *,
-              (SELECT name FROM users WHERE user_id = $2) AS user_name,
-              (SELECT avatar FROM users WHERE user_id = $2) AS user_image
-      `, [reportId, userId, content.trim()]);
-      
-      if (result.rows.length === 0) {
-          return res.status(500).json({ error: 'Failed to create comment' });
-      }
-      
-      // Update comment count in reports table
-      await pool.query(`
-          UPDATE reports 
-          SET comment_count = (
-              SELECT COUNT(*) FROM comments 
-              WHERE report_id = $1
-          )
-          WHERE report_id = $1
-      `, [reportId]);
-      
-      res.status(201).json(result.rows[0]);
+    const { reportId } = req.params;
+    const { content } = req.body;
+    const userId = req.session.user_id;;
+    
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ error: 'Comment content is required' });
+    }
+    
+    const result = await pool.query(`
+      INSERT INTO comments (report_id, user_id, content)
+      VALUES ($1, $2, $3)
+      RETURNING *,
+        (SELECT name FROM users WHERE user_id = $2) AS user_name,
+        (SELECT COALESCE(avatar, '/default-avatar.png') FROM users WHERE user_id = $2) AS user_image
+    `, [reportId, userId, content.trim()]);
+    
+    // Update comment count in reports table
+    await pool.query(`
+      UPDATE reports 
+      SET comment_count = comment_count + 1
+      WHERE report_id = $1
+    `, [reportId]);
+    
+    res.status(201).json(result.rows[0]);
   } catch (err) {
-      console.error('Error creating comment:', err);
-      res.status(500).json({ error: 'Failed to create comment' });
+    console.error('Error creating comment:', err);
+    res.status(500).json({ error: 'Failed to create comment' });
   }
 });
 

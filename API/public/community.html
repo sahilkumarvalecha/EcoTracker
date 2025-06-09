@@ -673,6 +673,7 @@
               <i class="fas fa-circle-notch fa-spin text-3xl text-green-500"></i>
 
             </div>
+            
           </div>
 
         </div>
@@ -778,7 +779,7 @@
       this.setupSidebar();
       this.setupVoting();
       this.setupChat();
-      this.setupCommentHandlers(); // Add this line
+      this.setupCommentHandlers(); 
   }
 
       setupTabs() {
@@ -950,7 +951,7 @@
         return card;
       }
 
-      generateReportCardHTML(report) {
+generateReportCardHTML(report) {
   const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   const username = report.is_anonymous ? 'Anonymous' : report.user_name;
 
@@ -1074,19 +1075,17 @@
         
         <span class="text-gray-400 mx-1">|</span>
         
-        <button class="flex items-center gap-1 text-gray-500 hover:text-blue-500 comment-toggle">
-          <i class="far fa-comment"></i>
-          <span>${report.comment_count || 0} comments</span>
-        </button>
-      </div>
+        <button class="comment-toggle flex items-center gap-1 text-gray-500 hover:text-blue-500" data-report-id="${report.report_id}">
+                <i class="far fa-comment"></i>
+                <span data-comment-count>${report.comment_count || 0} comments</span>
+            </button>
+        </div>
 
-      <!-- Comment Section -->
-      <div class="comment-section mt-4 pt-4 border-t border-gray-100 hidden">
-    ${this.renderCommentInput(report.report_id)}
-    <div class="space-y-3 mt-3 comments-list" id="comments-${report.report_id}">
-        <!-- Comments will be loaded here when expanded -->
-    </div>
-    </div>
+        <!-- Comment Section -->
+        <div class="comment-section mt-4 pt-4 border-t border-gray-100 hidden" data-report-id="${report.report_id}">
+            ${this.renderCommentInput(report.report_id)}
+            <div class="space-y-3 mt-3 comments-list" id="comments-${report.report_id}"></div>
+        </div>
     </div>`;
 }
 
@@ -1189,139 +1188,144 @@ setupCommentHandlers() {
     const feed = document.getElementById('ecoalerts-feed');
     if (!feed) return;
 
-    // Handle comment submission
+    // Toggle comments
+    feed.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('.comment-toggle');
+      if (toggleBtn) {
+        e.preventDefault();
+        this.toggleComments(toggleBtn);
+      }
+    });
+
+    // Submit comments
     feed.addEventListener('click', async (e) => {
-        const submitBtn = e.target.closest('.comment-submit');
-        if (submitBtn) {
-            await this.handleCommentSubmit(e);
-            return;
-        }
-
-        // Toggle comment visibility
-        const toggleBtn = e.target.closest('.comment-toggle');
-        if (toggleBtn) {
-            this.toggleComments(toggleBtn);// line 1196
-        }
+      const submitBtn = e.target.closest('.comment-submit');
+      if (submitBtn) {
+        e.preventDefault();
+        await this.handleCommentSubmit(submitBtn);
+      }
     });
 
-    // Handle Enter key in comment input
-    feed.addEventListener('keypress', (e) => {
-        if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
-            this.handleCommentSubmit(e);
-        }
+    // Handle Enter key
+    feed.addEventListener('keypress', async (e) => {
+      if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+        e.preventDefault();
+        await this.handleCommentSubmit(e.target.nextElementSibling);
+      }
     });
-}
+  }
 
-async handleCommentSubmit(e) {
-    const input = e.target.closest('.comment-submit') 
-        ? e.target.closest('.comment-submit').previousElementSibling 
-        : e.target;
-    
+  async handleCommentSubmit(button) {
+    const input = button.previousElementSibling;
     const reportId = input.dataset.reportId;
     const content = input.value.trim();
-    
+
     if (!content) return;
 
     try {
-        const res = await fetch(`/api/reports/${reportId}/comments`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ content })
-        });
+      const res = await fetch(`/api/reports/${reportId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ content })
+      });
 
-        if (!res.ok) throw new Error('Failed to post comment');
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
 
-        const newComment = await res.json();
-        
-        // Clear input
-        input.value = '';
-        
-        // Add new comment to the list
-        this.appendComment(reportId, newComment);
-        
-        // Update comment count
-        this.updateCommentCount(reportId);
-        
+      const newComment = await res.json();
+      input.value = '';
+      this.appendComment(reportId, newComment);
+      this.updateCommentCount(reportId);
     } catch (err) {
-        console.error('Comment submission error:', err);
-        alert('Failed to post comment');
+      console.error('Comment submission error:', err);
+      alert('Failed to post comment: ' + err.message);
     }
+  }
+
+  async loadComments(reportId) {
+  try {
+    const response = await fetch(`/api/reports/${reportId}/comments`);
+    if (!response.ok) {
+      throw new Error(`Failed to load comments: ${response.status}`);
+    }
+    const comments = await response.json();
+    // process comments
+  } catch (error) {
+    console.error('Error loading comments:', error.message);
+    // Show user-friendly error message to the user
+  }
 }
 
-async loadComments(reportId) {
-    try {
-        const res = await fetch(`/api/reports/${reportId}/comments`, {
-            credentials: 'include'
-        });
-        
-        if (!res.ok) throw new Error('Failed to load comments');
-        
-        const comments = await res.json();
-        const container = document.getElementById(`comments-${reportId}`);
-        
-        if (container) {
-            container.innerHTML = comments.map(comment => 
-                this.renderSingleComment(comment)
-            ).join('');
-        }
-    } catch (err) {
-        console.error('Error loading comments:', err);
-    }
-}
-
-renderSingleComment(comment) {
-    const userImage = comment.user_image || 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
-    const userName = comment.user_name || 'Anonymous';
-    
+  renderSingleComment(comment) {
     return `
-    <div class="flex gap-3 comment-item" data-comment-id="${comment.comment_id}">
-        <img src="${userImage}" 
-             class="w-8 h-8 rounded-full object-cover border border-gray-200"
-             alt="User avatar"
-             onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
-        <div class="flex-1">
-            <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="font-medium text-sm">${userName}</p>
-                <p class="text-gray-700 text-sm">${comment.content}</p>
-            </div>
-            <p class="text-xs text-gray-400 mt-1">
-                ${this.timeAgo(comment.created_at)}
-            </p>
+    <div class="flex gap-3 comment-item">
+      <img src="${comment.user_image}" 
+           class="w-8 h-8 rounded-full object-cover border border-gray-200"
+           alt="User avatar"
+           onerror="this.src='/default-avatar.png'">
+      <div class="flex-1">
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <p class="font-medium text-sm">${comment.user_name}</p>
+          <p class="text-gray-700 text-sm">${comment.content}</p>
         </div>
+        <p class="text-xs text-gray-400 mt-1">
+          ${this.timeAgo(comment.created_at)}
+        </p>
+      </div>
     </div>`;
-}
+  }
 
-appendComment(reportId, comment) {
+  appendComment(reportId, comment) {
     const container = document.getElementById(`comments-${reportId}`);
     if (container) {
-        container.insertAdjacentHTML('afterbegin', this.renderSingleComment(comment));
+      container.insertAdjacentHTML('afterbegin', this.renderSingleComment(comment));
     }
-}
+  }
 
-updateCommentCount(reportId) {
-    const toggleBtn = document.querySelector(`[data-report-id="${reportId}"] .comment-toggle span`);
-    if (toggleBtn) {
-        const currentCount = parseInt(toggleBtn.textContent) || 0;
-        toggleBtn.textContent = currentCount + 1;
+  updateCommentCount(reportId) {
+    const countElement = document.querySelector(`[data-report-id="${reportId}"] [data-comment-count]`);
+    if (countElement) {
+      const currentCount = parseInt(countElement.textContent) || 0;
+      countElement.textContent = `${currentCount + 1} comments`;
     }
-}
+  }
 
-toggleComments(button) {
-    const reportContainer = button.closest('[data-report-id]');
-    if (!reportContainer) return;
+  toggleComments(button) {
+    const reportId = button.dataset.reportId;
+    if (!reportId) return;
     
-    const reportId = reportContainer.dataset.reportId;
-    const commentSection = reportContainer.querySelector('.comment-section');
+    // Find the comment section for this specific report
+    const commentSection = document.querySelector(`.comment-section[data-report-id="${reportId}"]`);
     
     if (commentSection) {
+        // Toggle visibility
         commentSection.classList.toggle('hidden');
         
-        // Load comments if not already loaded
+        // Load comments if section is now visible
         if (!commentSection.classList.contains('hidden')) {
             this.loadComments(reportId);
         }
     }
+}
+
+  renderCommentInput(reportId) {
+  return `
+    <div class="flex items-center mb-3">
+      <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center text-green-600 mr-3">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="flex-1 relative">
+        <input type="text" 
+               placeholder="Add a comment..." 
+               class="w-full p-3 border border-gray-300 rounded-lg pr-10 comment-input" 
+               data-report-id="${reportId}">
+        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-800 comment-submit">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>`;
 }
 
 // Chat System
