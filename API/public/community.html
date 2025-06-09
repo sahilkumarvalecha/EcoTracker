@@ -753,7 +753,14 @@
         localStorage.removeItem("userName");
         localStorage.removeItem("userEmail");
         localStorage.removeItem("isAdmin");
-
+        // Send logout request to server
+             fetch('http://localhost:5055/api/logout', {
+               method: 'POST',
+               credentials: 'include'
+             })
+             .then(() => {
+               window.location.href = "login.html";
+             });
       }
       setupVoting() {
         const feed = document.getElementById('ecoalerts-feed');

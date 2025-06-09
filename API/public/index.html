@@ -202,9 +202,9 @@
     <!-- Sidebar overlay for mobile -->
     <div id="sidebar-overlay" class="sidebar-overlay hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
+
     <!-- Sidebar -->
-    <aside
-      class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar fixed z-30 inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
+  <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -223,7 +223,7 @@
           <i class="fas fa-map-marked-alt w-5 text-center text-green-500"></i>
           <span>Map</span>
         </a>
-        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item ">
+        <a href="/Reports.html" class="flex items-center space-x-3 p-3 rounded-lg sidebar-item">
           <i class="fas fa-file-alt w-5 text-center text-green-500"></i>
           <span>Reports</span>
         </a>
@@ -243,7 +243,6 @@
           <i class="fas fa-question-circle w-5 text-center text-green-500"></i>
           <span>Help</span>
         </a>
-
         <!-- Admin Only Items -->
         <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
           <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
@@ -262,18 +261,17 @@
           </a>
         </div>
       </nav>
-      <div class="p-4 border-t border-green-100">
-        <a href="/login.html" id="user-link"
-          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+      <div class="p-4 border-t border-gray-100">
+        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
-          <span id="user-name-text" class="flex-1">Signup/Signin</span>
+          <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
         </a>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="w-full pl-64 p-6 md:p-6 overflow-x-hidden">
+    <main class="flex-1 p-4 md:p-8 main-content">
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
           <div class="page-title">
