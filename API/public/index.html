@@ -86,21 +86,6 @@
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
 
-    .notification-badge {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      width: 18px;
-      height: 18px;
-      background-color: #ef4444;
-      color: white;
-      border-radius: 50%;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -279,10 +264,6 @@
             <p class="text-gray-500">Welcome back! Here's what's happening in your area.</p>
           </div>
           <div class="flex space-x-3">
-            <button class="p-2 rounded-full bg-white shadow hover:bg-gray-50 transition-colors relative">
-              <i class="fas fa-bell text-gray-500"></i>
-              <span class="notification-badge">2</span>
-            </button>
             <a href="/report-incident.html"
               class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 shadow-md hover:shadow-lg transition-all">
               <i class="fas fa-plus-circle"></i>
