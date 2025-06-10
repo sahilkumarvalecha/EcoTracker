@@ -22,19 +22,13 @@ const pool = new Pool({
 });
 
 app.use(session({
-  store: new pgSession({
-    pool: pool,
-    tableName: 'user_sessions',
-    createTableIfMissing: true
-  }),
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true if using HTTPS
-    httpOnly: true,
     sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }));
 
@@ -159,7 +153,7 @@ app.post('/login', async (req, res) => {
     }
 
     const isAdmin = email.endsWith('@ecotracker.pk');
-    req.session.user_id = user.user_id;
+    req.session.userId = user.user_id;
     req.session.email = email;
     req.session.name = user.name;
     req.session.isAdmin = isAdmin;
@@ -957,66 +951,69 @@ app.post('/api/upload-profile-picture', upload.single('profile'), async (req, re
   }
 });
 
-router.get('/:reportId/comments', async (req, res) => {
+// Comment Routes
+app.get('/api/reports/:reportId/comments', async (req, res) => {
   try {
-    const { reportId } = req.params;
-    
-    const result = await pool.query(`
-      SELECT 
-        c.comment_id,
-        c.report_id,
-        c.content,
-        c.created_at,
-        u.user_id,
-        u.name AS user_name,
-        COALESCE(u.avatar, '/default-avatar.png') AS user_image
-      FROM comments c
-      JOIN users u ON c.user_id = u.user_id
-      WHERE c.report_id = $1
-      ORDER BY c.created_at DESC
-    `, [reportId]);
-    
-    res.json(result.rows);
+      const { reportId } = req.params;
+      
+      const result = await pool.query(`
+          SELECT 
+              c.comment_id,
+              c.report_id,
+              c.content,
+              c.created_at,
+              u.user_id,
+              u.name AS user_name,
+              COALESCE(u.avatar, '/default-avatar.png') AS user_image
+          FROM comments c
+          JOIN users u ON c.user_id = u.user_id
+          WHERE c.report_id = $1
+          ORDER BY c.created_at DESC
+      `, [reportId]);
+      
+      res.json(result.rows);
   } catch (err) {
-    console.error('Error fetching comments:', err);
-    res.status(500).json({ error: 'Failed to fetch comments' });
+      console.error('Error fetching comments:', err);
+      res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
 
-// Create a new comment
-router.post('/:reportId/comments', checkAuth, async (req, res) => {
+app.post('/api/reports/:reportId/comments', async (req, res) => {
   try {
-    const { reportId } = req.params;
-    const { content } = req.body;
-    const userId = req.session.user_id;;
-    
-    if (!content || content.trim() === '') {
-      return res.status(400).json({ error: 'Comment content is required' });
-    }
-    
-    const result = await pool.query(`
-      INSERT INTO comments (report_id, user_id, content)
-      VALUES ($1, $2, $3)
-      RETURNING *,
-        (SELECT name FROM users WHERE user_id = $2) AS user_name,
-        (SELECT COALESCE(avatar, '/default-avatar.png') FROM users WHERE user_id = $2) AS user_image
-    `, [reportId, userId, content.trim()]);
-    
-    // Update comment count in reports table
-    await pool.query(`
-      UPDATE reports 
-      SET comment_count = comment_count + 1
-      WHERE report_id = $1
-    `, [reportId]);
-    
-    res.status(201).json(result.rows[0]);
+      const { reportId } = req.params;
+      const { content } = req.body;
+      const userId = req.session.userId;
+      console.log('Session:', req.session);
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized: User not logged in' });
+      }
+      
+      if (!content || content.trim() === '') {
+          return res.status(400).json({ error: 'Comment content is required' });
+      }
+      
+      const result = await pool.query(`
+          INSERT INTO comments (report_id, user_id, content)
+          VALUES ($1, $2, $3)
+          RETURNING *,
+              (SELECT name FROM users WHERE user_id = $2) AS user_name,
+              (SELECT COALESCE(avatar, '/default-avatar.png') FROM users WHERE user_id = $2) AS user_image
+      `, [reportId, userId, content.trim()]);
+      
+      // Update comment count in reports table
+      await pool.query(`
+          UPDATE reports 
+          SET comment_count = comment_count + 1
+          WHERE report_id = $1
+      `, [reportId]);
+      
+      res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Error creating comment:', err);
-    res.status(500).json({ error: 'Failed to create comment' });
+      console.error('Error creating comment:', err);
+      res.status(500).json({ error: 'Failed to create comment' });
   }
 });
 
-module.exports = router;
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));

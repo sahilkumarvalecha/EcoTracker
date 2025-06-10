@@ -1189,34 +1189,32 @@ setupCommentHandlers() {
     const feed = document.getElementById('ecoalerts-feed');
     if (!feed) return;
 
-    // Toggle comments
+    // Handle comment toggle clicks
     feed.addEventListener('click', (e) => {
-      const toggleBtn = e.target.closest('.comment-toggle');
-      if (toggleBtn) {
-        e.preventDefault();
-        this.toggleComments(toggleBtn);
-      }
+        const toggleBtn = e.target.closest('.comment-toggle');
+        if (toggleBtn) {
+            e.preventDefault();
+            this.toggleComments(toggleBtn);
+        }
+        
+        const submitBtn = e.target.closest('.comment-submit');
+        if (submitBtn) {
+            e.preventDefault();
+            this.handleCommentSubmit(submitBtn);
+        }
     });
 
-    // Submit comments
-    feed.addEventListener('click', async (e) => {
-      const submitBtn = e.target.closest('.comment-submit');
-      if (submitBtn) {
-        e.preventDefault();
-        await this.handleCommentSubmit(submitBtn);
-      }
+    // Handle Enter key in comment input
+    feed.addEventListener('keypress', (e) => {
+        if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+            e.preventDefault();
+            const submitBtn = e.target.nextElementSibling;
+            this.handleCommentSubmit(submitBtn);
+        }
     });
+}
 
-    // Handle Enter key
-    feed.addEventListener('keypress', async (e) => {
-      if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
-        e.preventDefault();
-        await this.handleCommentSubmit(e.target.nextElementSibling);
-      }
-    });
-  }
-
-  async handleCommentSubmit(button) {
+async handleCommentSubmit(button) {
     const input = button.previousElementSibling;
     const reportId = input.dataset.reportId;
     const content = input.value.trim();
@@ -1224,39 +1222,57 @@ setupCommentHandlers() {
     if (!content) return;
 
     try {
-      const res = await fetch(`/api/reports/${reportId}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ content })
-      });
+        const res = await fetch(`/api/reports/${reportId}/comments`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add if using token auth
+            },
+            credentials: 'include',
+            body: JSON.stringify({ content })
+        });
 
-      if (!res.ok) {
-        throw new Error(await res.text());
-      }
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || 'Failed to post comment');
+        }
 
-      const newComment = await res.json();
-      input.value = '';
-      this.appendComment(reportId, newComment);
-      this.updateCommentCount(reportId);
+        const newComment = await res.json();
+        input.value = '';
+        this.appendComment(reportId, newComment);
+        this.updateCommentCount(reportId);
     } catch (err) {
-      console.error('Comment submission error:', err);
-      alert('Failed to post comment: ' + err.message);
+        console.error('Comment submission error:', err);
+        alert('Failed to post comment: ' + err.message);
     }
-  }
+}
 
-  async loadComments(reportId) {
-  try {
-    const response = await fetch(`/api/reports/${reportId}/comments`);
-    if (!response.ok) {
-      throw new Error(`Failed to load comments: ${response.status}`);
+async loadComments(reportId) {
+    try {
+        const res = await fetch(`/api/reports/${reportId}/comments`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || 'Failed to load comments');
+        }
+
+        const comments = await res.json();
+        const container = document.getElementById(`comments-${reportId}`);
+
+        if (container) {
+            container.innerHTML = comments.length > 0 
+                ? comments.map(comment => this.renderSingleComment(comment)).join('')
+                : '<p class="text-gray-500 text-sm italic">No comments yet</p>';
+        }
+    } catch (err) {
+        console.error('Error loading comments:', err);
+        const container = document.getElementById(`comments-${reportId}`);
+        if (container) {
+            container.innerHTML = '<p class="text-red-500 text-sm">Failed to load comments</p>';
+        }
     }
-    const comments = await response.json();
-    // process comments
-  } catch (error) {
-    console.error('Error loading comments:', error.message);
-    // Show user-friendly error message to the user
-  }
 }
 
   renderSingleComment(comment) {
