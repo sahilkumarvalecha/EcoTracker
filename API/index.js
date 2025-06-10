@@ -230,13 +230,7 @@ app.get('/api/check-auth', (req, res) => {
   res.json({ isAuthenticated: !!req.session.user.id });
 });
 
-app.get('/check-session', (req, res) => {
-  if (req.session && req.session.user.id) {
-    return res.json({ authenticated: true, email: req.session.user.email });
-  } else {
-    return res.json({ authenticated: false });
-  }
-});
+
 
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
