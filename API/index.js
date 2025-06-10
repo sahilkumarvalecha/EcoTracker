@@ -46,7 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   // Only log session for specific routes if needed
   if (req.path.startsWith('/api')) {
-    console.log(`[${new Date().toISOString()}] Session for ${req.path}:`, {
+    (`[${new Date().toISOString()}] Session for ${req.path}:`, {
       id: req.sessionID,
       userId: req.session.user_id
     });
@@ -84,27 +84,6 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'login.html'));
 });
 
-// app.get('/rsvp', async (req, res) => {
-//   try {
-//     const result = await pool.query('SELECT * FROM events LIMIT 1');
-//     const event = result.rows[0];
-//     if (!event) {
-//       return res.send('No event found.');
-//     }
-
-//     const today = new Date();
-//     const eventDate = new Date(event.date);
-
-//     if (eventDate >= today.setHours(0, 0, 0, 0)) {
-//       res.sendFile(path.join(__dirname, '..', 'events.html'));
-//     } else {
-//       res.send('Event is done. Thank you!');
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Server error');
-//   }
-// });
 
 // User routes
 app.get("/api/user", async (req, res) => {
