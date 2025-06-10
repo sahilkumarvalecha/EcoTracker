@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const router = express.Router()
 const session = require('express-session');
 require('dotenv').config();
 const { Pool } = require('pg');
@@ -21,16 +20,38 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-app.use(session({
-  secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    sameSite: 'lax',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
-  }
-}));
+// Configure session middleware ONCE
+app.use(
+  session({
+    store: new pgSession({
+      pool: pool, // Use your pool instance here
+      tableName: 'user_sessions' // Optional custom table name
+    }),
+    name: "connect.sid",
+    secret: process.env.SESSION_SECRET || "your-secret-key", // Use env variable
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // true in production
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      sameSite: 'lax'
+    }
+  })
+);
+
+app.use(
+  session({
+    store: new pgSession({
+      pool: Pool, // your PG pool
+    }),
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }, // adjust for HTTPS
+  })
+);
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -148,26 +169,49 @@ app.post('/login', async (req, res) => {
 
     const user = result.rows[0];
 
+    // In production, use bcrypt.compare() instead of direct comparison
     if (user.password_hash !== password_hash) {
       return res.status(401).json({ message: 'Incorrect password' });
     }
 
-    const isAdmin = email.endsWith('@ecotracker.pk');
-    req.session.userId = user.user_id;
-    req.session.email = email;
-    req.session.name = user.name;
-    req.session.isAdmin = isAdmin;
+    // Regenerate session to prevent fixation
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error('Session regeneration error:', err);
+        return res.status(500).json({ message: 'Session error' });
+      }
 
-    res.status(200).json({
-      success: true,
-      message: "Logged in successfully", 
-      name: user.name,
-      user_id: user.user_id,
-      isAdmin
+      const isAdmin = email.endsWith('@ecotracker.pk');
+      
+      // Store user info in session
+      req.session.user = {
+        id: user.user_id,
+        email: email,
+        name: user.name,
+        isAdmin: isAdmin
+      };
+
+      // Save session before sending response
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: 'Session error' });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Logged in successfully", 
+          user: {
+            name: user.name,
+            id: user.user_id,
+            isAdmin
+          }
+        });
+      });
     });
 
   } catch (err) {
-    console.error(err.message);
+    console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -185,6 +229,20 @@ function checkAuth(req, res, next) {
     res.redirect('/login');
   }
 }
+
+app.get("/api/check-session", (req, res) => {
+  if (req.session.user) {
+    res.json({ 
+      authenticated: true, 
+      user: req.session.user 
+    });
+  } else {
+    res.status(401).json({ 
+      authenticated: false,
+      message: "Not authenticated"
+    });
+  }
+});
 
 app.get('/api/check-auth', (req, res) => {
   res.json({ isAuthenticated: !!req.session.user_id });
@@ -230,6 +288,7 @@ app.get('/api/reports', (req, res) => {
 
 // Handle report submission
 app.post("/api/reports" , upload.single("image"), async (req, res) => {
+  console.log("Session:", req.session);
 
   const {
     title,
@@ -260,12 +319,13 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
 
   // Check session if not anonymous
   if (!anonymous) {
-    if (!req.session || !req.session.user_id) {
+    if (!req.session || !req.session.user || !req.session.user.id) {
       return res.status(401).json({ error: "You must be logged in to submit a non-anonymous report." });
     }
   }
-
-  const user_id = anonymous ? null : req.session.user_id;
+  
+  const user_id = anonymous ? null : req.session.user.id;
+  
 
   // Generate unique report ID
   const report_id = uuidv4();
@@ -296,7 +356,11 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
       ]
     );
 
-    res.status(200).json({ success: true, message: "Report submitted successfully" });
+    res.status(200).json({ 
+      success: true, 
+      message: "Report submitted successfully",
+      report_id: report_id
+    });
 
   } catch (error) {
     console.error("Database error:", error);
