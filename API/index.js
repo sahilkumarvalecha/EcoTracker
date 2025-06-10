@@ -231,19 +231,9 @@ app.get('/api/check-auth', (req, res) => {
 });
 
 
-
 app.get(['/', '/dashboard'], checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
-
-// Middleware to protect admin routes
-function isAdminMiddleware(req, res, next) {
-  if (req.session && req.session.email && req.session.email.endsWith('@ecotracker.pk')) {
-    next();
-  } else {
-    res.status(403).json({ error: 'Access denied: Admins only' });
-  }
-}
 
 
 function requireLogin(req, res, next) {
@@ -261,7 +251,6 @@ app.get('/api/reports', (req, res) => {
 
 // Handle report submission
 app.post("/api/reports", upload.single("image"), async (req, res) => {
-  console.log("Session:", req.session);
 
   const {
     title,
@@ -306,7 +295,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
   const created_at = new Date();
 
   if (!image_url) {
-    console.warn("⚠️ No image uploaded. req.file is:", req.file);
+    console.warn("No image uploaded. req.file is:", req.file);
   }
   try {
     await pool.query(
@@ -341,8 +330,7 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
   }
 });
 
-
-
+//handle session
 app.get('/api/session', (req, res) => {
   if (req.session.user.id && req.session.name && req.session.email) {
     const { name, email } = req.session;
@@ -392,22 +380,6 @@ app.get('/api/reportsPage', async (req, res) => {
   }
 });
 
-
-// users fetch in admin panel
-// GET all users from the database
-app.get('/api/usersLoad', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching users:', err.message);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-
-
-
 // logout
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
@@ -435,45 +407,34 @@ app.get('/api/userRsvps', async (req, res) => {
   try {
     const query = 'SELECT event_id FROM rsvp WHERE user_id = $1';
     const result = await pool.query(query, [userId]);
-    res.json(result.rows); // Return database results directly
+    res.json(result.rows); 
   } catch (err) {
     console.error('Fetch RSVP error:', err);
     res.status(500).json({ error: 'Server error fetching RSVPs' });
   }
 });
+
 app.post('/api/rsvp', async (req, res) => {
   try {
     const { user_id, event_id } = req.body;
     console.log("Incoming RSVP:", req.body);
     if (!user_id || !event_id) {
-      return res.status(400).json({ error: "Missing user_id or event_id" }); // ✅ Always return
+      return res.status(400).json({ error: "Missing user_id or event_id" });
     }
 
     const checkQuery = 'SELECT * FROM rsvp WHERE user_id = $1 AND event_id = $2';
     const result = await pool.query(checkQuery, [user_id, event_id]);
 
     if (result.rows.length > 0) {
-      return res.status(409).json({ success: false, message: "Already RSVPed" }); // ✅
+      return res.status(409).json({ success: false, message: "Already RSVPed" });
     }
 
     const insertQuery = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
     await pool.query(insertQuery, [user_id, event_id]);
-    return res.json({ success: true }); // ✅ Critical: Don’t forget `return`!
+    return res.json({ success: true }); 
   } catch (err) {
     console.error("RSVP error:", err);
-    return res.status(500).json({ error: "Database error" }); // ✅
-  }
-});
-
-
-// Get all categories (for dropdown if needed)
-app.get('/api/categories', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT category_id, name FROM categories');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Failed to fetch categories:', err.message);
-    res.status(500).json({ error: 'Failed to fetch categories' });
+    return res.status(500).json({ error: "Database error" }); 
   }
 });
 
@@ -559,35 +520,45 @@ app.get('/api/incidents', async (req, res) => {
   }
 });
 
+//community chat
 app.get('/api/chats', async (req, res) => {
-  const { area } = req.query;
+  try {
+    const { area } = req.query;
+    if (!area) return res.status(400).json({ error: 'Area parameter is required' });
 
-  const result = await pool.query(`
-    SELECT chats.message, chats.is_user, users.name AS sender
-    FROM chats
-    JOIN users ON chats.user_id = users.user_id
-    WHERE chats.area = $1
-    ORDER BY chats.created_at ASC
-  `, [area]);
+    const result = await pool.query(`
+      SELECT chats.message, chats.is_user, users.name AS sender
+      FROM chats
+      JOIN users ON chats.user_id = users.user_id
+      WHERE chats.area = $1
+      ORDER BY chats.created_at ASC
+    `, [area]);
 
-  res.json(result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching chats:', err);
+    res.status(500).json({ error: 'Failed to load chats' });
+  }
 });
 
-
 app.post('/api/chats', async (req, res) => {
-  const userId = req.session.user_id;
-  const { area, message, is_user } = req.body;
+  try {
+    const userId = req.session.user.id;
+    const { area, message, is_user = true } = req.body;
 
-  if (!userId) {
-    return res.status(401).send("Not authenticated");
+    if (!userId) return res.status(401).json({ error: "Not authenticated" });
+    if (!area || !message) return res.status(400).json({ error: "Area and message are required" });
+
+    await pool.query(
+      'INSERT INTO chats (area, user_id, message, is_user) VALUES ($1, $2, $3, $4)',
+      [area, userId, message, is_user]
+    );
+
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('Error saving chat:', err);
+    res.status(500).json({ error: "Failed to save message" });
   }
-
-  await pool.query(
-    'INSERT INTO chats (area, user_id, message, is_user) VALUES ($1, $2, $3, $4)',
-    [area, userId, message, is_user]
-  );
-
-  res.status(201).send("Message saved");
 });
 
 // event create
@@ -605,6 +576,7 @@ app.post('/api/events', async (req, res) => {
     res.status(500).json({ error: "Failed to create event" });
   }
 });
+
 // fetch events
 app.get('/api/eventsFetch', async (req, res) => {
   try {
@@ -615,6 +587,7 @@ app.get('/api/eventsFetch', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 // events count
 app.get("/api/events-count", async (req, res) => {
   try {
@@ -627,10 +600,10 @@ app.get("/api/events-count", async (req, res) => {
   }
 });
 
-
+//EcoAlert Feed
 app.get('/api/reports-feed', async (req, res) => {
   try {
-    const userId = req.session.user_id; // Get current user ID
+    const userId = req.session.user.id; // Get current user ID
 
     const result = await pool.query(`
       SELECT 
@@ -665,11 +638,11 @@ app.get('/api/reports-feed', async (req, res) => {
 });
 
 
-// Improved vote endpoint
+// vote endpoint
 app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
   const reportId = req.params.id;
   const { vote } = req.body;
-  const userId = req.session.user_id;
+  const userId = req.session.user.id;
 
   try {
     await pool.query('BEGIN');
@@ -929,29 +902,11 @@ app.get('/api/analytics-data', async (req, res) => {
   }
 });
 
-// Filter reports by user ID
-app.get('/api/reportsSubmit', async (req, res) => {
-  try {
-    const userId = req.query.userId;
 
-    if (!userId || isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid or missing userId' });
-    }
-
-    const queryText = 'SELECT * FROM reports WHERE user_id = $1';
-    const { rows } = await pool.query(queryText, [parseInt(userId)]);
-
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching reports:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// 🌟 Profile picture upload route
+// Profile picture upload route
 app.post('/api/upload-profile-picture', upload.single('profile'), async (req, res) => {
   try {
-    const userId = req.body.userId;  // now expecting userId
+    const userId = req.body.user.id;  // now expecting userId
     const file = req.file;
 
     if (!userId || !file) {
@@ -1004,7 +959,7 @@ app.post('/api/reports/:reportId/comments', async (req, res) => {
   try {
     const { reportId } = req.params;
     const { content } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.user.id;
     console.log('Session:', req.session);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized: User not logged in' });
@@ -1024,15 +979,15 @@ app.post('/api/reports/:reportId/comments', async (req, res) => {
 
     // Update comment count in reports table
     await pool.query(`
-          UPDATE reports 
-          SET comment_count = comment_count + 1
-          WHERE report_id = $1
-      `, [reportId]);
+    UPDATE reports 
+    SET comment_count = (SELECT COUNT(*) FROM comments WHERE report_id = $1)
+    WHERE report_id = $1
+    `, [reportId]);
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error creating comment:', err);
-    res.status(500).json({ error: 'Failed to create comment' });
+    res.status(500).json({ error: 'Failed to create comment', details: err.message});
   }
 });
 

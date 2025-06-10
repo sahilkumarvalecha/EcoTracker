@@ -468,7 +468,7 @@
           <button id="tab-discussions" onclick="switchTab('discussions')"
             class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Discussions</button>
           <button id="tab-alerts" onclick="switchTab('alerts')"
-            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">EcoAlerts</button>
+            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Eco Feed</button>
         </div>
 
        
@@ -1099,15 +1099,14 @@ async handleCommentSubmit(button) {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add if using token auth
             },
-            credentials: 'include',
+            credentials: 'include', // Important for sessions
             body: JSON.stringify({ content })
         });
 
         if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(errorText || 'Failed to post comment');
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to post comment');
         }
 
         const newComment = await res.json();
@@ -1174,11 +1173,15 @@ async loadComments(reportId) {
     }
   }
 
+
   updateCommentCount(reportId) {
     const countElement = document.querySelector(`[data-report-id="${reportId}"] [data-comment-count]`);
     if (countElement) {
-      const currentCount = parseInt(countElement.textContent) || 0;
-      countElement.textContent = `${currentCount + 1} comments`;
+      fetch(`/api/reports/${reportId}/comments`)
+        .then(res => res.json())
+        .then(comments => {
+          countElement.textContent = `${comments.length} comments`;
+        });
     }
   }
 
@@ -1247,8 +1250,13 @@ selectArea(area) {
 }
 
 loadChats(area) {
-  fetch(`/api/chats?area=${area}`)
-    .then(res => res.json())
+  fetch(`/api/chats?area=${encodeURIComponent(area)}`, {
+    credentials: 'include' // Important for sessions
+  })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to load chats');
+      return res.json();
+    })
     .then(data => {
       const chatBox = document.getElementById("chat-box");
       if (!chatBox) return;
@@ -1256,36 +1264,47 @@ loadChats(area) {
       chatBox.innerHTML = data.length === 0 ?
         `<p class="text-sm text-gray-400 text-center italic">No messages yet. Start the conversation!</p>` :
         data.map(msg => `
-          <div class="chat-bubble ${msg.is_user ? 'user' : 'other'}">
-            <p class="font-medium">${msg.sender || 'Anonymous'} (${area}):</p>
-            <p>${msg.message}</p>
+          <div class="flex mb-3 ${msg.is_user ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${msg.is_user ? 'bg-green-100' : 'bg-gray-100'}">
+              <p class="font-medium text-sm">${msg.sender || 'Anonymous'}</p>
+              <p class="text-gray-800">${msg.message}</p>
+            </div>
           </div>
         `).join('');
 
       chatBox.scrollTop = chatBox.scrollHeight;
     })
-    .catch(err => console.error("Failed to load chats:", err));
+    .catch(err => {
+      console.error("Failed to load chats:", err);
+      const chatBox = document.getElementById("chat-box");
+      if (chatBox) chatBox.innerHTML = `<p class="text-red-500 text-center">Error loading messages</p>`;
+    });
 }
 
 sendMessage() {
   const input = document.getElementById("message-input");
   const message = input?.value.trim();
-  if (!message) return;
+  if (!message || !this.selectedArea) return;
 
   fetch('/api/chats', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Important for sessions
     body: JSON.stringify({
       area: this.selectedArea,
       message: message,
       is_user: true
     })
   })
-    .then(() => {
-      if (input) input.value = "";
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to send message');
+      input.value = "";
       this.loadChats(this.selectedArea);
     })
-    .catch(err => console.error("Failed to send message:", err));
+    .catch(err => {
+      console.error("Failed to send message:", err);
+      alert("Failed to send message. Please try again.");
+    });
 }
 
 // Utility Functions
