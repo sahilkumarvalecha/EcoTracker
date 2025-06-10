@@ -245,9 +245,6 @@ function isAdminMiddleware(req, res, next) {
   }
 }
 
-app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'admin-dashboard.html'));
-});
 
 function requireLogin(req, res, next) {
   if (!req.session.user.id) {
