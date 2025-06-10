@@ -1014,6 +1014,45 @@ app.post('/api/reports/:reportId/comments', async (req, res) => {
   }
 });
 
+//stats
+// Enhanced stats endpoint with error handling
+app.get('/api/report-stats', async (req, res) => {
+  try {
+    // Get total reports count (only count non-anonymous reports if needed)
+    const totalQuery = await pool.query(`
+      SELECT COUNT(*) as count 
+      FROM reports
+      WHERE is_anonymous = false
+    `);
+    
+    // Get resolved reports count
+    const resolvedQuery = await pool.query(`
+      SELECT COUNT(*) as count 
+      FROM reports 
+      WHERE report_status = 'Resolved' 
+      AND is_anonymous = false
+    `);
+
+    const total = parseInt(totalQuery.rows[0]?.count || 0);
+    const resolved = parseInt(resolvedQuery.rows[0]?.count || 0);
+    const percentage = total > 0 ? Math.round((resolved / total) * 100) : 0;
+
+    res.json({ 
+      success: true,
+      total,
+      resolved,
+      percentage,
+    });
+  } catch (err) {
+    console.error('Stats fetch error:', err);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch stats',
+      details: err.message 
+    });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));

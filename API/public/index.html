@@ -85,6 +85,14 @@
       border-radius: 4px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
+    @keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--target-width); }
+}
+
+.animate-progress {
+  animation: progressFill 1.5s ease-out forwards;
+}
 
     @media (max-width: 768px) {
       .sidebar {
@@ -310,21 +318,28 @@
             </a>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card">
+          <div id="healthCard" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card">
             <div class="flex items-start space-x-4">
               <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
-                <i class="fas fa-leaf text-lg"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
               <div class="flex-1">
-                <h3 class="font-semibold text-gray-700">Environmental Health</h3>
+                <h3 class="font-semibold text-gray-700">Resolution Progress</h3>
                 <div class="flex items-center mt-2 space-x-2">
-                  <p class="text-3xl font-bold text-gray-800">78</p>
-                  <span class="text-sm text-gray-500">/ 100</span>
+                  <p id="resolvedCount" class="text-3xl font-bold text-gray-800">0</p>
+                  <span id="totalCount" class="text-sm text-gray-500">/ 0</span>
+                  <span id="percentageText" class="text-sm font-medium text-blue-600 ml-2">(0%)</span>
                 </div>
-                <div class="w-full progress-bar mt-3">
-                  <div class="progress-fill" style="width: 78%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-3">
+                  <div id="progressFill" 
+                       class="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-out" 
+                       style="width: 0%"></div>
                 </div>
+                <p id="progressMessage" class="text-sm text-gray-500 mt-2">Loading report statistics...</p>
               </div>
+            </div>
             </div>
             <a href="/analytics.html"
               class="mt-4 inline-block text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
@@ -350,260 +365,205 @@
   </div>
 
   <script>
-
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const closeSidebarButton = document.getElementById('close-sidebar');
-    const sidebar = document.getElementById('sidebar');
-
-    function toggleSidebar() {
-      sidebar.classList.toggle('-translate-x-full');
-      sidebarOverlay.classList.toggle('hidden');
-    }
-
-    mobileMenuButton.addEventListener('click', toggleSidebar);
-    sidebarOverlay.addEventListener('click', toggleSidebar);
-    closeSidebarButton.addEventListener('click', toggleSidebar);
-  </script>
-
-  <script>
-
-    window.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
+      // Sidebar toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const closeSidebarButton = document.getElementById('close-sidebar');
+      const sidebar = document.getElementById('sidebar');
+  
+      function toggleSidebar() {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+      }
+  
+      mobileMenuButton?.addEventListener('click', toggleSidebar);
+      sidebarOverlay?.addEventListener('click', toggleSidebar);
+      closeSidebarButton?.addEventListener('click', toggleSidebar);
+  
+      // User Authentication & Info
       const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+  
       if (!userName) {
         window.location.href = "login.html";
         return;
       }
-      const userEmail = localStorage.getItem("userEmail");
-      const isAdmin = localStorage.getItem("isAdmin") === "true";
+  
       const userLink = document.getElementById("user-link");
       const userNameSpan = document.getElementById("user-name-text");
-      const sidebar = document.getElementById("sidebar");
       const adminItems = document.querySelectorAll(".admin-only");
-
-      // Set user info
-      if (userName && userNameSpan && userLink) {
+  
+      if (userNameSpan && userLink) {
         userNameSpan.textContent = userName;
         userLink.href = "account.html";
       }
-
-      // Handle admin features
+  
+      // Admin enhancements
       if (isAdmin) {
-        console.log("Admin logged in - expanding sidebar"); // Debug log
-
-        // Expand sidebar by default for admin
-        if (sidebar) {
-          sidebar.classList.remove("w-64"); // Remove default width
-          sidebar.classList.add("w-72"); // Set wider width
-          sidebar.classList.add("shadow-lg"); // Add shadow to make it stand out
-        }
-
-        // Show admin-only items
-        adminItems.forEach(item => {
-          item.style.display = "block";
-        });
-
-        // Add admin badge to user info
-        if (userNameSpan) {
-          const adminBadge = document.createElement("span");
-          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-          adminBadge.textContent = "Admin";
-          userNameSpan.parentNode.appendChild(adminBadge);
-        }
+        console.log("Admin logged in - expanding sidebar");
+  
+        sidebar?.classList.remove("w-64");
+        sidebar?.classList.add("w-72", "shadow-lg");
+  
+        adminItems.forEach(item => item.style.display = "block");
+  
+        const adminBadge = document.createElement("span");
+        adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+        adminBadge.textContent = "Admin";
+        userNameSpan?.parentNode.appendChild(adminBadge);
       }
-
-      // Add logout button
-      if (userName) {
+  
+      // Logout button
+      if (userLink?.parentNode) {
         const logoutBtn = document.createElement("button");
         logoutBtn.textContent = "Logout";
         logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
         logoutBtn.addEventListener("click", () => {
-          // Clear all stored data
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("isAdmin");
-
-          // Send logout request to server
+          localStorage.clear();
           fetch('http://localhost:5055/api/public/logout', {
             method: 'POST',
             credentials: 'include'
-          })
-            .then(() => {
-              window.location.href = "login.html";
-            });
+          }).then(() => window.location.href = "login.html");
         });
-
-        if (userLink && userLink.parentNode) {
-          userLink.parentNode.appendChild(logoutBtn);
-        }
+        userLink.parentNode.appendChild(logoutBtn);
       }
-      // Fetch and display report count
+  
+      // Report Count
       fetch("http://localhost:5055/api/report-count")
-        .then(response => response.json())
-        .then(data => {
-          const reportCountElement = document.getElementById("report-count");
-          if (reportCountElement) {
-            reportCountElement.textContent = data.count;
-          }
-        })
-        .catch(error => {
-          console.error("Failed to load report count:", error);
-          const reportCountElement = document.getElementById("report-count");
-          if (reportCountElement) {
-            reportCountElement.textContent = "N/A";
-          }
-        });
-
-      // fetch and display high severity reports count
-      fetch('/api/high-severity-count')
         .then(res => res.json())
         .then(data => {
-          console.log('High Severity Reports:', data.highSeverityCount);
-          document.getElementById("critical-incident").innerText = data.highSeverityCount;
+          document.getElementById("report-count").textContent = data.count || "0";
         })
-        .catch(err => console.error('Error:', err));
+        .catch(() => {
+          document.getElementById("report-count").textContent = "N/A";
+        });
+  
+      // High Severity Reports Count
+      fetch("/api/high-severity-count")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("critical-incident").innerText = data.highSeverityCount || 0;
+        })
+        .catch(err => console.error("Error:", err));
+  
+      // Report Stats
+      fetch("/api/report-stats")
+        .then(res => res.json())
+        .then(data => {
+            const { total = 0, resolved = 0, percentage = 0 } = data;
 
-    });
+            document.getElementById("report-count").textContent = total;
+            document.getElementById("critical-incident").textContent = 0; // If you don’t use this, consider removing it
+            document.getElementById("resolvedCount").textContent = resolved;
+            document.getElementById("totalCount").textContent = `/ ${total}`;
 
-    // Reports load
-    async function loadReports() {
-      try {
-        const res = await fetch('/api/reportsPage');
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
+            document.getElementById("percentageText").textContent = `(${percentage}%)`;
+            document.getElementById("progressFill").style.width = `${percentage}%`;
+            document.getElementById("progressMessage").textContent =
+              percentage === 100
+                ? "All reports resolved!"
+                : `${resolved} of ${total} reports resolved`;
+          })
+        .catch(() => {
+          document.getElementById("progressMessage").textContent = "Failed to load report statistics.";
+        });
+  
+      // Load Reports
+      async function loadReports() {
         const container = document.getElementById('event-list');
-        container.innerHTML = '';
-
-        if (!data || data.length === 0) {
-          container.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found</p>';
-          return;
-        }
-
-        // Enhanced category mapping
-        const getCategoryInfo = (title) => {
-          title = title.toLowerCase();
-          if (title.includes('garbage') || title.includes('dumping') || title.includes('trash')) {
-            return { icon: 'fa-dumpster', color: 'red', name: 'Waste' };
+        try {
+          const res = await fetch('/api/reportsPage');
+          const data = await res.json();
+          container.innerHTML = '';
+  
+          if (!data.length) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found</p>';
+            return;
           }
-          if (title.includes('water') || title.includes('sewage') || title.includes('pipe')) {
-            return { icon: 'fa-water', color: 'blue', name: 'Water' };
-          }
-          if (title.includes('smoke') || title.includes('smog') || title.includes('air')) {
-            return { icon: 'fa-smog', color: 'purple', name: 'Air' };
-          }
-          if (title.includes('noise') || title.includes('loud') || title.includes('horn')) {
-            return { icon: 'fa-volume-up', color: 'orange', name: 'Noise' };
-          }
-          return { icon: 'fa-exclamation-circle', color: 'gray', name: 'Other' };
-        };
-
-        // Severity styles
-        const severityStyles = {
-          'high': { bg: 'red-100', text: 'red-800' },
-          'medium': { bg: 'yellow-100', text: 'yellow-800' },
-          'low': { bg: 'green-100', text: 'green-800' }
-        };
-
-        data.forEach(report => {
-          const category = getCategoryInfo(report.title);
-          const rawSeverity = report.severity?.trim().toLowerCase();
-          const severity = ['high', 'medium', 'low'].includes(rawSeverity) ? rawSeverity : 'medium';
-          const severityStyle = severityStyles[severity] || severityStyles.medium;
-
-          
-          const reportDate = report.created_at
-            ? new Date(report.created_at).toLocaleDateString()
-            : 'Just now';
-
-          const tag = document.createElement('div');
-          tag.className = `activity-tag bg-${category.color}-50 text-${category.color}-700 px-4 py-2 rounded-full text-sm flex items-center space-x-2`;
-
-          tag.innerHTML = `
-        <i class="fas ${category.icon}"></i>
-        <span>${report.title}</span>
-        <span class="bg-${severityStyle.bg} text-${severityStyle.text} px-2 py-1 rounded-full text-xs">
-          ${severity.charAt(0).toUpperCase() + severity.slice(1)}
-        </span>
-        <span class="text-gray-500">${reportDate}</span>
-      `;
-
-          container.appendChild(tag);
-        });
-
-      } catch (err) {
-        // console.error('Error loading reports:', err);
-        container.innerHTML = `
-      <div class="bg-red-50 text-red-700 px-4 py-2 rounded-full text-sm">
-        <i class="fas fa-exclamation-circle mr-2"></i>
-        Error loading activity
-      </div>
-    `;
-      }
-    }
-
-    // Load when ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadReports);
-    } else {
-      loadReports();
-    }
-
-
-    // report search javascript
-    const searchInput = document.getElementById('report-search');
-    const suggestionBox = document.getElementById('suggestions');
-
-    searchInput.addEventListener('input', async function () {
-      const query = this.value.trim();
-      suggestionBox.innerHTML = '';
-
-      if (query.length === 0) {
-        suggestionBox.classList.add('hidden');
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
-        const suggestions = await res.json();
-
-        if (suggestions.length === 0) {
-          suggestionBox.classList.add('hidden');
-          return;
-        }
-
-        suggestions.forEach(report => {
-          const li = document.createElement('li');
-          li.textContent = `${report.title}`;
-          li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer";
-          li.onclick = () => {
-            searchInput.value = report.title;
-            suggestionBox.classList.add('hidden');
-            // Optional: Scroll to report or show details
-            // Filter the reports on page based on selected title
-            document.querySelectorAll('.report-card').forEach(card => {
-              const title = card.querySelector('.font-medium').textContent.toLowerCase();
-              const selected = report.title.toLowerCase();
-
-              if (title.includes(selected)) {
-                card.style.display = 'flex'; // show match
-              } else {
-                card.style.display = 'none'; // hide non-match
-              }
-            });
-
+  
+          const getCategoryInfo = (title) => {
+            title = title.toLowerCase();
+            if (title.includes('garbage') || title.includes('trash')) return { icon: 'fa-dumpster', color: 'red' };
+            if (title.includes('water') || title.includes('pipe')) return { icon: 'fa-water', color: 'blue' };
+            if (title.includes('smoke') || title.includes('air')) return { icon: 'fa-smog', color: 'purple' };
+            if (title.includes('noise') || title.includes('horn')) return { icon: 'fa-volume-up', color: 'orange' };
+            return { icon: 'fa-exclamation-circle', color: 'gray' };
           };
-          suggestionBox.appendChild(li);
-        });
-
-        suggestionBox.classList.remove('hidden');
-      } catch (err) {
-        console.error('Suggestion fetch failed:', err);
-        suggestionBox.classList.add('hidden');
+  
+          const severityStyles = {
+            high: { bg: 'red-100', text: 'red-800' },
+            medium: { bg: 'yellow-100', text: 'yellow-800' },
+            low: { bg: 'green-100', text: 'green-800' }
+          };
+  
+          data.forEach(report => {
+            const category = getCategoryInfo(report.title);
+            const severity = ['high', 'medium', 'low'].includes(report.severity?.toLowerCase()) ? report.severity.toLowerCase() : 'medium';
+            const style = severityStyles[severity];
+            const date = report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Just now';
+  
+            const tag = document.createElement('div');
+            tag.className = `activity-tag bg-${category.color}-50 text-${category.color}-700 px-4 py-2 rounded-full text-sm flex items-center space-x-2`;
+            tag.innerHTML = `
+              <i class="fas ${category.icon}"></i>
+              <span>${report.title}</span>
+              <span class="bg-${style.bg} text-${style.text} px-2 py-1 rounded-full text-xs">${severity}</span>
+              <span class="text-gray-500">${date}</span>`;
+            container.appendChild(tag);
+          });
+        } catch (err) {
+          container.innerHTML = `
+            <div class="bg-red-50 text-red-700 px-4 py-2 rounded-full text-sm">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              Error loading activity
+            </div>`;
+        }
       }
+  
+      loadReports();
+  
+      // Search functionality
+      const searchInput = document.getElementById('report-search');
+      const suggestionBox = document.getElementById('suggestions');
+  
+      searchInput?.addEventListener('input', async function () {
+        const query = this.value.trim();
+        suggestionBox.innerHTML = '';
+  
+        if (!query) return suggestionBox.classList.add('hidden');
+  
+        try {
+          const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
+          const suggestions = await res.json();
+  
+          if (!suggestions.length) return suggestionBox.classList.add('hidden');
+  
+          suggestions.forEach(report => {
+            const li = document.createElement('li');
+            li.textContent = report.title;
+            li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer";
+            li.onclick = () => {
+              searchInput.value = report.title;
+              suggestionBox.classList.add('hidden');
+  
+              document.querySelectorAll('.report-card').forEach(card => {
+                const title = card.querySelector('.font-medium')?.textContent.toLowerCase();
+                card.style.display = title?.includes(report.title.toLowerCase()) ? 'flex' : 'none';
+              });
+            };
+            suggestionBox.appendChild(li);
+          });
+  
+          suggestionBox.classList.remove('hidden');
+        } catch (err) {
+          console.error("Suggestion fetch failed:", err);
+          suggestionBox.classList.add('hidden');
+        }
+      });
     });
-  </script>
-
-
+  </script>  
 </body>
 
 </html>
