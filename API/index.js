@@ -95,25 +95,6 @@ app.get('/login', (req, res) => {
 });
 
 
-// User routes
-app.get("/api/user", async (req, res) => {
-  if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
-
-  const result = await pool.query("SELECT name, email, avatar FROM users WHERE user_id = $1", [req.session.user_id]);
-  if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
-
-  res.json(result.rows[0]);
-});
-
-app.post("/api/avatar", async (req, res) => {
-  if (!req.session.user_id) return res.status(401).json({ error: "Not logged in" });
-
-  const { avatar } = req.body;
-  await pool.query("UPDATE users SET avatar = $1 WHERE id = $2", [avatar, req.session.user_id]);
-
-  res.json({ success: true });
-});
-
 // signup 
 
 app.post('/signup', async (req, res) => {
