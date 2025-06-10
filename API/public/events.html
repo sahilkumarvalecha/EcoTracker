@@ -223,35 +223,6 @@
           <p class="text-gray-500 mt-1">Manage and participate in environmental events</p>
         </div>
 
-        <!-- Tabs -->
-        <div class="flex space-x-6 border-b border-gray-200 pb-2 mb-6">
-          <button id="tab-all" onclick="switchTab('all')"
-            class="text-green-600 font-medium border-b-2 border-green-600 pb-2 px-1">All</button>
-          <button id="tab-upcoming" onclick="switchTab('upcoming')"
-            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Upcoming</button>
-          <button id="tab-past" onclick="switchTab('past')"
-            class="text-gray-500 hover:text-green-600 hover:border-b-2 hover:border-green-500 pb-2 px-1">Past</button>
-        </div>
-
-        <!-- Filters -->
-        <div class="mb-6 ml-3">
-          <div class="flex flex-wrap items-center gap-4 filter-container">
-            <input type="text" placeholder="Event name or ID"
-              class="border border-gray-300 p-2 rounded-lg w-full md:w-60 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
-            <select onchange="filterByStatus(this.value)"
-              class="border border-gray-300 p-2 rounded-lg w-full md:w-40 bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
-              <option value="all">All statuses</option>
-              <option value="Upcoming">Upcoming</option>
-              <option value="Past">Past</option>
-            </select>
-            <input type="date"
-              class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
-            <button
-              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">Apply
-              Filters</button>
-          </div>
-        </div>
-
         <!-- Event List -->
         <div class="bg-white p-6 rounded-lg shadow-md" id="events-show">
           <h2 class="text-xl font-semibold mb-4">All Events</h2>
@@ -307,45 +278,6 @@
     sidebarOverlay.addEventListener('click', toggleSidebar);
     closeSidebarButton.addEventListener('click', toggleSidebar);
 
-    function switchTab(tab) {
-      document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        el.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-        el.classList.add('text-gray-500');
-      });
-      document.getElementById('tab-' + tab).classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-      document.getElementById('tab-' + tab).classList.remove('text-gray-500');
-
-      const events = document.querySelectorAll('#event-list > div');
-      events.forEach(event => {
-        event.style.display = (tab === 'all' || event.dataset.status.toLowerCase() === tab.toLowerCase()) ? 'flex' : 'none';
-      });
-
-      // Sync dropdown with tab
-      document.querySelector('select').value = tab.charAt(0).toUpperCase() + tab.slice(1);
-    }
-
-    function filterByStatus(status) {
-      const events = document.querySelectorAll('#event-list > div');
-      events.forEach(event => {
-        event.style.display = (status === 'all' || event.dataset.status.toLowerCase() === status.toLowerCase()) ? 'flex' : 'none';
-      });
-
-      // Sync tab with dropdown
-      document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        el.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-        el.classList.add('text-gray-500');
-      });
-      const tabId = 'tab-' + (status.toLowerCase());
-      const tabBtn = document.getElementById(tabId);
-      if (tabBtn) {
-        tabBtn.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'font-medium');
-        tabBtn.classList.remove('text-gray-500');
-      }
-    }
-
-
-    // Initialize with All tab active
-    document.addEventListener('DOMContentLoaded', () => switchTab('all'));
 
     // User session handling
     window.addEventListener("DOMContentLoaded", () => {

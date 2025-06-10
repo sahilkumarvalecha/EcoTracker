@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 
-   <style>
-     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
     :root {
       --primary: #10b981;
       --primary-dark: #059669;
@@ -20,27 +20,27 @@
       --secondary: #3b82f6;
       --accent: #f59e0b;
     }
-    
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f8fafc;
     }
-    
+
     .sidebar-item {
       transition: all 0.2s ease;
       position: relative;
     }
-    
+
     .sidebar-item:hover {
       background-color: var(--primary-light);
     }
-    
+
     .sidebar-item.active {
       background-color: var(--primary-light);
       color: var(--primary-dark);
       font-weight: 500;
     }
-    
+
     .sidebar-item.active::after {
       content: '';
       position: absolute;
@@ -51,40 +51,40 @@
       background-color: var(--primary);
       border-radius: 2px;
     }
-    
+
     .card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       border-radius: 12px;
       overflow: hidden;
     }
-    
+
     .card:hover {
       transform: translateY(-4px);
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    
+
     .activity-tag {
       transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    
+
     .activity-tag:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    
+
     .progress-bar {
       height: 8px;
       border-radius: 4px;
       background-color: #e2e8f0;
     }
-    
+
     .progress-fill {
       height: 100%;
       border-radius: 4px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
-    
+
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -93,11 +93,11 @@
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-      
+
       .sidebar.open {
         transform: translateX(0);
       }
-      
+
       .sidebar-overlay {
         display: none;
         position: fixed;
@@ -105,40 +105,40 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         z-index: 40;
         backdrop-filter: blur(4px);
       }
-      
+
       .sidebar-overlay.open {
         display: block;
       }
-      
+
       .page-title {
         margin-left: 60px;
       }
     }
-    
+
     /* Modern scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-    
+
     ::-webkit-scrollbar-track {
       background: #f1f1f1;
       border-radius: 10px;
     }
-    
+
     ::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 10px;
     }
-    
+
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
+
     /* Admin specific styles */
     .admin-panel-title {
       font-size: 0.75rem;
@@ -183,24 +183,48 @@
       padding-left: 0.5rem;
       border-left: 2px solid var(--primary);
     }
-    
+
     @media (max-width: 768px) {
       main {
         margin-left: 16rem;
       }
     }
+
+    .status-reported {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .status-resolved {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-inreview {
+      color: blue;
+      font-weight: bold;
+    }
+
+    .status-verified {
+      color: darkgreen;
+      font-weight: bold;
+    }
+
+    .status-unknown {
+      color: gray;
+    }
   </style>
 </head>
 
-  <body class="bg-gray-50 text-gray-800">
-    <div class="flex min-h-screen">
-      <!-- Mobile menu button -->
-      <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
-        <i class="fas fa-bars text-gray-600"></i>
-      </button>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex min-h-screen">
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
+      <i class="fas fa-bars text-gray-600"></i>
+    </button>
 
-      <!-- Sidebar -->
-      <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -241,7 +265,7 @@
         </a>
 
         <!-- Admin Only Items -->
-         <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
+        <div class="border-t border-green-100 mt-2 pt-2 admin-only" style="display: none;">
           <h3 class="px-2 py-1 text-sm font-semibold text-gray-500 uppercase tracking-wider">Admin Panel</h3>
 
           <a href="/admin/moderate-reports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-100">
@@ -270,271 +294,251 @@
     </aside>
 
 
-      <!-- Main Content -->
-     <main class="flex items-center justify-center h-full w-full p-6 flex-1 p-4 md:p-8 main-content">
-    <div class="max-w-3xl w-full bg-white rounded-lg shadow-lg p-8">
-      <div class="text-center">
-        <img
-          id="profile-picture"
-          src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-          alt="Profile Picture"
-          class="w-24 h-24 rounded-full object-cover mx-auto"
-        />
-        <h2 class="text-3xl font-bold mt-6" id="profile-user-name"></h2>
-        <button
-          class="edit-profile-btn mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-          Edit Profile
-        </button>
-        <!-- Hidden file input -->
-<input type="file" id="file-upload" accept="image/*" class="hidden">
-      </div>
-
-      <div class="mt-10">
-        <h3 class="text-xl font-semibold mb-2">Contact Information</h3>
-        <p id="user-email" class="text-gray-700"></p>
-      </div>
-
-      <div class="mt-10" id="reports-container">
-  <h3 class="text-xl font-semibold mb-4">Reported Incidents</h3>
-  <ul class="list-disc list-inside text-gray-700 space-y-2 max-h-48 overflow-y-auto">
-    <!-- Reports will be injected here dynamically -->
-  </ul>
-</div>
-
-      <div class="mt-10 flex justify-between items-center">
-  <div>
-    <!-- Title and Info Icon in same row -->
-    <div class="flex items-center space-x-2 mb-1">
-      <h3 class="text-xl font-semibold">Total Points</h3>
-
-      <!-- Info Icon + Tooltip -->
-      <div class="relative flex items-center group cursor-pointer">
-        <!-- Info Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-black-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
-        </svg>
-
-        <!-- Tooltip -->
-        <div class="absolute left-6 top-0 z-10 w-64 bg-white border border-gray-300 rounded-md shadow-md p-3 text-sm text-gray-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 ease-in-out">
-          🎯 <strong>How to Earn Points:</strong><br />
-          • 1 Point per report submitted 📝<br />
-          • 2 Points per upvoted alert 🚨<br />
-          • Bonus for verified reports 🔍<br />
-          • More badges coming soon! 🏅
+    <!-- Main Content -->
+    <main class="flex items-center justify-center h-full w-full p-6 flex-1 p-4 md:p-8 main-content">
+      <div class="max-w-3xl w-full bg-white rounded-lg shadow-lg p-8">
+        <div class="text-center">
+          <img id="profile-picture" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile Picture"
+            class="w-24 h-24 rounded-full object-cover mx-auto" />
+          <h2 class="text-3xl font-bold mt-6" id="profile-user-name"></h2>
+          <button class="edit-profile-btn mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+            Edit Profile
+          </button>
+          <!-- Hidden file input -->
+          <input type="file" id="file-upload" accept="image/*" class="hidden">
         </div>
+
+        <div class="mt-10">
+          <h3 class="text-xl font-semibold mb-2">Contact Information</h3>
+          <p id="user-email" class="text-gray-700"></p>
+        </div>
+
+        <div class="mt-10" id="reports-container">
+          <h3 class="text-xl font-semibold mb-4">Reported Incidents</h3>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 max-h-48 overflow-y-auto">
+            <!-- Reports will be injected here dynamically -->
+          </ul>
+        </div>
+
+        <div class="mt-10 flex justify-between items-center">
+          <div>
+            <!-- Title and Info Icon in same row -->
+            <div class="flex items-center space-x-2 mb-1">
+              <h3 class="text-xl font-semibold">Total Points</h3>
+
+              <!-- Info Icon + Tooltip -->
+              <div class="relative flex items-center group cursor-pointer">
+                <!-- Info Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-black-300" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                </svg>
+
+                <!-- Tooltip -->
+                <div
+                  class="absolute left-6 top-0 z-10 w-64 bg-white border border-gray-300 rounded-md shadow-md p-3 text-sm text-gray-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 ease-in-out">
+                  🎯 <strong>How to Earn Points:</strong><br />
+                  • 1 Point per report submitted 📝<br />
+                  • 2 Points per upvoted alert 🚨<br />
+                  • Bonus for verified reports 🔍<br />
+                  • More badges coming soon! 🏅
+                </div>
+              </div>
+            </div>
+
+            <!-- Points Number -->
+            <p class="text-4xl font-bold text-green-600">1,250</p>
+          </div>
+        </div>
+
+
       </div>
-    </div>
-
-    <!-- Points Number -->
-    <p class="text-4xl font-bold text-green-600">1,250</p>
   </div>
-</div>
-
-        <div class="w-full mt-10">
-  <h3 class="text-xl font-semibold mb-4">🏅 Badges</h3>
-
-  <!-- Container with extra top padding -->
-  <div class="relative w-full pt-12">
-    
-    <!-- Progress Bar -->
-    <div class="w-full h-4 bg-gray-300 rounded-full relative z-10">
-      <div class="absolute top-0 left-0 h-full bg-green-500 rounded-full" style="width: 60%;"></div>
-    </div>
-
-    <!-- Badges -->
-    <div class="absolute top-0 left-[10%] flex flex-col items-center z-20">
-      <img src="https://cdn-icons-png.flaticon.com/128/609/609803.png" class="w-8 h-8 mb-1" />
-      <span class="text-xs font-medium text-gray-600">Novice</span>
-    </div>
-
-    <div class="absolute top-0 left-[40%] flex flex-col items-center z-20">
-      <img src="https://cdn-icons-png.flaticon.com/128/190/190411.png" class="w-8 h-8 mb-1" />
-      <span class="text-xs font-medium text-gray-600">Explorer</span>
-    </div>
-
-    <div class="absolute top-0 left-[80%] flex flex-col items-center opacity-40 z-20">
-      <img src="https://cdn-icons-png.flaticon.com/128/2583/2583317.png" class="w-8 h-8 mb-1 grayscale" />
-      <span class="text-xs font-medium text-gray-400">Elite</span>
-    </div>
-  </div>
-
-  <!-- Progress text -->
-  <p class="text-sm text-gray-500 mt-2">Progress: <strong>60%</strong></p>
-</div>
-
-      </div>
-    </div>
   </main>
-    </div>
+  </div>
 
-    <script>
-      window.addEventListener("DOMContentLoaded", () => {
-  const userName = localStorage.getItem("userName");
-  const userEmail = localStorage.getItem("userEmail");
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
-const userId = localStorage.getItem("user_id"); 
-  const userLink = document.getElementById("user-link");
-  const userNameSpan = document.getElementById("user-name-text");
-  const sidebar = document.getElementById("sidebar");
-  const adminItems = document.querySelectorAll(".admin-only");
-  const sidebarName = document.getElementById("sidebar-user-name");
-  const profileName = document.getElementById("profile-user-name");
-  const profileEmail = document.getElementById("user-email");
-  const editBtn = document.querySelector(".edit-profile-btn");
-    const fileInput = document.getElementById("file-upload");
-  // Profile picture
- const profileImg = document.getElementById("profile-picture");
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+      const userId = localStorage.getItem("user_id");
+      const userLink = document.getElementById("user-link");
+      const userNameSpan = document.getElementById("user-name-text");
+      const sidebar = document.getElementById("sidebar");
+      const adminItems = document.querySelectorAll(".admin-only");
+      const sidebarName = document.getElementById("sidebar-user-name");
+      const profileName = document.getElementById("profile-user-name");
+      const profileEmail = document.getElementById("user-email");
+      const editBtn = document.querySelector(".edit-profile-btn");
+      const fileInput = document.getElementById("file-upload");
+      // Profile picture
+      const profileImg = document.getElementById("profile-picture");
 
-  const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-  // Set user profile image or default
-    const savedAvatar = localStorage.getItem(`selectedAvatar_${userId}`);
-    profileImg.src = savedAvatar ? savedAvatar : "/assets/default-avatar.png";
-  if (profileImg) {
-    profileImg.src = savedAvatar || defaultAvatar;
-  }
-
-  if (userName) {
-    // Set user display names and email
-    if (sidebarName) sidebarName.textContent = userName;
-    if (profileName) profileName.textContent = userName;
-    if (profileEmail) profileEmail.textContent = "Email: " + userEmail;
-    if (userNameSpan) userNameSpan.textContent = userName;
-
-    
-
-    if (userLink) {
-      userLink.href = "account.html";
-
-      // Only add logout button if it does not exist yet
-      if (!document.getElementById("logout-btn")) {
-        const logoutBtn = document.createElement("button");
-        logoutBtn.id = "logout-btn"; // add id to prevent duplicates
-        logoutBtn.textContent = "Logout";
-        logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("isAdmin");
-          localStorage.removeItem("selectedAvatar");
-          window.location.href = "index.html";
-        });
-        userLink.parentNode.appendChild(logoutBtn);
+      const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+      // Set user profile image or default
+      const savedAvatar = localStorage.getItem(`selectedAvatar_${userId}`);
+      profileImg.src = savedAvatar ? savedAvatar : "/assets/default-avatar.png";
+      if (profileImg) {
+        profileImg.src = savedAvatar || defaultAvatar;
       }
-    }
-  }
 
-  if (isAdmin) {
-    // Expand sidebar for admin
-    if (sidebar) {
-      sidebar.classList.remove("w-64");
-      sidebar.classList.add("w-72", "shadow-lg");
-    }
-
-    // Show admin-only menu items
-    adminItems.forEach(item => {
-      item.style.display = "block";
-    });
-
-    // Add admin badge only once
-    if (userNameSpan && !document.getElementById("admin-badge")) {
-      const adminBadge = document.createElement("span");
-      adminBadge.id = "admin-badge"; // prevent duplicates
-      adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
-      adminBadge.textContent = "Admin";
-      userNameSpan.parentNode.appendChild(adminBadge);
-    }
-  }
-
-  // Mobile sidebar toggle code (unchanged)
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const sidebarOverlay = document.getElementById('sidebar-overlay');
-  const closeSidebarButton = document.getElementById('close-sidebar');
-
-  function toggleSidebar() {
-    sidebar.classList.toggle('-translate-x-full');
-    sidebarOverlay.classList.toggle('hidden');
-  }
-
-  mobileMenuButton?.addEventListener('click', toggleSidebar);
-  sidebarOverlay?.addEventListener('click', toggleSidebar);
-  closeSidebarButton?.addEventListener('click', toggleSidebar);
-
-  
-
-  // reports by user
-const reportsContainer = document.getElementById('reports-container');
-  const reportsList = reportsContainer.querySelector('ul');
-
-  function renderReports(reports) {
-    reportsList.innerHTML = '';
-
-    if (!reports || reports.length === 0) {
-      reportsList.innerHTML = '<li>No reported incidents found.</li>';
-      return;
-    }
-
-    reports.forEach(report => {
-      const li = document.createElement('li');
-      li.textContent = report.title || 'Untitled report'; // adjust accordingly
-      reportsList.appendChild(li);
-    });
-  }
-
-  if (userId) {
-    fetch(`http://localhost:5055/api/reportsSubmit?userId=${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        console.log("Reports fetched:", data); // log for debug
-        // If data is wrapped, adjust here:
-        const reports = Array.isArray(data) ? data : data.reports || [];
-        renderReports(reports);
-      })
-      .catch(err => {
-        reportsList.innerHTML = '<li>Error loading reports.</li>';
-        console.error('Failed to load reports:', err);
-      });
-  } else {
-    reportsList.innerHTML = '<li>User ID not found. Please login again.</li>';
-  }
+      if (userName) {
+        // Set user display names and email
+        if (sidebarName) sidebarName.textContent = userName;
+        if (profileName) profileName.textContent = userName;
+        if (profileEmail) profileEmail.textContent = "Email: " + userEmail;
+        if (userNameSpan) userNameSpan.textContent = userName;
 
 
-  // edit button functionality
-editBtn.addEventListener("click", () => {
-      fileInput.click(); // Trigger file input when button is clicked
-    });
 
-    fileInput.addEventListener("change", async () => {
-      const file = fileInput.files[0];
-      if (!file) return;
+        if (userLink) {
+          userLink.href = "account.html";
 
-      const formData = new FormData();
-      formData.append("profile", file);
-      formData.append("userId", userId);
-
-      try {
-        const res = await fetch("http://localhost:5055/api/upload-profile-picture", {
-          method: "POST",
-          body: formData
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          profileImg.src = result.path;
-         localStorage.setItem(`selectedAvatar_${userId}`, result.path);
-          alert("Profile picture uploaded");
-        } else {
-          alert("Upload failed, try again?");
+          // Only add logout button if it does not exist yet
+          if (!document.getElementById("logout-btn")) {
+            const logoutBtn = document.createElement("button");
+            logoutBtn.id = "logout-btn"; // add id to prevent duplicates
+            logoutBtn.textContent = "Logout";
+            logoutBtn.className = "ml-2 text-sm text-red-500 underline hover:text-red-700";
+            logoutBtn.addEventListener("click", () => {
+              localStorage.removeItem("userName");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("isAdmin");
+              localStorage.removeItem("selectedAvatar");
+              window.location.href = "index.html";
+            });
+            userLink.parentNode.appendChild(logoutBtn);
+          }
         }
-      } catch (err) {
-        console.error(err);
-        alert("Error uploading image");
       }
+
+      if (isAdmin) {
+        // Expand sidebar for admin
+        if (sidebar) {
+          sidebar.classList.remove("w-64");
+          sidebar.classList.add("w-72", "shadow-lg");
+        }
+
+        // Show admin-only menu items
+        adminItems.forEach(item => {
+          item.style.display = "block";
+        });
+
+        // Add admin badge only once
+        if (userNameSpan && !document.getElementById("admin-badge")) {
+          const adminBadge = document.createElement("span");
+          adminBadge.id = "admin-badge"; // prevent duplicates
+          adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
+          adminBadge.textContent = "Admin";
+          userNameSpan.parentNode.appendChild(adminBadge);
+        }
+      }
+
+      // Mobile sidebar toggle code (unchanged)
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const closeSidebarButton = document.getElementById('close-sidebar');
+
+      function toggleSidebar() {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+      }
+
+      mobileMenuButton?.addEventListener('click', toggleSidebar);
+      sidebarOverlay?.addEventListener('click', toggleSidebar);
+      closeSidebarButton?.addEventListener('click', toggleSidebar);
+
+
+
+      // reports by user
+      const reportsContainer = document.getElementById('reports-container');
+      const reportsList = reportsContainer.querySelector('ul');
+
+      function renderReports(reports) {
+        reportsList.innerHTML = '';
+
+        if (!reports || reports.length === 0) {
+          reportsList.innerHTML = '<li>No reported incidents found.</li>';
+          return;
+        }
+
+        reports.forEach(report => {
+          const li = document.createElement('li');
+
+          // Create elements for title and status
+          const titleSpan = document.createElement('span');
+          titleSpan.textContent = report.title || 'Untitled report';
+
+          const statusSpan = document.createElement('span');
+          statusSpan.textContent = `Status: ${report.report_status || 'Unknown'}`;
+          statusSpan.className = `status-${report.report_status?.toLowerCase() || 'unknown'}`;
+
+          // Add some styling classes based on status
+          li.appendChild(titleSpan);
+          li.appendChild(document.createElement('br')); // line break
+          li.appendChild(statusSpan);
+
+          reportsList.appendChild(li);
+        });
+      }
+
+      if (userId) {
+        fetch(`http://localhost:5055/api/reportsSubmit?userId=${userId}`)
+          .then(res => res.json())
+          .then(data => {
+            console.log("Reports fetched:", data); // log for debug
+            // If data is wrapped, adjust here:
+            const reports = Array.isArray(data) ? data : data.reports || [];
+            renderReports(reports);
+          })
+          .catch(err => {
+            reportsList.innerHTML = '<li>Error loading reports.</li>';
+            console.error('Failed to load reports:', err);
+          });
+      } else {
+        reportsList.innerHTML = '<li>User ID not found. Please login again.</li>';
+      }
+
+
+      // edit button functionality
+      editBtn.addEventListener("click", () => {
+        fileInput.click(); // Trigger file input when button is clicked
+      });
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("profile", file);
+        formData.append("userId", userId);
+
+        try {
+          const res = await fetch("http://localhost:5055/api/upload-profile-picture", {
+            method: "POST",
+            body: formData
+          });
+
+          const result = await res.json();
+
+          if (result.success) {
+            profileImg.src = result.path;
+            localStorage.setItem(`selectedAvatar_${userId}`, result.path);
+            alert("Profile picture uploaded");
+          } else {
+            alert("Upload failed, try again?");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error uploading image");
+        }
+      });
     });
-});
 
 
-    </script>
-  </body>
+  </script>
+</body>
 
 </html>
