@@ -307,6 +307,7 @@
                     this.showLoadingState(feed);
 
                     const res = await fetch('/api/moderate-reports');
+                    credentials: 'include'
                     if (!res.ok) throw new Error('Failed to fetch reports');
 
                     const reports = await res.json();

@@ -366,6 +366,8 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      console.log('Stored userName:', localStorage.getItem('userName'));
+console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
       // Sidebar toggle
       const mobileMenuButton = document.getElementById('mobile-menu-button');
       const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -395,7 +397,7 @@
       const userNameSpan = document.getElementById("user-name-text");
       const adminItems = document.querySelectorAll(".admin-only");
   
-      if (userNameSpan && userLink) {
+      if (userName) {
         userNameSpan.textContent = userName;
         userLink.href = "account.html";
       }
@@ -434,7 +436,7 @@
       fetch("http://localhost:5055/api/report-count")
         .then(res => res.json())
         .then(data => {
-          document.getElementById("report-count").textContent = data.count || "0";
+          document.getElementById("report-count").textContent = data.count || 0;
         })
         .catch(() => {
           document.getElementById("report-count").textContent = "N/A";
@@ -444,7 +446,7 @@
       fetch("/api/high-severity-count")
         .then(res => res.json())
         .then(data => {
-          document.getElementById("critical-incident").innerText = data.highSeverityCount || 0;
+          document.getElementById("critical-incident").innerText = data.highSeverityCount;
         })
         .catch(err => console.error("Error:", err));
   
@@ -455,7 +457,6 @@
             const { total = 0, resolved = 0, percentage = 0 } = data;
 
             document.getElementById("report-count").textContent = total;
-            document.getElementById("critical-incident").textContent = 0; // If you don’t use this, consider removing it
             document.getElementById("resolvedCount").textContent = resolved;
             document.getElementById("totalCount").textContent = `/ ${total}`;
 

@@ -4,16 +4,12 @@ const app = express();
 const session = require('express-session');
 require('dotenv').config();
 const { Pool } = require('pg');
+const pgSession = require('connect-pg-simple')(session);
 const multer = require("multer");
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
 
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-const pgSession = require('connect-pg-simple')(session);
 // PostgreSQL connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -47,15 +43,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-
+// Improved session logging middleware
 app.use((req, res, next) => {
-  // Only log session for specific routes if needed
-  if (req.path.startsWith('/api')) {
-    (`[${new Date().toISOString()}] Session for ${req.path}:`, {
-      id: req.sessionID,
-      userId: req.session.user_id
+  // Log session data more clearly
+  console.log(`\n[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Session ID:', req.sessionID);
+  console.log('Full session data:', req.session);  // Log everything for debugging
+
+  // Check authentication status
+  if (req.session.user) {
+    console.log('Authenticated user:', {
+      id: req.session.user.id,
+      name: req.session.user.name,
+      isAdmin: req.session.user.isAdmin
     });
+  } else {
+    console.log('No authenticated user');
   }
+
   next();
 });
 
@@ -63,7 +68,7 @@ app.use((req, res, next) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, "../public/uploads");
-   if (!fs.existsSync(dir)) {
+    if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true }); // ✅ fixes the error
     }
     cb(null, dir);
@@ -147,8 +152,8 @@ app.post('/login', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT name, password_hash, user_id FROM users WHERE email = $1',
-      [email]
+      'SELECT user_id, name, password_hash FROM users WHERE email = $1',
+      [email.toLowerCase().trim()]
     );
 
     if (result.rows.length === 0) {
@@ -170,29 +175,37 @@ app.post('/login', async (req, res) => {
       }
 
       const isAdmin = email.endsWith('@ecotracker.pk');
-      
-      // Store user info in session
+
+      // Set session data
       req.session.user = {
         id: user.user_id,
-        email: email,
+        email: email.toLowerCase().trim(),
         name: user.name,
-        isAdmin: isAdmin
+        isAdmin: isAdmin,
+        authenticatedAt: new Date()
       };
 
       // Save session before sending response
       req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session error' });
+          return res.status(500).json({
+            success: false,
+            message: 'Login failed'
+          });
         }
+        console.log('User from DB:', user);
+        console.log('Calculated isAdmin:', isAdmin);
 
+        // Successful login response
         res.status(200).json({
           success: true,
-          message: "Logged in successfully", 
+          message: "Login successful",
           user: {
-            name: user.name,
             id: user.user_id,
-            isAdmin
+            name: user.name,
+            email: email.toLowerCase().trim(),
+            isAdmin: isAdmin
           }
         });
       });
@@ -208,7 +221,7 @@ app.post('/login', async (req, res) => {
 
 // Middleware to check if user is logged in
 function checkAuth(req, res, next) {
-  if (req.session.user_id) {
+  if (req.session.user.id) {
     next();
   } else {
     if (req.xhr || req.headers.accept?.includes('application/json')) {
@@ -219,19 +232,25 @@ function checkAuth(req, res, next) {
 }
 
 app.get("/api/check-session", (req, res) => {
-  if (req.session && req.session.user) {
-    res.json({ authenticated: true, user: req.session.user });
+  if (req.session.user) {
+    res.json({
+      authenticated: true,
+      user: req.session.user
+    });
   } else {
-    res.status(401).json({ authenticated: false });
+    res.status(401).json({
+      authenticated: false,
+      message: "Not authenticated"
+    });
   }
 });
 
 app.get('/api/check-auth', (req, res) => {
-  res.json({ isAuthenticated: !!req.session.user_id });
+  res.json({ isAuthenticated: !!req.session.user.id });
 });
 
 app.get('/check-session', (req, res) => {
-  if (req.session && req.session.user_id) {
+  if (req.session && req.session.user.id) {
     return res.json({ authenticated: true, email: req.session.user.email });
   } else {
     return res.json({ authenticated: false });
@@ -256,7 +275,7 @@ app.get('/admin-dashboard', isAdminMiddleware, (req, res) => {
 });
 
 function requireLogin(req, res, next) {
-  if (!req.session.user_id) {
+  if (!req.session.user.id) {
     return res.status(401).json({ error: 'Login required' });
   }
   next();
@@ -269,7 +288,7 @@ app.get('/api/reports', (req, res) => {
 });
 
 // Handle report submission
-app.post("/api/reports" , upload.single("image"), async (req, res) => {
+app.post("/api/reports", upload.single("image"), async (req, res) => {
   console.log("Session:", req.session);
 
   const {
@@ -283,7 +302,7 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
 
   console.log("Received POST /api/reports request");
   console.log("Body:", req.body);
-  console.log("File:", req.file); 
+  console.log("File:", req.file);
   // Input validation
   if (
     !title ||
@@ -306,7 +325,8 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
     }
   }
 
-  const user_id = anonymous ? null : req.session.user_id;
+  const user_id = anonymous ? null : req.session.user.id;
+
 
   // Generate unique report ID
   const report_id = uuidv4();
@@ -314,8 +334,8 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
   const created_at = new Date();
 
   if (!image_url) {
-  console.warn("⚠️ No image uploaded. req.file is:", req.file);
-}
+    console.warn("⚠️ No image uploaded. req.file is:", req.file);
+  }
   try {
     await pool.query(
       `INSERT INTO reports (
@@ -337,7 +357,11 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
       ]
     );
 
-    res.status(200).json({ success: true, message: "Report submitted successfully" });
+    res.status(200).json({
+      success: true,
+      message: "Report submitted successfully",
+      report_id: report_id
+    });
 
   } catch (error) {
     console.error("Database error:", error);
@@ -348,7 +372,7 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
 
 
 app.get('/api/session', (req, res) => {
-  if (req.session.user_id && req.session.name && req.session.email) {
+  if (req.session.user.id && req.session.name && req.session.email) {
     const { name, email } = req.session;
     res.json({
       name,
@@ -362,9 +386,9 @@ app.get('/api/session', (req, res) => {
 // Get report count
 app.get("/api/report-count", async (req, res) => {
   try {
-    const result = await pool.query("SELECT COUNT(report_id) FROM reports");
-   const count = result.rows[0].count;
-    res.json({ count: parseInt(count) }); // Send the count as a number
+    const result = await pool.query("SELECT COUNT(*) FROM reports");
+    const count = result.rows[0].count;
+    res.json({ count });
   } catch (error) {
     console.error("Error fetching report count:", error);
     res.status(500).json({ error: "Failed to fetch count" });
@@ -375,7 +399,7 @@ app.get("/api/report-count", async (req, res) => {
 app.get('/api/high-severity-count', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT COUNT(*) FROM reports WHERE LOWER(TRIM(severity_level)) = 'high'`
+      `SELECT COUNT(*) FROM reports WHERE severity_level ilike 'high'`
     );
     const count = parseInt(result.rows[0].count);
     res.json({ highSeverityCount: count });
@@ -389,28 +413,13 @@ app.get('/api/high-severity-count', async (req, res) => {
 app.get('/api/reportsPage', async (req, res) => {
   try {
     const result = await pool.query('SELECT *, severity_level AS severity  FROM reports ORDER BY created_at DESC');
-    res.json(result.rows); 
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching reports:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Search API - returns matching titles or IDs
-app.get('/api/search-reports', async (req, res) => {
-  const searchQuery = req.query.q;
-
-  try {
-    const result = await pool.query(
-     `SELECT distinct title FROM reports WHERE title ILIKE $1`,
-  [`%${searchQuery}%`]
-    );
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Search error:', error.message);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
 
 // users fetch in admin panel
 // GET all users from the database
@@ -463,7 +472,7 @@ app.get('/api/userRsvps', async (req, res) => {
 app.post('/api/rsvp', async (req, res) => {
   try {
     const { user_id, event_id } = req.body;
-     console.log("Incoming RSVP:", req.body); 
+    console.log("Incoming RSVP:", req.body);
     if (!user_id || !event_id) {
       return res.status(400).json({ error: "Missing user_id or event_id" }); // ✅ Always return
     }
@@ -530,7 +539,7 @@ app.get('/api/analytics', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Failed to fetch analytics data:', err);
+    console.error('Failed to fetch analytics data:', err);
     res.status(500).json({ error: 'Analytics query failed' });
   }
 });
@@ -550,7 +559,7 @@ app.get('/api/incidents', async (req, res) => {
     `;
 
     const values = [];
-    
+
     if (lat && lng) {
       query += ` AND l.latitude BETWEEN $${values.length + 1} AND $${values.length + 2}
                 AND l.longitude BETWEEN $${values.length + 3} AND $${values.length + 4}`;
@@ -568,7 +577,7 @@ app.get('/api/incidents', async (req, res) => {
     }
 
     const result = await pool.query(query, values);
-    
+
     // Always return an array, even if empty
     res.json(result.rows || []);
 
@@ -628,7 +637,7 @@ app.post('/api/events', async (req, res) => {
 app.get('/api/eventsFetch', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM events ORDER BY date DESC');
-    res.json(result.rows); 
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching reports:', error.message);
     res.status(500).json({ error: 'Server error' });
@@ -638,7 +647,7 @@ app.get('/api/eventsFetch', async (req, res) => {
 app.get("/api/events-count", async (req, res) => {
   try {
     const result = await pool.query("SELECT COUNT(id) FROM events");
-   const count = result.rows[0].count;
+    const count = result.rows[0].count;
     res.json({ count: parseInt(count) }); // Send the count as a number
   } catch (error) {
     console.error("Error fetching report count:", error);
@@ -650,7 +659,7 @@ app.get("/api/events-count", async (req, res) => {
 app.get('/api/reports-feed', async (req, res) => {
   try {
     const userId = req.session.user_id; // Get current user ID
-    
+
     const result = await pool.query(`
       SELECT 
         r.report_id,
@@ -675,7 +684,7 @@ app.get('/api/reports-feed', async (req, res) => {
       GROUP BY r.report_id, u.name, u.avatar, l.neighborhood, c.name, r.image_url, r.created_at, r.is_anonymous, r.report_status
       ORDER BY r.created_at DESC;
     `, [userId]);
-    
+
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -713,8 +722,8 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
     `, [reportId]);
 
     await pool.query('COMMIT');
-    
-    res.json({ 
+
+    res.json({
       success: true,
       upvotes: rows[0].upvotes || 0,
       downvotes: rows[0].downvotes || 0,
@@ -731,21 +740,21 @@ app.post('/api/reports/:id/vote', requireLogin, async (req, res) => {
 app.post('/api/updateUser', async (req, res) => {
   try {
     const { user_id, name, email, password } = req.body;
-    
+
     // Validate input
     if (!user_id || !name || !email) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    
+
     // Update logic here
     const userCheck = await pool.query('SELECT * FROM users WHERE user_id = $1', [user_id]);
     if (userCheck.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
-     let updateQuery;
+
+    let updateQuery;
     let queryParams;
-    
+
     if (password) {
       // Store password directly (assuming it's already hashed or you want plain text)
       updateQuery = `
@@ -762,11 +771,11 @@ app.post('/api/updateUser', async (req, res) => {
         RETURNING user_id, name, email`;
       queryParams = [name, email, user_id];
     }
-    
+
     const result = await pool.query(updateQuery, queryParams);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       user: result.rows[0],
       message: 'User updated successfully'
     });
@@ -877,7 +886,7 @@ app.get('/api/moderate-reports', requireAdmin, async (req, res) => {
       WHERE r.report_status IN ('reported', 'inreview')
       ORDER BY r.created_at DESC;
     `);
-    
+
     res.json(result.rows);
   } catch (err) {
     console.error('Moderation reports error:', err);
@@ -911,7 +920,7 @@ app.post('/api/reports/:id/status', requireAdmin, async (req, res) => {
 function requireAdmin(req, res, next) {
   console.log('requireAdmin called');
   console.log('req.session:', req.session);
-  if (!req.session || !req.session.isAdmin) {
+  if (!req.session.user || !req.session.user.isAdmin) {
     console.log('Admin access denied');
     return res.status(403).json({ error: 'Admin access required' });
   }
@@ -995,9 +1004,9 @@ app.post('/api/upload-profile-picture', upload.single('profile'), async (req, re
 // Comment Routes
 app.get('/api/reports/:reportId/comments', async (req, res) => {
   try {
-      const { reportId } = req.params;
-      
-      const result = await pool.query(`
+    const { reportId } = req.params;
+
+    const result = await pool.query(`
           SELECT 
               c.comment_id,
               c.report_id,
@@ -1011,47 +1020,47 @@ app.get('/api/reports/:reportId/comments', async (req, res) => {
           WHERE c.report_id = $1
           ORDER BY c.created_at DESC
       `, [reportId]);
-      
-      res.json(result.rows);
+
+    res.json(result.rows);
   } catch (err) {
-      console.error('Error fetching comments:', err);
-      res.status(500).json({ error: 'Failed to fetch comments' });
+    console.error('Error fetching comments:', err);
+    res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
 
 app.post('/api/reports/:reportId/comments', async (req, res) => {
   try {
-      const { reportId } = req.params;
-      const { content } = req.body;
-      const userId = req.session.userId;
-      console.log('Session:', req.session);
-      if (!userId) {
-        return res.status(401).json({ error: 'Unauthorized: User not logged in' });
-      }
-      
-      if (!content || content.trim() === '') {
-          return res.status(400).json({ error: 'Comment content is required' });
-      }
-      
-      const result = await pool.query(`
+    const { reportId } = req.params;
+    const { content } = req.body;
+    const userId = req.session.userId;
+    console.log('Session:', req.session);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized: User not logged in' });
+    }
+
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ error: 'Comment content is required' });
+    }
+
+    const result = await pool.query(`
           INSERT INTO comments (report_id, user_id, content)
           VALUES ($1, $2, $3)
           RETURNING *,
               (SELECT name FROM users WHERE user_id = $2) AS user_name,
               (SELECT COALESCE(avatar, '/default-avatar.png') FROM users WHERE user_id = $2) AS user_image
       `, [reportId, userId, content.trim()]);
-      
-      // Update comment count in reports table
-      await pool.query(`
+
+    // Update comment count in reports table
+    await pool.query(`
           UPDATE reports 
           SET comment_count = comment_count + 1
           WHERE report_id = $1
       `, [reportId]);
-      
-      res.status(201).json(result.rows[0]);
+
+    res.status(201).json(result.rows[0]);
   } catch (err) {
-      console.error('Error creating comment:', err);
-      res.status(500).json({ error: 'Failed to create comment' });
+    console.error('Error creating comment:', err);
+    res.status(500).json({ error: 'Failed to create comment' });
   }
 });
 
@@ -1063,22 +1072,20 @@ app.get('/api/report-stats', async (req, res) => {
     const totalQuery = await pool.query(`
       SELECT COUNT(*) as count 
       FROM reports
-      WHERE is_anonymous = false
     `);
-    
+
     // Get resolved reports count
     const resolvedQuery = await pool.query(`
       SELECT COUNT(*) as count 
       FROM reports 
       WHERE report_status = 'Resolved' 
-      AND is_anonymous = false
     `);
 
     const total = parseInt(totalQuery.rows[0]?.count || 0);
     const resolved = parseInt(resolvedQuery.rows[0]?.count || 0);
     const percentage = total > 0 ? Math.round((resolved / total) * 100) : 0;
 
-    res.json({ 
+    res.json({
       success: true,
       total,
       resolved,
@@ -1086,10 +1093,10 @@ app.get('/api/report-stats', async (req, res) => {
     });
   } catch (err) {
     console.error('Stats fetch error:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       error: 'Failed to fetch stats',
-      details: err.message 
+      details: err.message
     });
   }
 });

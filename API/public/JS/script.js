@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch("/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          method: 'POST',
+          credentials: 'include', // Required for cookies
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: loginemail.value.trim(),
             password_hash: loginpassword.value.trim(),
@@ -29,13 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (response.ok) {
-          localStorage.setItem("userEmail", loginemail.value);
-          localStorage.setItem("userName", data.name);
-          localStorage.setItem("isAdmin", data.isAdmin);
-         localStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("userEmail", data.user.email);
+          localStorage.setItem("userName", data.user.name);
+          localStorage.setItem("isAdmin", data.user.isAdmin);
+          localStorage.setItem("user_id", data.user.id);
           window.location.href = "index.html";
         }
-         else {
+        else {
           alert(data.message);
         }
       } catch (err) {
@@ -97,5 +97,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // events js
- 
+
 
