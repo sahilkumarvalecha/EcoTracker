@@ -40,18 +40,6 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    store: new pgSession({
-      pool: Pool, // your PG pool
-    }),
-    secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }, // adjust for HTTPS
-  })
-);
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -231,16 +219,10 @@ function checkAuth(req, res, next) {
 }
 
 app.get("/api/check-session", (req, res) => {
-  if (req.session.user) {
-    res.json({ 
-      authenticated: true, 
-      user: req.session.user 
-    });
+  if (req.session && req.session.user) {
+    res.json({ authenticated: true, user: req.session.user });
   } else {
-    res.status(401).json({ 
-      authenticated: false,
-      message: "Not authenticated"
-    });
+    res.status(401).json({ authenticated: false });
   }
 });
 
@@ -323,9 +305,8 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
       return res.status(401).json({ error: "You must be logged in to submit a non-anonymous report." });
     }
   }
-  
-  const user_id = anonymous ? null : req.session.user.id;
-  
+
+  const user_id = anonymous ? null : req.session.user_id;
 
   // Generate unique report ID
   const report_id = uuidv4();
@@ -356,11 +337,7 @@ app.post("/api/reports" , upload.single("image"), async (req, res) => {
       ]
     );
 
-    res.status(200).json({ 
-      success: true, 
-      message: "Report submitted successfully",
-      report_id: report_id
-    });
+    res.status(200).json({ success: true, message: "Report submitted successfully" });
 
   } catch (error) {
     console.error("Database error:", error);
