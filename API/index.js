@@ -24,7 +24,7 @@ app.use(
       tableName: 'user_sessions' // Optional custom table name
     }),
     name: "connect.sid",
-    secret: process.env.SESSION_SECRET || "your-secret-key", // Use env variable
+    secret: "your-secret-key", // Use env variable
     resave: false,
     saveUninitialized: false,
     cookie: {
