@@ -747,6 +747,17 @@ app.get('/api/user/:id', async (req, res) => {
   }
 });
 
+// GET all users from the database
+app.get('/api/usersLoad', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM users');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching users:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // delete user
 // DELETE a user by ID
 app.delete('/api/users/:user_id', async (req, res) => {

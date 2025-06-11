@@ -1,0 +1,98 @@
+----------------------------------DATABASE SCHEMA------------------------------------------------
+
+CREATE TABLE categories (
+  category_id serial PRIMARY KEY,
+  name TEXT NOT NULL,
+  color_code TEXT
+);
+
+CREATE TABLE events (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255),
+  location VARCHAR(255),
+  status VARCHAR(50),
+  date DATE
+);
+
+CREATE TABLE locations (
+  location_id SERIAL PRIMARY KEY,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
+  address TEXT,
+  neighborhood TEXT
+);
+
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  is_anonymous BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  reports_submitted INTEGER,
+  badges TEXT[],
+  reports_count INTEGER,
+  avatar TEXT
+);
+
+CREATE TABLE reports (
+  report_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id INTEGER REFERENCES users(user_id),
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  category_id INTEGER NOT NULL REFERENCES categories(category_id),
+  location_id INTEGER NOT NULL REFERENCES locations(location_id),
+  image_url TEXT,
+  is_anonymous BOOLEAN DEFAULT false,
+  severity_level TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  report_status TEXT DEFAULT 'reported',
+  comment_count INTEGER DEFAULT 0
+);
+
+CREATE TABLE comments (
+  comment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  report_id UUID NOT NULL REFERENCES reports(report_id),
+  user_id INTEGER NOT NULL REFERENCES users(user_id),
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE report_votes (
+  vote_id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(user_id),
+  report_id UUID NOT NULL REFERENCES reports(report_id),
+  vote_type SMALLINT NOT NULL, -- -1 or 1
+  created_at TIMESTAMP DEFAULT now(),
+  UNIQUE (user_id, report_id)
+);
+
+CREATE TABLE chats (
+  id SERIAL PRIMARY KEY,
+  area VARCHAR(50),
+  message TEXT,
+  is_user BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT now(),
+  user_id INTEGER REFERENCES users(user_id)
+);
+
+CREATE TABLE rsvp (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(user_id),
+  event_id INTEGER NOT NULL REFERENCES events(id),
+  rsvp_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_sessions (
+  sid VARCHAR PRIMARY KEY,
+  sess JSON NOT NULL,
+  expire TIMESTAMP NOT NULL
+);
+
+CREATE TABLE contact_messages (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(150) NOT NULL,
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  received_at TIMESTAMP DEFAULT now()
+);
