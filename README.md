@@ -139,8 +139,3 @@ Uploading Eco Tracker - Made with Clipchamp (1).mp4…
 This project is open-source and available under the [MIT License](LICENSE).
 
 ```
-
----
-
-Let me know if you’d like a version with images, demo links, or if you want help writing the screen-recording script for GitHub or LinkedIn!
-```
