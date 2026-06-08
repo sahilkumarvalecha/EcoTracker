@@ -484,7 +484,8 @@ app.get('/api/incidents', async (req, res) => {
   try {
     let query = `
       SELECT r.report_id, r.title, c.name AS category, 
-             l.latitude, l.longitude, l.neighborhood
+       l.latitude, l.longitude, l.neighborhood,
+       r.severity_level AS severity
       FROM reports r
       JOIN categories c ON r.category_id = c.category_id
       JOIN locations l ON r.location_id = l.location_id
@@ -847,6 +848,23 @@ app.get('/api/moderate-reports', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Moderation reports error:', err);
     res.status(500).json({ error: "Failed to fetch reports for moderation" });
+  }
+});
+
+// Moderate Reports Stats
+app.get('/api/moderate-stats', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE report_status = 'reported') AS pending,
+        COUNT(*) FILTER (WHERE report_status = 'inreview') AS inreview,
+        COUNT(*) FILTER (WHERE report_status = 'Resolved' AND DATE(created_at) = CURRENT_DATE) AS resolved_today
+      FROM reports
+    `);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Moderate stats error:', err);
+    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
