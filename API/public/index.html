@@ -193,7 +193,7 @@
   <style>
     #sos-float-btn {
       position: fixed;
-     bottom: 90px;
+      bottom: 90px;
       right: 28px;
       z-index: 9999;
       width: 70px;
@@ -666,6 +666,11 @@
             low: { bg: 'green-100', text: 'green-800' }
           };
 
+          data.sort((a, b) => {
+            const order = { high: 1, medium: 2, low: 3 };
+            return (order[a.severity_level?.toLowerCase()] || 4) - (order[b.severity_level?.toLowerCase()] || 4);
+          });
+
           data.forEach(report => {
             const category = getCategoryInfo(report.title);
             const severity = ['high', 'medium', 'low'].includes(report.severity?.toLowerCase()) ? report.severity.toLowerCase() : 'medium';
@@ -782,15 +787,28 @@
           document.getElementById('sos-default').style.display = 'none';
           document.getElementById('sos-success').style.display = 'block';
         } else {
-          status.textContent = '❌ Failed. Please try again.';
+          status.textContent = ' Failed. Please try again.';
           btn.disabled = false;
         }
       } catch (err) {
-        status.textContent = '❌ Network error. Please try again.';
+        status.textContent = ' Network error. Please try again.';
         btn.disabled = false;
       }
     }
   </script>
+
+<!-- real time notification -->
+  <script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  socket.on('new-alert', (data) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:fixed;top:20px;right:20px;background:#dc2626;color:white;padding:16px 24px;border-radius:12px;z-index:99999;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+    div.innerHTML = '🚨 New High Alert: ' + data.title;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 5000);
+  });
+</script>
 </body>
 
 </html>

@@ -1,6 +1,10 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const io = new Server(server);
 const session = require('express-session');
 require('dotenv').config();
 const { Pool } = require('pg');
@@ -318,6 +322,10 @@ app.post("/api/reports", upload.single("image"), async (req, res) => {
       ]
     );
 
+     if (severity_level === 'High') {
+      io.emit('new-alert', { title, severity_level });
+    }
+    
     res.status(200).json({
       success: true,
       message: "Report submitted successfully",
@@ -372,14 +380,13 @@ app.get('/api/high-severity-count', async (req, res) => {
 // reports from database
 app.get('/api/reportsPage', async (req, res) => {
   try {
-    const result = await pool.query('SELECT *, severity_level AS severity  FROM reports ORDER BY created_at DESC');
+    const result = await pool.query(`SELECT *, severity_level AS severity FROM reports ORDER BY CASE severity_level WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END ASC, created_at DESC`);
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching reports:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 // logout
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
@@ -407,7 +414,7 @@ app.get('/api/userRsvps', async (req, res) => {
   try {
     const query = 'SELECT event_id FROM rsvp WHERE user_id = $1';
     const result = await pool.query(query, [userId]);
-    res.json(result.rows); 
+    res.json(result.rows);
   } catch (err) {
     console.error('Fetch RSVP error:', err);
     res.status(500).json({ error: 'Server error fetching RSVPs' });
@@ -431,10 +438,10 @@ app.post('/api/rsvp', async (req, res) => {
 
     const insertQuery = 'INSERT INTO rsvp (user_id, event_id) VALUES ($1, $2)';
     await pool.query(insertQuery, [user_id, event_id]);
-    return res.json({ success: true }); 
+    return res.json({ success: true });
   } catch (err) {
     console.error("RSVP error:", err);
-    return res.status(500).json({ error: "Database error" }); 
+    return res.status(500).json({ error: "Database error" });
   }
 });
 
@@ -628,7 +635,7 @@ app.get('/api/reports-feed', async (req, res) => {
       LEFT JOIN categories c ON r.category_id = c.category_id
       LEFT JOIN report_votes rv ON r.report_id = rv.report_id
       GROUP BY r.report_id, u.name, u.avatar, l.neighborhood, c.name, r.image_url, r.created_at, r.is_anonymous, r.report_status
-      ORDER BY r.created_at DESC;
+      ORDER BY CASE r.severity_level WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END ASC, r.created_at DESC;
     `, [userId]);
 
     res.json(result.rows);
@@ -841,7 +848,14 @@ app.get('/api/moderate-reports', requireAdmin, async (req, res) => {
       LEFT JOIN locations l ON r.location_id = l.location_id
       LEFT JOIN categories c ON r.category_id = c.category_id
       WHERE r.report_status IN ('reported', 'inreview')
-      ORDER BY r.created_at DESC;
+      ORDER BY 
+  CASE r.severity_level 
+    WHEN 'High' THEN 1 
+    WHEN 'Medium' THEN 2 
+    WHEN 'Low' THEN 3 
+    ELSE 4 
+  END ASC,
+  r.created_at DESC;
     `);
 
     res.json(result.rows);
@@ -917,7 +931,7 @@ app.get('/api/analytics-data', async (req, res) => {
       JOIN categories c ON r.category_id = c.category_id
       JOIN locations l ON r.location_id = l.location_id
       WHERE r.report_status != 'deleted'
-      ORDER BY r.created_at DESC
+      ORDER BY CASE r.severity_level WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END ASC, r.created_at DESC
     `;
 
     const { rows } = await pool.query(query);
@@ -1016,7 +1030,7 @@ app.post('/api/reports/:reportId/comments', async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error creating comment:', err);
-    res.status(500).json({ error: 'Failed to create comment', details: err.message});
+    res.status(500).json({ error: 'Failed to create comment', details: err.message });
   }
 });
 
@@ -1071,7 +1085,7 @@ app.post('/api/sos', async (req, res) => {
     let neighborhood = 'Unknown Area';
     try {
       const geoRes = await fetch(
-       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=en`,
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=en`,
         { headers: { 'User-Agent': 'EcoTracker-SOS/1.0' } }
       );
       const geoData = await geoRes.json();
@@ -1137,7 +1151,6 @@ app.post('/api/sos', async (req, res) => {
 // ========================================================
 
 // user reports
-// User ke apne reports
 app.get('/api/reportsSubmit', async (req, res) => {
   const { userId } = req.query;
   if (!userId) return res.status(400).json({ error: 'userId required' });
@@ -1152,9 +1165,10 @@ app.get('/api/reportsSubmit', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 // Start the server
 const PORT = process.env.PORT || 5055;
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
   console.log(`connected successfully....on port ${PORT}`);
   const { default: open } = await import('open');
   open(`http://localhost:${PORT}`);
