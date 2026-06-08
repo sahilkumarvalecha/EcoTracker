@@ -1135,6 +1135,23 @@ app.post('/api/sos', async (req, res) => {
   }
 });
 // ========================================================
+
+// user reports
+// User ke apne reports
+app.get('/api/reportsSubmit', async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) return res.status(400).json({ error: 'userId required' });
+  try {
+    const result = await pool.query(
+      `SELECT title, report_status FROM reports WHERE user_id = $1 ORDER BY created_at DESC`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching user reports:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 // Start the server
 const PORT = process.env.PORT || 5055;
 app.listen(PORT, async () => {

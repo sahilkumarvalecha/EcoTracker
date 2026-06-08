@@ -356,7 +356,7 @@
         // Set user display names and email
         if (sidebarName) sidebarName.textContent = userName;
         if (profileName) profileName.textContent = userName;
-        if (profileEmail) profileEmail.textContent = "Email: " + userEmail;
+        if (profileEmail) profileEmail.textContent = "Email: " + (userEmail && userEmail !== 'null' ? userEmail : 'Not provided');
         if (userNameSpan) userNameSpan.textContent = userName;
 
 

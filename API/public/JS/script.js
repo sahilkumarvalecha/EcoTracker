@@ -81,10 +81,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (response.ok) {
           alert(data.message);
-          localStorage.setItem("userName", signupname.value);
-          window.location.href = "login.html";
-        } else {
-          alert(data.message || "Signup failed");
+          // Auto login after signup
+          const loginRes = await fetch("/login", {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: signupemail.value.trim(),
+              password_hash: signuppassword.value.trim(),
+            }),
+          });
+          const loginData = await loginRes.json();
+          if (loginRes.ok) {
+            localStorage.setItem("userEmail", loginData.user.email);
+            localStorage.setItem("userName", loginData.user.name);
+            localStorage.setItem("isAdmin", loginData.user.isAdmin);
+            localStorage.setItem("user_id", loginData.user.id);
+            window.location.href = "index.html";
+          } else {
+            window.location.href = "login.html";
+          }
         }
       } catch (error) {
         console.error(error);
