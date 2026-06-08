@@ -95,20 +95,13 @@ npm start
 
 ## 🙌 Credits
 
-### 👨‍💻 Developers:
+### 🤝 Hackathon Contributors:
 
 * **Sahil Kumar Valecha**
 * **Saleena Ahuja**
+* **Shivani**
+* **Aarian Kumar**
 
-### 🤝 Initial Hackathon Contributors:
-
-* Muhammad Muneeb
-* Mahkash Thourani
-
-### 🎓 Mentors:
-
-* **Sir Usama Khalid**
-* **Sir Abid Ali**
 
 ---
 
