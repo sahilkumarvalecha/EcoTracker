@@ -130,6 +130,26 @@
             letter-spacing: 0.05em;
         }
 
+        /* SOS Emergency Card */
+        .sos-card {
+            border: 2px solid #EF4444 !important;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%) !important;
+            animation: sosGlow 2s ease-in-out infinite;
+        }
+        @keyframes sosGlow {
+            0%, 100% { box-shadow: 0 0 8px rgba(239,68,68,0.3); }
+            50% { box-shadow: 0 0 20px rgba(239,68,68,0.6); }
+        }
+        .sos-badge {
+            background: #EF4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            animation: pulse 1s infinite;
+        }
+
         /* Admin badge style */
         .admin-badge {
             font-size: 0.65rem;
@@ -363,7 +383,14 @@
 
             createReportCard(report) {
                 const card = document.createElement('div');
-                card.className = 'report-card bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow';
+                const isSOS = report.title && report.title.includes('EMERGENCY SOS');
+                card.className = `report-card bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow ${isSOS ? 'sos-card' : ''}`;
+                if (isSOS) {
+                  const sosBanner = document.createElement('div');
+                  sosBanner.className = 'flex items-center gap-2 mb-4 p-3 bg-red-50 rounded-lg border border-red-200';
+                  sosBanner.innerHTML = `<span class="sos-badge">🚨 EMERGENCY SOS</span><span class="text-red-700 font-semibold text-sm">Requires Immediate Attention!</span>`;
+                  card.prepend(sosBanner);
+                }
                 card.innerHTML = this.generateReportCardHTML(report);
                 return card;
             }
@@ -657,6 +684,7 @@
             }
         });
     </script>
+<script src="/JS/lang.js"></script>
 </body>
 
 </html>

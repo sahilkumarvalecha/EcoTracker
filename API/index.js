@@ -1039,6 +1039,88 @@ app.get('/api/report-stats', async (req, res) => {
   }
 });
 
+// ==================== EMERGENCY SOS ====================
+app.post('/api/sos', async (req, res) => {
+  const { latitude, longitude } = req.body;
+
+  if (!latitude || !longitude) {
+    return res.status(400).json({ error: 'Location is required for SOS' });
+  }
+
+  try {
+    // --- Step 1: Reverse geocode to get real area name ---
+    let areaName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    let neighborhood = 'Unknown Area';
+    try {
+      const geoRes = await fetch(
+       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=en`,
+        { headers: { 'User-Agent': 'EcoTracker-SOS/1.0' } }
+      );
+      const geoData = await geoRes.json();
+      if (geoData && geoData.address) {
+        const a = geoData.address;
+        neighborhood = a.suburb || a.neighbourhood || a.quarter || a.district || a.city_district || a.city || 'Unknown Area';
+        areaName = [a.road, neighborhood, a.city || a.town].filter(Boolean).join(', ');
+      }
+    } catch (geoErr) {
+      console.warn('Reverse geocoding failed:', geoErr.message);
+    }
+
+    // --- Step 2: Ensure "Emergency" category exists ---
+    let emergencyCategoryId;
+    const catCheck = await pool.query(
+      `SELECT category_id FROM categories WHERE name ILIKE 'Emergency' LIMIT 1`
+    );
+    if (catCheck.rows.length > 0) {
+      emergencyCategoryId = catCheck.rows[0].category_id;
+    } else {
+      const newCat = await pool.query(
+        `INSERT INTO categories (name, color_code) VALUES ('Emergency', '#dc2626') RETURNING category_id`
+      );
+      emergencyCategoryId = newCat.rows[0].category_id;
+    }
+
+    // --- Step 3: Insert real location ---
+    const locResult = await pool.query(
+      `INSERT INTO locations (latitude, longitude, address, neighborhood)
+       VALUES ($1, $2, $3, $4) RETURNING location_id`,
+      [latitude, longitude, areaName, neighborhood]
+    );
+    const location_id = locResult.rows[0].location_id;
+
+    // --- Step 4: Get user_id from session ---
+    const user_id = (req.session && req.session.user) ? req.session.user.id : null;
+
+    // --- Step 5: Insert SOS report ---
+    const report_id = require('crypto').randomUUID();
+    await pool.query(
+      `INSERT INTO reports (
+        report_id, user_id, title, description,
+        category_id, location_id,
+        is_anonymous, severity_level, created_at, report_status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        report_id, user_id,
+        '🚨 EMERGENCY SOS',
+        `Emergency SOS alert from ${areaName}. Immediate assistance required!`,
+        emergencyCategoryId,
+        location_id,
+        user_id ? false : true,
+        'High', new Date(), 'reported'
+      ]
+    );
+
+    res.status(200).json({ success: true, message: 'SOS alert sent to admin!', report_id, location: areaName });
+  } catch (error) {
+    console.error('SOS error:', error);
+    res.status(500).json({ error: 'Failed to send SOS' });
+  }
+});
+// ========================================================
 // Start the server
 const PORT = process.env.PORT || 5055;
-app.listen(PORT, () => console.log(`connected successfully....on port ${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`connected successfully....on port ${PORT}`);
+  const { default: open } = await import('open');
+  open(`http://localhost:${PORT}`);
+});

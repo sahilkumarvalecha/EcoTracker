@@ -85,14 +85,20 @@
       border-radius: 4px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
-    @keyframes progressFill {
-  from { width: 0%; }
-  to { width: var(--target-width); }
-}
 
-.animate-progress {
-  animation: progressFill 1.5s ease-out forwards;
-}
+    @keyframes progressFill {
+      from {
+        width: 0%;
+      }
+
+      to {
+        width: var(--target-width);
+      }
+    }
+
+    .animate-progress {
+      animation: progressFill 1.5s ease-out forwards;
+    }
 
     @media (max-width: 768px) {
       .sidebar {
@@ -183,6 +189,130 @@
       }
     }
   </style>
+  <!-- ========== FLOATING SOS BUTTON ========== -->
+  <style>
+    #sos-float-btn {
+      position: fixed;
+     bottom: 90px;
+      right: 28px;
+      z-index: 9999;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+      font-weight: 900;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+      animation: sosPulse 2s infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      transition: transform 0.15s;
+    }
+
+    #sos-float-btn:hover {
+      transform: scale(1.1);
+    }
+
+    #sos-float-btn:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes sosPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 18px rgba(220, 38, 38, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+      }
+    }
+
+    #sos-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #sos-overlay.show {
+      display: flex;
+    }
+
+    #sos-modal {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+      animation: modalPop 0.25s ease;
+    }
+
+    @keyframes modalPop {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    #sos-status {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: #6b7280;
+      min-height: 22px;
+    }
+
+    #sos-confirm-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    #sos-confirm-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    #sos-cancel-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: none;
+      color: #6b7280;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+  </style>
+
+
+  <!-- ========== END SOS ========== -->
 </head>
 
 <body class="min-h-screen flex bg-gray-100">
@@ -197,7 +327,7 @@
 
 
     <!-- Sidebar -->
-  <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
+    <aside class="w-64 bg-white text-gray-700 flex flex-col border-r shadow-sm sidebar">
       <div class="p-4 text-xl font-bold border-b border-green-100 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fas fa-leaf text-green-500"></i>
@@ -255,7 +385,8 @@
         </div>
       </nav>
       <div class="p-4 border-t border-gray-100">
-        <a href="/login.html" id="user-link" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+        <a href="/login.html" id="user-link"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
           <i class="fas fa-user-circle w-5 text-center text-green-500"></i>
           <span id="user-name-text" class="flex-1">Sign In / Sign Up</span>
           <i class="fas fa-chevron-right text-xs text-gray-400"></i>
@@ -321,8 +452,10 @@
           <div id="healthCard" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card">
             <div class="flex items-start space-x-4">
               <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div class="flex-1">
@@ -333,90 +466,124 @@
                   <span id="percentageText" class="text-sm font-medium text-blue-600 ml-2">(0%)</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-3">
-                  <div id="progressFill" 
-                       class="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-out" 
-                       style="width: 0%"></div>
+                  <div id="progressFill" class="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                    style="width: 0%"></div>
                 </div>
                 <p id="progressMessage" class="text-sm text-gray-500 mt-2">Loading report statistics...</p>
               </div>
             </div>
-            </div>
-            <a href="/analytics.html"
-              class="mt-4 inline-block text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
-              <span>See Details</span>
-              <i class="fas fa-chevron-right text-xs"></i>
-            </a>
           </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 card">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="font-semibold text-xl text-gray-800">Recent Activity</h2>
-            <a href="/Reports.html"
-              class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View All</a>
-          </div>
-          <div id="event-list" class="flex flex-wrap gap-3">
-            <!-- Reports will be loaded here -->
-          </div>
+          <a href="/analytics.html"
+            class="mt-4 inline-block text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1 transition-colors">
+            <span>See Details</span>
+            <i class="fas fa-chevron-right text-xs"></i>
+          </a>
         </div>
       </div>
-    </main>
+
+      <!-- Recent Activity -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 card">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="font-semibold text-xl text-gray-800">Recent Activity</h2>
+          <a href="/Reports.html" class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">View
+            All</a>
+        </div>
+        <div id="event-list" class="flex flex-wrap gap-3">
+          <!-- Reports will be loaded here -->
+        </div>
+      </div>
   </div>
+  </main>
+  </div>
+
+  <!--  sos  -->
+  <button id="sos-float-btn" onclick="openSOSModal()" title="Emergency SOS">
+    <i class="fas fa-exclamation-triangle" style="font-size:1.3rem;"></i>
+    <span style="font-size:0.7rem;">SOS</span>
+  </button>
+
+  <div id="sos-overlay">
+    <div id="sos-modal">
+      <div id="sos-default">
+        <div
+          style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <i class="fas fa-exclamation-triangle" style="font-size:1.8rem;color:#dc2626;"></i>
+        </div>
+        <h2 style="font-size:1.4rem;font-weight:800;color:#111827;margin-bottom:6px;">Emergency SOS</h2>
+        <p style="color:#6b7280;font-size:0.92rem;">Your GPS location will be sent to admin immediately. Use only in
+          real emergencies.</p>
+        <p id="sos-status">📍 Ready to detect your location...</p>
+        <button id="sos-confirm-btn" onclick="sendSOS()">🚨 Send Emergency Alert</button>
+        <button id="sos-cancel-btn" onclick="closeSOSModal()">Cancel</button>
+      </div>
+      <div id="sos-success" style="display:none;">
+        <div
+          style="width:64px;height:64px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <i class="fas fa-check-circle" style="font-size:1.8rem;color:#059669;"></i>
+        </div>
+        <h2 style="font-size:1.4rem;font-weight:800;color:#111827;margin-bottom:6px;">Alert Sent!</h2>
+        <p style="color:#6b7280;font-size:0.92rem;">Your emergency alert with location has been sent to admin.</p>
+        <button onclick="closeSOSModal()"
+          style="margin-top:20px;width:100%;padding:12px;background:#059669;color:white;font-weight:700;border:none;border-radius:12px;cursor:pointer;">OK,
+          Close</button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       console.log('Stored userName:', localStorage.getItem('userName'));
-console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
+      console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
       // Sidebar toggle
       const mobileMenuButton = document.getElementById('mobile-menu-button');
       const sidebarOverlay = document.getElementById('sidebar-overlay');
       const closeSidebarButton = document.getElementById('close-sidebar');
       const sidebar = document.getElementById('sidebar');
-  
+
       function toggleSidebar() {
         sidebar.classList.toggle('-translate-x-full');
         sidebarOverlay.classList.toggle('hidden');
       }
-  
+
       mobileMenuButton?.addEventListener('click', toggleSidebar);
       sidebarOverlay?.addEventListener('click', toggleSidebar);
       closeSidebarButton?.addEventListener('click', toggleSidebar);
-  
+
       // User Authentication & Info
       const userName = localStorage.getItem("userName");
       const userEmail = localStorage.getItem("userEmail");
       const isAdmin = localStorage.getItem("isAdmin") === "true";
-  
+
       if (!userName) {
         window.location.href = "login.html";
         return;
       }
-  
+
       const userLink = document.getElementById("user-link");
       const userNameSpan = document.getElementById("user-name-text");
       const adminItems = document.querySelectorAll(".admin-only");
-  
+
       if (userName) {
         userNameSpan.textContent = userName;
         userLink.href = "account.html";
       }
-  
+
       // Admin enhancements
       if (isAdmin) {
         console.log("Admin logged in - expanding sidebar");
-  
+
         sidebar?.classList.remove("w-64");
         sidebar?.classList.add("w-72", "shadow-lg");
-  
+
         adminItems.forEach(item => item.style.display = "block");
-  
+
         const adminBadge = document.createElement("span");
         adminBadge.className = "ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full";
         adminBadge.textContent = "Admin";
         userNameSpan?.parentNode.appendChild(adminBadge);
       }
-  
+
       // Logout button
       if (userLink?.parentNode) {
         const logoutBtn = document.createElement("button");
@@ -431,7 +598,7 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
         });
         userLink.parentNode.appendChild(logoutBtn);
       }
-  
+
       // Report Count
       fetch("http://localhost:5055/api/report-count")
         .then(res => res.json())
@@ -441,7 +608,7 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
         .catch(() => {
           document.getElementById("report-count").textContent = "N/A";
         });
-  
+
       // High Severity Reports Count
       fetch("/api/high-severity-count")
         .then(res => res.json())
@@ -449,28 +616,28 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
           document.getElementById("critical-incident").innerText = data.highSeverityCount;
         })
         .catch(err => console.error("Error:", err));
-  
+
       // Report Stats
       fetch("/api/report-stats")
         .then(res => res.json())
         .then(data => {
-            const { total = 0, resolved = 0, percentage = 0 } = data;
+          const { total = 0, resolved = 0, percentage = 0 } = data;
 
-            document.getElementById("report-count").textContent = total;
-            document.getElementById("resolvedCount").textContent = resolved;
-            document.getElementById("totalCount").textContent = `/ ${total}`;
+          document.getElementById("report-count").textContent = total;
+          document.getElementById("resolvedCount").textContent = resolved;
+          document.getElementById("totalCount").textContent = `/ ${total}`;
 
-            document.getElementById("percentageText").textContent = `(${percentage}%)`;
-            document.getElementById("progressFill").style.width = `${percentage}%`;
-            document.getElementById("progressMessage").textContent =
-              percentage === 100
-                ? "All reports resolved!"
-                : `${resolved} of ${total} reports resolved`;
-          })
+          document.getElementById("percentageText").textContent = `(${percentage}%)`;
+          document.getElementById("progressFill").style.width = `${percentage}%`;
+          document.getElementById("progressMessage").textContent =
+            percentage === 100
+              ? "All reports resolved!"
+              : `${resolved} of ${total} reports resolved`;
+        })
         .catch(() => {
           document.getElementById("progressMessage").textContent = "Failed to load report statistics.";
         });
-  
+
       // Load Reports
       async function loadReports() {
         const container = document.getElementById('event-list');
@@ -478,12 +645,12 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
           const res = await fetch('/api/reportsPage');
           const data = await res.json();
           container.innerHTML = '';
-  
+
           if (!data.length) {
             container.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found</p>';
             return;
           }
-  
+
           const getCategoryInfo = (title) => {
             title = title.toLowerCase();
             if (title.includes('garbage') || title.includes('trash')) return { icon: 'fa-dumpster', color: 'red' };
@@ -492,19 +659,19 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
             if (title.includes('noise') || title.includes('horn')) return { icon: 'fa-volume-up', color: 'orange' };
             return { icon: 'fa-exclamation-circle', color: 'gray' };
           };
-  
+
           const severityStyles = {
             high: { bg: 'red-100', text: 'red-800' },
             medium: { bg: 'yellow-100', text: 'yellow-800' },
             low: { bg: 'green-100', text: 'green-800' }
           };
-  
+
           data.forEach(report => {
             const category = getCategoryInfo(report.title);
             const severity = ['high', 'medium', 'low'].includes(report.severity?.toLowerCase()) ? report.severity.toLowerCase() : 'medium';
             const style = severityStyles[severity];
             const date = report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Just now';
-  
+
             const tag = document.createElement('div');
             tag.className = `activity-tag bg-${category.color}-50 text-${category.color}-700 px-4 py-2 rounded-full text-sm flex items-center space-x-2`;
             tag.innerHTML = `
@@ -522,25 +689,25 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
             </div>`;
         }
       }
-  
+
       loadReports();
-  
+
       // Search functionality
       const searchInput = document.getElementById('report-search');
       const suggestionBox = document.getElementById('suggestions');
-  
+
       searchInput?.addEventListener('input', async function () {
         const query = this.value.trim();
         suggestionBox.innerHTML = '';
-  
+
         if (!query) return suggestionBox.classList.add('hidden');
-  
+
         try {
           const res = await fetch(`/api/search-reports?q=${encodeURIComponent(query)}`);
           const suggestions = await res.json();
-  
+
           if (!suggestions.length) return suggestionBox.classList.add('hidden');
-  
+
           suggestions.forEach(report => {
             const li = document.createElement('li');
             li.textContent = report.title;
@@ -548,7 +715,7 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
             li.onclick = () => {
               searchInput.value = report.title;
               suggestionBox.classList.add('hidden');
-  
+
               document.querySelectorAll('.report-card').forEach(card => {
                 const title = card.querySelector('.font-medium')?.textContent.toLowerCase();
                 card.style.display = title?.includes(report.title.toLowerCase()) ? 'flex' : 'none';
@@ -556,7 +723,7 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
             };
             suggestionBox.appendChild(li);
           });
-  
+
           suggestionBox.classList.remove('hidden');
         } catch (err) {
           console.error("Suggestion fetch failed:", err);
@@ -564,7 +731,66 @@ console.log('Stored isAdmin:', localStorage.getItem('isAdmin'));
         }
       });
     });
-  </script>  
+  </script>
+  <script src="/JS/lang.js"></script>
+
+  <!-- SOS -->
+  <script>
+    function openSOSModal() {
+      document.getElementById('sos-overlay').classList.add('show');
+      document.getElementById('sos-default').style.display = 'block';
+      document.getElementById('sos-success').style.display = 'none';
+      document.getElementById('sos-status').textContent = '📍 Ready to detect your location...';
+      document.getElementById('sos-confirm-btn').disabled = false;
+    }
+    function closeSOSModal() {
+      document.getElementById('sos-overlay').classList.remove('show');
+    }
+    document.getElementById('sos-overlay').addEventListener('click', function (e) {
+      if (e.target === this) closeSOSModal();
+    });
+    async function sendSOS() {
+      const btn = document.getElementById('sos-confirm-btn');
+      const status = document.getElementById('sos-status');
+      btn.disabled = true;
+      status.textContent = '📍 Getting your GPS location...';
+      let latitude, longitude;
+      try {
+        const pos = await new Promise((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 15000,
+            enableHighAccuracy: true,
+            maximumAge: 0
+          })
+        );
+        latitude = pos.coords.latitude;
+        longitude = pos.coords.longitude;
+      } catch (e) {
+        latitude = 24.8607; longitude = 67.0011;
+        status.textContent = '⚠️ GPS unavailable — using default location';
+      }
+      status.textContent = '🚨 Sending alert to admin...';
+      try {
+        const res = await fetch('/api/sos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ latitude, longitude })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('sos-default').style.display = 'none';
+          document.getElementById('sos-success').style.display = 'block';
+        } else {
+          status.textContent = '❌ Failed. Please try again.';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        status.textContent = '❌ Network error. Please try again.';
+        btn.disabled = false;
+      }
+    }
+  </script>
 </body>
 
 </html>

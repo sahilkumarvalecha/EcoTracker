@@ -291,7 +291,7 @@
               class="border border-gray-300 p-2 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
               <option value="all">All Statuses</option>
               <option value="reported">Reported</option>
-              <option value="inreview">In Review</option>
+              <option value="inreview">InReview</option>
               <option value="verified">Verified</option>
               <option value="resolved">Resolved</option>
             </select>
@@ -495,7 +495,7 @@
           </div>
           <span class="px-3 py-1 rounded-full text-xs ${
           statusClass[status] || 'bg-gray-100 text-gray-600'
-        } capitalize">${status || 'unknown'}</span>
+        } } capitalize\">${window.translateStatus ? window.translateStatus(status) : status || 'unknown'}</span>
         `;
 
           container.appendChild(reportCard);
@@ -506,7 +506,9 @@
     }
 
     // Load reports when page loads
-    window.addEventListener('DOMContentLoaded', loadReports);
+    window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(loadReports, 100);
+});
 
 
     // report search javascript
@@ -562,7 +564,7 @@
       }
     });
   </script>
-
+<script src="/JS/lang.js"></script>
 </body>
 
 </html>
